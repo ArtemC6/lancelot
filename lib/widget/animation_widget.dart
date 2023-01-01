@@ -213,10 +213,34 @@ Column showAnimationNoMessage(
           ..repeat();
       },
           controller: animationController,
-          height: height * 0.26,
-          width: height * 0.34,
+          height: height * 0.38,
+          width: height * 0.52,
           path),
-      SizedBox(height: height * 0.08,),
+      SizedBox(
+        height: height * 0.08,
+      ),
+    ],
+  );
+}
+
+Column showAnimationVerify(
+    double height, String path, AnimationController animationController) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Lottie.asset(alignment: Alignment.center,
+          errorBuilder: (context, error, stackTrace) {
+        return const SizedBox();
+      }, onLoaded: (composition) {
+        animationController
+          ..duration = composition.duration
+          ..repeat();
+      },
+          controller: animationController,
+          height: height * 0.38,
+          width: height * 0.52,
+          path),
     ],
   );
 }

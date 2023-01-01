@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lancelot/screens/settings/edit_profile_screen.dart';
 import 'package:lancelot/screens/settings/settiongs_profile_screen.dart';
@@ -273,14 +272,20 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 ),
                               ),
                               if (isProprietor)
-                                buttonUniversal('Редактировать', [Colors.blueAccent, Colors.purpleAccent], size.height / 21, () {
-                                  Navigator.push(
-                                      context,
-                                      FadeRouteAnimation(EditProfileScreen(
-                                        isFirst: false,
-                                        userModel: userModelCurrent,
-                                      )));
-                                }),
+                                buttonUniversalAnimationColors(
+                                        'Редактировать',
+                                        [
+                                          Colors.blueAccent,
+                                          Colors.purpleAccent
+                                        ],
+                                        size.height / 21, () {
+                                      Navigator.push(
+                                          context,
+                                          FadeRouteAnimation(EditProfileScreen(
+                                            isFirst: false,
+                                            userModel: userModelCurrent,
+                                          )));
+                                    }),
                               if (!isProprietor)
                                 buttonProfileUser(
                                   userModelCurrent,
@@ -294,28 +299,30 @@ class _ProfileScreen extends State<ProfileScreen> {
                             alignment: Alignment.topLeft,
                             decoration: const BoxDecoration(
                                 color: color_black_88,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(22),
-                                    topRight: Radius.circular(22))),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                infoPanelWidget(userModel: userModelPartner),
-                                slideInterests(listStory),
-                                photoProfileGallery(
-                                    userModelPartner.userImageUrl),
-                              ],
-                            ),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(22),
+                                        topRight: Radius.circular(22))),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    infoPanelWidget(
+                                        userModel: userModelPartner),
+                                    slideInterests(listStory),
+                                    photoProfileGallery(
+                                        userModelPartner.userImageUrl),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-
-                        ],
-                      ),
-                    )
-                  ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ))),
+          ),
         ),
       );
     }

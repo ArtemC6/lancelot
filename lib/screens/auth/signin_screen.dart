@@ -171,7 +171,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           textFieldAuth('Email...', emailController,
-                              Icons.email_outlined, size, false, 26, context),
+                              Icons.email_outlined, size, false, 35, context),
                           textFieldAuth(
                               'Password...',
                               passwordController,

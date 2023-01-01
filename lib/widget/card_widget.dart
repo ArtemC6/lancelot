@@ -101,12 +101,11 @@ class itemUserLike extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
 
-    return InkWell(
-      highlightColor: Colors.transparent,
-      splashColor: Colors.transparent,
+    return ZoomTapAnimation(
       child: Container(
-        height: width / 3.4,
+        height: height / 7.3,
         width: width,
         padding: EdgeInsets.only(
             left: width / 30, top: 0, right: width / 30, bottom: width / 30),
@@ -141,12 +140,12 @@ class itemUserLike extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 72,
-                    height: 72,
+                    width: height / 12,
+                    height: height / 12,
                     child: photoUser(
                       uri: userModelLike.userImageUrl[0],
-                      width: 72,
-                      height: 72,
+                      width: height / 12,
+                      height: height / 12,
                       state: userModelLike.state,
                       padding: 0,
                     ),
@@ -168,9 +167,9 @@ class itemUserLike extends StatelessWidget {
                                   text:
                                       '${userModelLike.name}, ${userModelLike.ageInt}',
                                   style: GoogleFonts.lato(
-                                    textStyle: const TextStyle(
+                                    textStyle: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 14,
+                                        fontSize: height / 56,
                                         letterSpacing: .5),
                                   ),
                                 ),
@@ -185,7 +184,7 @@ class itemUserLike extends StatelessWidget {
                                   style: GoogleFonts.lato(
                                     textStyle: TextStyle(
                                         color: Colors.white.withOpacity(.6),
-                                        fontSize: 11,
+                                        fontSize: height / 67,
                                         letterSpacing: .5),
                                   ),
                                 ),
@@ -205,8 +204,8 @@ class itemUserLike extends StatelessWidget {
                                 )));
                           },
                           path: 'images/ic_send.png',
-                          height: 30,
-                          width: 30,
+                          height: height / 28,
+                          width: height / 28,
                           padding: 4,
                         )
                       ],
@@ -404,7 +403,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
         ],
         size: Size(size.height, size.height),
         boardRadius: 22,
-        borderWidth: 0.8,
+        borderWidth: 1,
         child: Stack(
           fit: StackFit.expand,
           alignment: Alignment.bottomLeft,
@@ -456,6 +455,12 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                         child: Container(
                           alignment: Alignment.bottomLeft,
                           padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: <Color>[
+                              Colors.white.withOpacity(0.01),
+                              Colors.black26
+                            ]),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

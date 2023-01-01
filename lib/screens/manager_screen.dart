@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
-import '../config/notification_api.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -33,6 +32,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       indexSympathy = 0,
       indexChat = 0,
       indexProfile = 0;
+
+  // late StreamSubscription streamSubscription;
 
   late UserModel userModelCurrent;
 
@@ -178,7 +179,7 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       isLoading = true;
       setStateFirebase('online');
     });
-
+    // checkStatusNetwork(streamSubscription);
     super.initState();
   }
 
@@ -194,6 +195,7 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.addObserver(this);
+    // streamSubscription.cancel();
     super.dispose();
   }
 
@@ -205,7 +207,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         if (isWrite) {
           startTimer();
           isWrite = false;
-          print('of');
           setStateFirebase('offline');
         }
         break;
@@ -213,7 +214,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         if (isWrite) {
           startTimer();
           isWrite = false;
-          print('on');
           setStateFirebase('online');
         }
         break;

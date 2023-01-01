@@ -96,13 +96,13 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
         readFirebase(5, false);
-        Future.delayed(const Duration(milliseconds: 500), () {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent - 70,
-            duration: const Duration(milliseconds: 1500),
-            curve: Curves.fastOutSlowIn,
-          );
-        });
+        // Future.delayed(const Duration(milliseconds: 500), () {
+        //   scrollController.animateTo(
+        //     scrollController.position.maxScrollExtent - 70,
+        //     duration: const Duration(milliseconds: 1500),
+        //     curve: Curves.fastOutSlowIn,
+        //   );
+        // });
       }
     });
 
@@ -123,11 +123,12 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
                 children: [
                   topPanel(
                     context,
-                    'Отметки \'Нравится\'',
-                    Icons.favorite_outlined,
-                    Colors.red,
-                    true,
-                  ),
+                  'Отметки \'Нравится\'',
+                  Icons.favorite_outlined,
+                  Colors.red,
+                  true,
+                  size.height,
+                ),
                 AnimationLimiter(
                   child: ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -154,18 +155,18 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
                         } else {
                           if (isLoadingNewUser) {
                             return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 30),
-                              child: Center(
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 0.8,
-                                  ),
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 0.8,
                                 ),
                               ),
-                            );
+                            ),
+                          );
                         } else {
                           return const SizedBox();
                         }

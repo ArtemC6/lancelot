@@ -144,7 +144,6 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                               margin: const EdgeInsets.only(left: 20),
                               alignment: Alignment.centerLeft,
                               color: Colors.transparent,
-                              // padding: const EdgeInsets.only(top: 50),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -197,7 +196,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                     ],
                                   ),
                                 ),
-                                buttonUniversal(
+                                buttonUniversalAnimationColors(
                                   'Редактировать',
                                   [Colors.blueAccent, Colors.purpleAccent],
                                   size.height / 21,

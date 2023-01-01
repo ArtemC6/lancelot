@@ -75,6 +75,10 @@ dependencies:
   flutter_bounceable: ^1.0.2
   zoom_tap_animation: ^1.1.0
   flutter_colors_border: ^0.0.3+2
+  animator: ^3.2.0
+  auto_animated: ^3.1.0
+  connectivity_plus: ^3.0.2
+  email_validator: ^2.1.17
 
 dev_dependencies:
   flutter_test:

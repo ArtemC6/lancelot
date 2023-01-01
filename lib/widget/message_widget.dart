@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
@@ -187,70 +188,67 @@ class _MessageTextFieldState extends State<MessageTextField> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Padding(
         padding: const EdgeInsets.only(bottom: 20, left: 14, right: 24),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              width: MediaQuery.of(context).size.width / 1.3,
+              width: width / 1.3,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(colors: [
                   Colors.pinkAccent,
                   Colors.purpleAccent,
                   Colors.blueAccent,
                 ]),
-                // ),
                 borderRadius: BorderRadius.circular(26),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(
-                  1.4,
+                  1.2,
                 ),
                 child: Container(
                   alignment: Alignment.center,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: color_black_88,
                     border: Border.all(color: color_black_88),
                     borderRadius: BorderRadius.circular(26),
                   ),
-                  child: MediaQuery(
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                    child: TextFormField(
-                      textCapitalization: TextCapitalization.words,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(550),
-                      ],
-                      controller: _controllerMessage,
-                      minLines: 1,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          contentPadding: const EdgeInsets.only(
-                              left: 15, bottom: 5, top: 5, right: 15),
-                          counterStyle: const TextStyle(color: Colors.white),
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.9)),
-                          hintText: "Сообщение..."),
-                      style: GoogleFonts.lato(
-                          textStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13.5,
-                              letterSpacing: .5)),
-                    ),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(550),
+                    ],
+                    controller: _controllerMessage,
+                    minLines: 1,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: height / 52, horizontal: 15),
+                        counterStyle: const TextStyle(color: Colors.white),
+                        hintStyle:
+                            TextStyle(color: Colors.white.withOpacity(0.9)),
+                        hintText: "Сообщение..."),
+                    style: GoogleFonts.lato(
+                        textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: height / 58,
+                            letterSpacing: .5)),
                   ),
                 ),
               ),
             ),
-            InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+            ZoomTapAnimation(
               onTap: () {
                 if (_controllerMessage.text.trim().isNotEmpty) {
                   String messageText = _controllerMessage.text.trim();
@@ -326,8 +324,8 @@ class _MessageTextFieldState extends State<MessageTextField> {
                 padding: const EdgeInsets.all(0),
                 child: Image.asset(
                   'images/ic_send.png',
-                  height: 34,
-                  width: 34,
+                  height: width / 11,
+                  width: width / 11,
                 ),
               ),
             ),

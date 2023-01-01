@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:lancelot/screens/profile_screen.dart';
+
 // import 'package:flutter_colors_border/flutter_colors_border.dart';
 
 import '../config/const.dart';
@@ -379,11 +380,14 @@ class _HomeScreen extends State<HomeScreen>
                                     const Duration(milliseconds: 700),
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 60),
-                                  child: buttonUniversal('Обновить', [
-                                    Colors.blueAccent,
-                                    Colors.purpleAccent,
-                                    Colors.orangeAccent
-                                  ], height / 30, () {
+                                  child: buttonUniversalAnimationColors(
+                                      'Обновить',
+                                      [
+                                        Colors.blueAccent,
+                                        Colors.purpleAccent,
+                                        Colors.orangeAccent
+                                      ],
+                                      height / 21, () {
                                     readFirebase(
                                       10,
                                       true,
@@ -405,7 +409,6 @@ class _HomeScreen extends State<HomeScreen>
                               }, color_red, Icons.favorite, 2400),
                             ],
                           ),
-
                       ],
                     ),
                   ),

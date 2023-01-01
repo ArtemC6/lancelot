@@ -20,14 +20,6 @@ class photoProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return ZoomTapAnimation(
-      enableLongTapRepeatEvent: false,
-      longTapRepeatDuration: const Duration(milliseconds: 200),
-      begin: 1.0,
-      end: 0.93,
-      beginDuration: const Duration(milliseconds: 20),
-      endDuration: const Duration(milliseconds: 200),
-      beginCurve: Curves.decelerate,
-      endCurve: Curves.fastOutSlowIn,
       onTap: () {
         showDialogZoom(uri: uri, context: context);
       },
@@ -109,15 +101,6 @@ class photoProfileGallery extends StatelessWidget {
                               context: context,
                             );
                           },
-                          enableLongTapRepeatEvent: false,
-                          longTapRepeatDuration:
-                              const Duration(milliseconds: 200),
-                          begin: 1.0,
-                          end: 0.93,
-                          beginDuration: const Duration(milliseconds: 20),
-                          endDuration: const Duration(milliseconds: 200),
-                          beginCurve: Curves.decelerate,
-                          endCurve: Curves.fastOutSlowIn,
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 bottom: 5, left: 5, right: 5, top: 5),
@@ -206,15 +189,6 @@ class photoProfileSettingsGallery extends StatelessWidget {
                       curve: Curves.fastLinearToSlowEaseIn,
                       child: FadeInAnimation(
                         child: ZoomTapAnimation(
-                          enableLongTapRepeatEvent: false,
-                          longTapRepeatDuration:
-                              const Duration(milliseconds: 200),
-                          begin: 1.0,
-                          end: 0.93,
-                          beginDuration: const Duration(milliseconds: 20),
-                          endDuration: const Duration(milliseconds: 200),
-                          beginCurve: Curves.decelerate,
-                          endCurve: Curves.fastOutSlowIn,
                           onTap: () {
                             if (userModel.userImageUrl.length > index) {
                               showDialogZoom(

@@ -179,7 +179,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               10,
                               context),
                           textFieldAuth('Email...', emailController,
-                              Icons.email_outlined, size, false, 26, context),
+                              Icons.email_outlined, size, false, 35, context),
                           textFieldAuth(
                               'Password...',
                               passwordController,
@@ -188,6 +188,15 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               true,
                               20,
                               context),
+                          Container(
+                              padding: EdgeInsets.only(right: size.height / 22),
+                              alignment: Alignment.centerRight,
+                              child: animatedText(
+                                  size.height / 72,
+                                  'Введите реальную почту',
+                                  Colors.white,
+                                  500,
+                                  1)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

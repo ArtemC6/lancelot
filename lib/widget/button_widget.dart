@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animator/animator.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -51,14 +52,6 @@ class buttonAuth extends StatelessWidget {
 
 Widget buttonUniversal(String name, color, height, onTap) {
   return ZoomTapAnimation(
-    enableLongTapRepeatEvent: false,
-    longTapRepeatDuration: const Duration(milliseconds: 200),
-    begin: 1.0,
-    end: 0.94,
-    beginDuration: const Duration(milliseconds: 20),
-    endDuration: const Duration(milliseconds: 200),
-    beginCurve: Curves.decelerate,
-    endCurve: Curves.fastOutSlowIn,
     onTap: () {},
     child: SizedBox(
       height: height,
@@ -87,7 +80,64 @@ Widget buttonUniversal(String name, color, height, onTap) {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
             ),
-            child: animatedText(height / 3.5, name, Colors.white, 600, 1)),
+            child: animatedText(height / 3.5, name, Colors.white, 550, 1)),
+      ),
+    ),
+  );
+}
+
+Widget buttonUniversalAnimationNoColor(String name, color, height, onTap) {
+  return ZoomTapAnimation(
+    onTap: onTap,
+    child: Container(
+      width: height * 3.5,
+      height: height,
+      decoration: BoxDecoration(
+        color: color_black_88,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: FlutterColorsBorder(
+        animationDuration: 4,
+        colors: const [
+          Colors.white10,
+          Colors.white70,
+        ],
+        size: Size(height * 3.5, height),
+        boardRadius: 20,
+        borderWidth: 0.6,
+        child: Container(
+          alignment: Alignment.center,
+          child: animatedText(height / 3.6, name, Colors.white, 500, 1),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget buttonUniversalAnimationColors(String name, color, height, onTap) {
+  return ZoomTapAnimation(
+    onTap: onTap,
+    child: Container(
+      width: height * 3.5,
+      height: height,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: color),
+        // color: color_black_88,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: FlutterColorsBorder(
+        animationDuration: 4,
+        colors: const [
+          Colors.white10,
+          Colors.white70,
+        ],
+        size: Size(height * 3.5, height),
+        boardRadius: 20,
+        borderWidth: 0.6,
+        child: Container(
+          alignment: Alignment.center,
+          child: animatedText(height / 3.6, name, Colors.white, 500, 1),
+        ),
       ),
     ),
   );
@@ -159,15 +209,15 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
     Widget buttonLogic(
         bool isMutuallyMy, bool isMutuallyFriend, BuildContext context) {
       if (!isMutuallyMy && isMutuallyFriend) {
-        return buttonUniversal('Ожидайте ответа',
-            [Colors.blueAccent, Colors.purpleAccent], height / 30, () {
+        return buttonUniversalAnimationColors('Ожидайте ответа',
+            [Colors.blueAccent, Colors.purpleAccent], height / 21, () {
           if (!isMutuallyMy && isMutuallyFriend) {
             deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid);
           }
         });
       } else if (!isMutuallyMy && !isMutuallyFriend) {
-        return buttonUniversal(
-            'Оставить симпатию', [color_black_88, color_black_88], height / 30,
+        return buttonUniversalAnimationColors(
+            'Оставить симпатию', [color_black_88, color_black_88], height / 21,
             () {
           if (!isMutuallyMy && !isMutuallyFriend) {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
@@ -186,8 +236,8 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           }
         });
       } else if (isMutuallyMy && !isMutuallyFriend) {
-        return buttonUniversal('Принять симпатию',
-            [Colors.blueAccent, Colors.purpleAccent], height / 30, () {
+        return buttonUniversalAnimationColors('Принять симпатию',
+            [Colors.blueAccent, Colors.purpleAccent], height / 21, () {
           if (isMutuallyMy && !isMutuallyFriend) {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
               if (userModelFriend.token != '' && userModelFriend.notification) {
@@ -205,10 +255,10 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           }
         });
       } else {
-        return buttonUniversal(
+        return buttonUniversalAnimationColors(
             'Написать',
             [Colors.blueAccent, Colors.purpleAccent, Colors.orangeAccent],
-            height / 30, () {
+            height / 21, () {
           Navigator.push(
               context,
               FadeRouteAnimation(ChatUserScreen(
@@ -223,118 +273,54 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
       }
     }
 
-    return SizedBox(
-      height: 40,
-      child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('User')
-              .doc(userModelCurrent.uid)
-              .collection('sympathy')
-              .where('uid', isEqualTo: userModelFriend.uid)
-              .snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshotMy) {
-            if (snapshotMy.hasData) {
-              return StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(userModelFriend.uid)
-                      .collection('sympathy')
-                      .where('uid', isEqualTo: userModelCurrent.uid)
-                      .snapshots(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    bool isMutuallyFriend = false, isMutuallyMy = false;
-                    try {
-                      for (int i = 0; i < snapshot.data.docs.length; i++) {
-                        isMutuallyFriend = snapshot.data.docs[i]['uid'] ==
-                            userModelCurrent.uid;
-                        if (isMutuallyFriend) {
-                          break;
-                        }
-                      }
-                      for (int i = 0; i < snapshotMy.data.docs.length; i++) {
-                        isMutuallyMy = snapshotMy.data.docs[i]['uid'] ==
-                            userModelFriend.uid;
-                        if (isMutuallyMy) {
-                          break;
-                        }
-                      }
-                    } catch (E) {}
-                    if (snapshotMy.hasData && snapshot.hasData) {
-                      return SlideFadeTransition(
-                          animationDuration: const Duration(milliseconds: 500),
-                          child: buttonLogic(
-                              isMutuallyMy, isMutuallyFriend, context));
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('User')
+          .doc(userModelCurrent.uid)
+          .collection('sympathy')
+          .where('uid', isEqualTo: userModelFriend.uid)
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshotMy) {
+        if (snapshotMy.hasData) {
+          return StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('User')
+                  .doc(userModelFriend.uid)
+                  .collection('sympathy')
+                  .where('uid', isEqualTo: userModelCurrent.uid)
+                  .snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                bool isMutuallyFriend = false, isMutuallyMy = false;
+                try {
+                  for (int i = 0; i < snapshot.data.docs.length; i++) {
+                    isMutuallyFriend =
+                        snapshot.data.docs[i]['uid'] == userModelCurrent.uid;
+                    if (isMutuallyFriend) {
+                      break;
                     }
-                    return const SizedBox();
-                  });
-            }
-            return const SizedBox();
-          }),
+                  }
+                  for (int i = 0; i < snapshotMy.data.docs.length; i++) {
+                    isMutuallyMy =
+                        snapshotMy.data.docs[i]['uid'] == userModelFriend.uid;
+                    if (isMutuallyMy) {
+                      break;
+                    }
+                  }
+                } catch (E) {}
+                if (snapshotMy.hasData && snapshot.hasData) {
+                  return SlideFadeTransition(
+                      animationDuration: const Duration(milliseconds: 500),
+                      child:
+                          buttonLogic(isMutuallyMy, isMutuallyFriend, context));
+                }
+                return const SizedBox();
+              });
+        }
+        return const SizedBox();
+      },
     );
   }
 }
-
-// class buttonProfileMy extends StatelessWidget {
-//   UserModel userModel;
-//
-//   buttonProfileMy(this.userModel, {super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SlideFadeTransition(
-//       animationDuration: const Duration(milliseconds: 800),
-//       child: Container(
-//         padding: const EdgeInsets.only(right: 20),
-//         height: 40,
-//         child: DecoratedBox(
-//           decoration: BoxDecoration(
-//             boxShadow: const [
-//               BoxShadow(
-//                 color: Colors.white38,
-//                 blurRadius: 5.0,
-//                 spreadRadius: 0.0,
-//                 offset: Offset(
-//                   0.0,
-//                   1.5,
-//                 ),
-//               )
-//             ],
-//             border: Border.all(width: 0.7, color: Colors.white30),
-//             gradient: const LinearGradient(
-//                 colors: [Colors.blueAccent, Colors.purpleAccent]),
-//             borderRadius: BorderRadius.circular(20),
-//           ),
-//           child: ElevatedButton(
-//             onPressed: () {
-//               Navigator.push(
-//                   context,
-//                   FadeRouteAnimation(EditProfileScreen(
-//                     isFirst: false,
-//                     userModel: userModel,
-//                   )));
-//             },
-//             style: ElevatedButton.styleFrom(
-//               shadowColor: Colors.transparent,
-//               backgroundColor: Colors.transparent,
-//               shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(20)),
-//             ),
-//             child: RichText(
-//               text: TextSpan(
-//                 text: 'Редактировать',
-//                 style: GoogleFonts.lato(
-//                   textStyle: const TextStyle(
-//                       color: Colors.white, fontSize: 11, letterSpacing: .1),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class buttonLike extends StatelessWidget {
   bool isLike;
@@ -349,20 +335,14 @@ class buttonLike extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
     return ZoomTapAnimation(
-      enableLongTapRepeatEvent: false,
-      longTapRepeatDuration: const Duration(milliseconds: 200),
-      begin: 1.0,
-      end: 0.93,
-      beginDuration: const Duration(milliseconds: 20),
-      endDuration: const Duration(milliseconds: 200),
-      beginCurve: Curves.decelerate,
-      endCurve: Curves.fastOutSlowIn,
       child: Container(
         margin: const EdgeInsets.only(right: 30),
         child: LikeButton(
           isLiked: isLike,
-          size: 32,
+          size: size.height * 0.03,
           circleColor:
               const CircleColor(start: Colors.pinkAccent, end: Colors.red),
           bubblesColor: const BubblesColor(
@@ -370,10 +350,22 @@ class buttonLike extends StatelessWidget {
             dotSecondaryColor: Colors.deepPurpleAccent,
           ),
           likeBuilder: (bool isLiked) {
-            return Icon(
-              isLiked ? Icons.favorite_outlined : Icons.favorite_border_sharp,
-              color: isLiked ? color_red : Colors.white,
-              size: 32,
+            return SizedBox(
+              height: size.height * 0.06,
+              width: size.height * 0.06,
+              child: Animator<double>(
+                duration: const Duration(milliseconds: 2000),
+                cycles: 0,
+                curve: Curves.elasticIn,
+                tween: Tween<double>(begin: 20.0, end: 25.0),
+                builder: (context, animatorState, child) => Icon(
+                  isLiked
+                      ? Icons.favorite_outlined
+                      : Icons.favorite_border_sharp,
+                  size: animatorState.value * 1.5,
+                  color: isLiked ? color_red : Colors.white,
+                ),
+              ),
             );
           },
           onTap: (isLiked) {
@@ -415,10 +407,10 @@ ZoomTapAnimation homeAnimationButton(
         child: FlutterColorsBorder(
           animationDuration: 5,
           colors: const [
-            Colors.amberAccent,
-            Colors.red,
-            // Colors.purpleAccent,
+            Colors.indigoAccent,
+            Colors.purpleAccent,
             Colors.deepPurpleAccent,
+            Colors.pinkAccent,
           ],
           size: Size(height * 0.10, height * 0.10),
           boardRadius: 50,
@@ -427,11 +419,22 @@ ZoomTapAnimation homeAnimationButton(
             height: height * 0.10,
             width: height * 0.10,
             decoration: BoxDecoration(
-                color: Colors.transparent, borderRadius: BorderRadius.circular(99)),
-            child: Icon(
-              icon,
-              color: colors,
-              size: height * 0.05,
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(99)),
+            child: SizedBox(
+              height: height * 0.05,
+              width: height * 0.05,
+              child: Animator<double>(
+                duration: const Duration(milliseconds: 2000),
+                cycles: 0,
+                curve: Curves.elasticIn,
+                tween: Tween<double>(begin: 20.0, end: 25.0),
+                builder: (context, animatorState, child) => Icon(
+                  icon,
+                  size: animatorState.value * 2,
+                  color: colors,
+                ),
+              ),
             ),
           ),
         ),

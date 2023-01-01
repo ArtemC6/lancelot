@@ -12,46 +12,43 @@ Widget textFieldAuth(
     bool isPassword,
     int length,
     BuildContext context) {
-  return MediaQuery(
-    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaY: 15,
-          sigmaX: 15,
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(15),
+    child: BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaY: 15,
+        sigmaX: 15,
+      ),
+      child: Container(
+        height: size.width / 8,
+        width: size.width / 1.2,
+        alignment: Alignment.center,
+        padding: EdgeInsets.only(right: size.width / 30),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white10, width: 0.5),
+          color: Colors.white.withOpacity(.05),
+          borderRadius: BorderRadius.circular(15),
         ),
-        child: Container(
-          height: size.width / 8,
-          width: size.width / 1.2,
-          alignment: Alignment.center,
-          padding: EdgeInsets.only(right: size.width / 30),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white10, width: 0.5),
-            color: Colors.white.withOpacity(.05),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: TextField(
-            obscureText: isPassword,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(length),
-            ],
-
-            textAlignVertical: TextAlignVertical.center,
-            controller: controller,
-            style: TextStyle(color: Colors.white.withOpacity(.8), fontSize: size.width / 30),
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-              prefixIcon: Icon(
-                icon,
-                color: Colors.white.withOpacity(.7),
-              ),
-              border: InputBorder.none,
-              hintMaxLines: 1,
-              hintText: hint,
-              hintStyle:
-                  TextStyle(fontSize: size.width / 32, color: Colors.white.withOpacity(.5)),
+        child: TextField(
+          obscureText: isPassword,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(length),
+          ],
+          textAlignVertical: TextAlignVertical.center,
+          controller: controller,
+          style: TextStyle(
+              color: Colors.white.withOpacity(.8), fontSize: size.width / 30),
+          cursorColor: Colors.white,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              icon,
+              color: Colors.white.withOpacity(.7),
             ),
+            border: InputBorder.none,
+            hintMaxLines: 1,
+            hintText: hint,
+            hintStyle: TextStyle(
+                fontSize: size.width / 32, color: Colors.white.withOpacity(.5)),
           ),
         ),
       ),

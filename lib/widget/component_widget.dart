@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../../config/const.dart';
 import '../../model/interests_model.dart';
@@ -433,7 +434,7 @@ class infoPanelWidget extends StatelessWidget {
 }
 
 Padding topPanel(BuildContext context, String text, IconData icon, Color color,
-    bool isBack) {
+    bool isBack, double height) {
   return Padding(
     padding: const EdgeInsets.all(20),
     child: Row(
@@ -444,25 +445,19 @@ Padding topPanel(BuildContext context, String text, IconData icon, Color color,
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: Colors.white, size: 18),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                color: Colors.white, size: height / 38),
           ),
-        RichText(
-          text: TextSpan(
-            text: text,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: .4),
-          ),
-        ),
+        animatedText(height / 52, text, Colors.white, 540, 1),
         Container(
-          height: 25,
-          width: 25,
+          height: height / 34,
+          width: height / 34,
           decoration: BoxDecoration(
               color: color, borderRadius: BorderRadius.circular(99)),
           child: Icon(
             icon,
             color: Colors.white,
-            size: 17,
+            size: height / 50,
           ),
         ),
       ],
@@ -535,24 +530,20 @@ class _topPanelChatState extends State<topPanelChat> {
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
+                      ZoomTapAnimation(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child:  Icon(
+                        child: Icon(
                           Icons.arrow_back_ios_new_rounded,
                           color: Colors.white,
-                          size: height/ 34,
+                          size: height / 34,
                         ),
                       ),
                       Container(
                         padding:
                             const EdgeInsets.only(left: 22, top: 6, right: 4),
-                        child: InkWell(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
+                        child: ZoomTapAnimation(
                           onTap: () {
                             Navigator.push(
                                 context,
@@ -663,11 +654,19 @@ class _topPanelChatState extends State<topPanelChat> {
                     ],
                   ),
                   PopupMenuButton<int>(
+                    enabled: true,
+                    elevation: 10,
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: height / 38,
+                      color: Colors.white,
+                    ),
                     color: Colors.white.withOpacity(0.07),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(16),
                       ),
+                      side: BorderSide(color: Colors.white24, width: 0.7),
                     ),
                     onSelected: (value) {
                       if (value == 0) {
@@ -679,12 +678,13 @@ class _topPanelChatState extends State<topPanelChat> {
                       return [
                         PopupMenuItem(
                           value: 0,
-                          child: animatedText(height / 58, 'Удалить чат', Colors.white, 550, 1),
-
+                          child: animatedText(
+                              height / 58, 'Удалить чат', Colors.white, 550, 1),
                         ),
                         PopupMenuItem(
-                          value: 1,
-                          child:animatedText(height / 58, 'Изменить цвет', Colors.white, 650, 1)),
+                            value: 1,
+                            child: animatedText(height / 58, 'Изменить цвет',
+                                Colors.white, 650, 1)),
                       ];
                     },
                   ),

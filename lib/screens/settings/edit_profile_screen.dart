@@ -272,9 +272,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
-                                    icon: const Icon(
-                                        Icons.arrow_back_ios_new_rounded,
-                                        size: 20),
+                                    icon: Icon(Icons.arrow_back_ios_new_rounded,
+                                        size: height / 38),
                                   ),
                                 customIconButton(
                                   path: 'images/ic_log_out.png',
@@ -298,14 +297,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             animationDuration:
                                 const Duration(milliseconds: 900),
                             child: Container(
-                              padding: const EdgeInsets.only(bottom: 6, top: 6, right: 8),
+                              padding: EdgeInsets.only(
+                                  bottom: height / 62,
+                                  top: height / 62,
+                                  right: 8),
                               alignment: Alignment.centerRight,
-                              child: buttonUniversal(
-                                  isFirst ? 'Завершить' : 'Сохронить', [
-                                Colors.blueAccent,
-                                Colors.purpleAccent,
-                                Colors.orangeAccent
-                              ], width / 10,() {
+                              child: buttonUniversalAnimationColors(
+                                  isFirst ? 'Завершить' : 'Сохронить',
+                                  [
+                                    Colors.blueAccent,
+                                    Colors.purpleAccent,
+                                    Colors.orangeAccent
+                                  ],
+                                  height / 22, () {
                                 _uploadData();
                               }),
                             ),

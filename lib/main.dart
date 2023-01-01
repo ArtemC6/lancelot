@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lancelot/screens/auth/signin_screen.dart';
+import 'package:lancelot/screens/auth/verify_screen.dart';
 import 'package:lancelot/screens/manager_screen.dart';
 import 'package:lancelot/screens/settings/edit_image_profile_screen.dart';
 import 'package:lancelot/screens/settings/edit_profile_screen.dart';
@@ -99,44 +100,49 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return StreamBuilder(
-        stream: FirebaseAuth.instance.userChanges(),
+      return StreamBuilder<User>(
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const loadingCustom();
           } else if (snapshot.hasData) {
             if (isStart) {
-              if (isEmptyDataUser) {
-                if (isEmptyImageBackground) {
-                  return ManagerScreen(
-                    currentIndex: 0,
-                  );
+              // if(snapshot.data.emailVerified) {
+              if (true) {
+                if (isEmptyDataUser) {
+                  if (isEmptyImageBackground) {
+                    return ManagerScreen(
+                      currentIndex: 0,
+                    );
+                  } else {
+                    return EditImageProfileScreen(
+                      bacImage: '',
+                    );
+                  }
                 } else {
-                  return EditImageProfileScreen(
-                    bacImage: '',
+                  return EditProfileScreen(
+                    isFirst: true,
+                    userModel: UserModel(
+                        name: '',
+                        uid: '',
+                        myCity: '',
+                        ageTime: Timestamp.now(),
+                        ageInt: 0,
+                        userPol: '',
+                        searchPol: '',
+                        searchRangeStart: 0,
+                        userImageUrl: [],
+                        userImagePath: [],
+                        imageBackground: '',
+                        userInterests: [],
+                        searchRangeEnd: 0,
+                        state: '',
+                        token: '',
+                        notification: true),
                   );
                 }
               } else {
-                return EditProfileScreen(
-                  isFirst: true,
-                  userModel: UserModel(
-                      name: '',
-                      uid: '',
-                      myCity: '',
-                      ageTime: Timestamp.now(),
-                      ageInt: 0,
-                      userPol: '',
-                      searchPol: '',
-                      searchRangeStart: 0,
-                      userImageUrl: [],
-                      userImagePath: [],
-                      imageBackground: '',
-                      userInterests: [],
-                      searchRangeEnd: 0,
-                      state: '',
-                      token: '',
-                      notification: true),
-                );
+                return const VerifyScreen();
               }
             } else {
               return const WarningScreen();

@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'const.dart';
+import 'firestore_operations.dart';
 
 class Utils {
   static Future<String> downloadFile(String uri, String fileName) async {
@@ -31,7 +34,7 @@ String filterDate(lastDateOnline) {
           '${months[getDataTime(lastDateOnline).month - 1]} в ${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
     } else {
       time =
-          '${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
+      '${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
     }
   } catch (error) {}
   return time;
@@ -48,4 +51,21 @@ Future<bool> getState(time) async {
 Future<void> setValueSharedPref(String key, int value) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setInt(key, value);
+}
+
+Future checkStatusNetwork(StreamSubscription streamSubscription) async {
+  bool isFiresState = false;
+  streamSubscription =
+      Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    if (isFiresState) {
+      if (result.name == 'wifi') {
+        setStateFirebase('online');
+      } else if (result.name == 'mobile') {
+        setStateFirebase('online');
+      } else {
+        setStateFirebase('offline');
+      }
+    }
+    isFiresState = true;
+  });
 }
