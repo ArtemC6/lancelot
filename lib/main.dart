@@ -107,8 +107,8 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
             return const loadingCustom();
           } else if (snapshot.hasData) {
             if (isStart) {
-              // if(snapshot.data.emailVerified) {
               if (true) {
+              // if (snapshot.data.emailVerified) {
                 if (isEmptyDataUser) {
                   if (isEmptyImageBackground) {
                     return ManagerScreen(

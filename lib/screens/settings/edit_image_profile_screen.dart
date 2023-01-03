@@ -7,7 +7,6 @@ import '../../config/const.dart';
 import '../../config/firestore_operations.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
-import '../../widget/card_widget.dart';
 
 class EditImageProfileScreen extends StatefulWidget {
  final String bacImage;
@@ -93,11 +92,18 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                 shadowColor: Colors.white30,
                                 color: color_black_88,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    side: const BorderSide(
-                                      width: 0.8,
-                                      color: Colors.white38,
-                                    )),
+                                  borderRadius: BorderRadius.circular(12),
+                                  side:
+                                      (indexImage == index && indexImage != 100)
+                                          ? const BorderSide(
+                                              width: 1,
+                                              color: Colors.white70,
+                                            )
+                                          : const BorderSide(
+                                              width: 0.7,
+                                              color: Colors.white38,
+                                            ),
+                                ),
                                 elevation: 6,
                                 child: CachedNetworkImage(
                                   errorWidget: (context, url, error) =>
@@ -114,9 +120,8 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                     ),
                                   ),
                                   progressIndicatorBuilder:
-                                      (context, url, progress) => Center(
-                                        child: cardLoading(size, 14),
-                                  ),
+                                      (context, url, progress) =>
+                                          loadingPhotoAnimation(size.height),
                                   imageUrl: listImageUri[index],
                                 ),
                               ),
@@ -174,8 +179,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                 color: Colors.white,
               ),
             if (bacImage == '') const SizedBox(),
-            animatedText(size.height /48, 'Фон профиля', Colors.white, 700, 1),
-
+            animatedText(size.height / 48, 'Фон профиля', Colors.white, 700, 1),
             Padding(
               padding: const EdgeInsets.only(
                 right: 14,
@@ -189,7 +193,6 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                 onTap: () {},
               ),
             )
-            // Container(
           ],
         ),
       );

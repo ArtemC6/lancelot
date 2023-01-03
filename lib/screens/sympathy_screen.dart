@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lancelot/screens/chat_user_screen.dart';
 import 'package:lancelot/screens/profile_screen.dart';
-import 'package:lancelot/screens/that_user_screen.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
@@ -75,7 +75,6 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: color_black_88,
       body: SafeArea(
@@ -228,7 +227,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                       height: height / 4.5,
                                                       width: size.width,
                                                       padding: EdgeInsets.all(
-                                                          height / 68),
+                                                          height / 74),
                                                       child: Card(
                                                         shadowColor: Colors
                                                             .white
@@ -255,7 +254,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                           58,
                                                                   vertical:
                                                                       height /
-                                                                          42),
+                                                                          46),
                                                           child: Row(
                                                             // mainAxisAlignment: MainAxisAlignment.start,
                                                             // crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,8 +324,8 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                           ),
                                                                         ),
                                                                         Container(
-                                                                          margin: const EdgeInsets.only(
-                                                                              bottom: 20,
+                                                                          margin:  EdgeInsets.only(
+                                                                              bottom: height / 76,
                                                                               left: 10),
                                                                           alignment:
                                                                               Alignment.topRight,

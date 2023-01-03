@@ -670,8 +670,8 @@ class _topPanelChatState extends State<topPanelChat> {
                     ),
                     onSelected: (value) {
                       if (value == 0) {
-                        showAlertDialogDeleteChat(
-                            context, friendId, friendName, true, friendImage);
+                        showAlertDialogDeleteChat(context, friendId, friendName,
+                            true, friendImage, height);
                       }
                     },
                     itemBuilder: (BuildContext context) {

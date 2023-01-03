@@ -37,7 +37,8 @@ Widget textFieldAuth(
           textAlignVertical: TextAlignVertical.center,
           controller: controller,
           style: TextStyle(
-              color: Colors.white.withOpacity(.8), fontSize: size.width / 30),
+              color: Colors.white.withOpacity(.8), fontSize: size.height / 72),
+
           cursorColor: Colors.white,
           decoration: InputDecoration(
             prefixIcon: Icon(
@@ -48,7 +49,7 @@ Widget textFieldAuth(
             hintMaxLines: 1,
             hintText: hint,
             hintStyle: TextStyle(
-                fontSize: size.width / 32, color: Colors.white.withOpacity(.5)),
+                fontSize: size.height / 72, color: Colors.white.withOpacity(.5)),
           ),
         ),
       ),

@@ -11,6 +11,7 @@ import 'package:ndialog/ndialog.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
+import 'animation_widget.dart';
 
 void showDialogZoom({required String uri, required BuildContext context}) {
   ZoomDialog(
@@ -223,17 +224,17 @@ showAlertDialogWarning(BuildContext context) async {
 }
 
 showAlertDialogDeleteChat(BuildContext context, String friendId,
-    String friendName, bool isBack, String friendUri) {
-  bool isDeletePartner = false;
+    String friendName, bool isBack, String friendUri, double height) {
+  bool isDeletePartner = true;
   Widget cancelButton = TextButton(
-    child: const Text("Отмена"),
+    child: animatedText(height / 64, 'Отмена', Colors.blueAccent, 500, 1),
     onPressed: () {
       Navigator.pop(context);
     },
   );
 
   Widget continueButton = TextButton(
-    child: const Text("Удалить"),
+    child: animatedText(height / 64, 'Удалить', Colors.blueAccent, 500, 1),
     onPressed: () {
       deleteChatFirebase(isDeletePartner, friendId, isBack, context, friendUri);
     },
@@ -255,36 +256,22 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Удалить чат',
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  letterSpacing: .4),
-                            ),
-                          ),
-                        ),
+                        child: animatedText(
+                            height / 50, 'Удалить чат', Colors.white, 400, 1),
                       ),
                       CheckboxListTile(
                         activeColor: Colors.blue,
-                        title: RichText(
-                          text: TextSpan(
-                            text: "Также удалить для $friendName",
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  letterSpacing: .6),
-                            ),
-                          ),
-                        ),
+                        title: animatedText(
+                            height / 60,
+                            'Также удалить для $friendName',
+                            Colors.white,
+                            450,
+                            1),
                         value: isDeletePartner,
                         onChanged: (newValue) {
-                          setState(() {
-                            isDeletePartner = !isDeletePartner;
-                          });
+                          // setState(() {
+                          //   isDeletePartner = !isDeletePartner;
+                          // });
                         },
                         controlAffinity: ListTileControlAffinity
                             .leading, //  <-- leading Checkbox

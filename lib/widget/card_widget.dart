@@ -290,81 +290,6 @@ SizedBox cardLoadingWidget(Size size, double heightCard, double heightAvatar) {
       },
     ),
   );
-  return SizedBox(
-    height: size.height,
-    child: SliverPadding(
-      padding: const EdgeInsets.all(20),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(alignment: Alignment.centerLeft, children: [
-                    CardLoading(
-                      cardLoadingTheme: CardLoadingTheme(
-                          colorTwo: color_black_88,
-                          colorOne: Colors.white.withOpacity(0.10)),
-                      height: size.height * heightCard,
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      margin: const EdgeInsets.only(bottom: 10),
-                    ),
-                    Positioned(
-                      left: 22,
-                      child: CardLoading(
-                        cardLoadingTheme: CardLoadingTheme(
-                            colorTwo: color_black_88,
-                            colorOne: Colors.white.withOpacity(0.14)),
-                        height: size.height * heightAvatar,
-                        width: size.height * heightAvatar,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(50)),
-                        margin: const EdgeInsets.only(bottom: 10),
-                      ),
-                    ),
-                  ]),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: CardLoading(
-                          cardLoadingTheme: CardLoadingTheme(
-                              colorTwo: color_black_88,
-                              colorOne: Colors.white.withOpacity(0.10)),
-                          height: 30,
-                          width: 200,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          margin: const EdgeInsets.only(bottom: 10),
-                        ),
-                      ),
-                      const Expanded(child: SizedBox()),
-                      Expanded(
-                        flex: 1,
-                        child: CardLoading(
-                          cardLoadingTheme: CardLoadingTheme(
-                              colorTwo: color_black_88,
-                              colorOne: Colors.white.withOpacity(0.10)),
-                          height: 30,
-                          width: 200,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          margin: const EdgeInsets.only(bottom: 10),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-          childCount: 10,
-        ),
-      ),
-    ),
-  );
 }
 
 Widget cardLoading(Size size, double radius) {
@@ -465,7 +390,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               animatedText(
-                                  size.height / 52,
+                                  size.height / 53,
                                   '${userModelPartner[index].name}, '
                                   '${userModelPartner[index].ageInt} ',
                                   Colors.white,
@@ -474,7 +399,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                               Row(
                                 children: [
                                   animatedText(
-                                      size.height / 64,
+                                      size.height / 65,
                                       userModelPartner[index].myCity,
                                       Colors.white,
                                       550,

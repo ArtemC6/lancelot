@@ -148,6 +148,17 @@ SlideFadeTransition showProgressWrite() {
   );
 }
 
+Padding showCheckMessageAnimation(double height, IconData icon, Color white) {
+  return Padding(
+    padding: EdgeInsets.only(left: height / 86),
+    child: Icon(
+      icon,
+      color: white,
+      size: height / 50,
+    ),
+  );
+}
+
 SlideFadeTransition animatedText(
     double size, String text, color, time, int line) {
   return SlideFadeTransition(
@@ -217,7 +228,7 @@ Column showAnimationNoMessage(
           width: height * 0.52,
           path),
       SizedBox(
-        height: height * 0.08,
+        height: height * 0.04,
       ),
     ],
   );

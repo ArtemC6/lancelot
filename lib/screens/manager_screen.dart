@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lancelot/screens/chat_screen.dart';
+import 'package:lancelot/screens/chat_user_screen.dart';
 import 'package:lancelot/screens/profile_screen.dart';
 import 'package:lancelot/screens/sympathy_screen.dart';
-import 'package:lancelot/screens/that_screen.dart';
-import 'package:lancelot/screens/that_user_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';

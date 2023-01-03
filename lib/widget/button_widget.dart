@@ -11,7 +11,7 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
 import '../model/user_model.dart';
-import '../screens/that_user_screen.dart';
+import '../screens/chat_user_screen.dart';
 import 'animation_widget.dart';
 
 class buttonAuth extends StatelessWidget {
