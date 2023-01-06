@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lancelot/config/utils.dart';
 import 'package:path/path.dart' as path;
 
 import '../model/account_is_full_model.dart';
@@ -19,13 +20,14 @@ import '../screens/settings/edit_profile_screen.dart';
 import '../widget/dialog_widget.dart';
 import 'const.dart';
 
-Future<CroppedFile?> _cropImage(BuildContext context, XFile pickedImage) async {
+Future<CroppedFile?> _cropImage(
+    BuildContext context, XFile pickedImage, int compressQuality) async {
   CroppedFile? _croppedFile;
 
   final croppedFile = await ImageCropper().cropImage(
     sourcePath: pickedImage.path,
     compressFormat: ImageCompressFormat.jpg,
-    compressQuality: 30,
+    compressQuality: compressQuality,
     uiSettings: [
       AndroidUiSettings(
         toolbarTitle: 'Обрезать',
@@ -64,12 +66,11 @@ Future<String> uploadFirstImage(BuildContext context, List<String> userImageUrl,
     List<String> userImagePath) async {
   String uri = '';
   FirebaseStorage storage = FirebaseStorage.instance;
-  final picker = ImagePicker();
   try {
-    final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 30, maxWidth: 1920);
+    final pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery, imageQuality: 34, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 34).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
@@ -112,9 +113,9 @@ Future<void> uploadImageAdd(
 
   try {
     final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 24, maxWidth: 1920);
+        source: ImageSource.gallery, imageQuality: 26, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 26).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
@@ -163,9 +164,9 @@ Future<String> updateFirstImage(
   final picker = ImagePicker();
   try {
     final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 24, maxWidth: 1920);
+        source: ImageSource.gallery, imageQuality: 34, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 34).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
@@ -521,7 +522,7 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
           searchRangeEnd: data['rangeEnd'],
           myCity: data['myCity'],
           imageBackground: data['imageBackground'],
-          ageInt: data['ageInt'],
+          ageInt: ageInt(data),
           state: data['state'],
           token: data['token'],
           notification: data['notification']);
@@ -597,20 +598,20 @@ Future deleteMessageFirebase(
         "last_msg": snapshotMy.data.docs[index]['message'],
         'date': snapshotMy.data.docs[index]['date'],
         'last_date_open_chat': DateTime.now(),
-      }).then((value) {
-        if (isDeletePartner) {
-          FirebaseFirestore.instance
-              .collection('User')
-              .doc(friendId)
-              .collection('messages')
-              .doc(myId)
-              .update({
-            "last_msg": snapshotMy.data.docs[index]['message'],
-            'date': snapshotMy.data.docs[index]['date'],
-            'last_date_open_chat': DateTime.now(),
-          });
-        }
       });
+
+      if (isDeletePartner) {
+        FirebaseFirestore.instance
+            .collection('User')
+            .doc(friendId)
+            .collection('messages')
+            .doc(myId)
+            .update({
+          "last_msg": snapshotMy.data.docs[index]['message'],
+          'date': snapshotMy.data.docs[index]['date'],
+          'last_date_open_chat': DateTime.now(),
+        });
+      }
     }
 
     FirebaseFirestore.instance
@@ -620,19 +621,18 @@ Future deleteMessageFirebase(
         .doc(friendId)
         .collection('chats')
         .doc(deleteMessageIdMy)
-        .delete()
-        .then((value) {
-      if (isDeletePartner) {
-        FirebaseFirestore.instance
-            .collection('User')
-            .doc(friendId)
-            .collection('messages')
-            .doc(myId)
-            .collection('chats')
-            .doc(deleteMessageIdPartner)
-            .delete();
-      }
-    });
+        .delete();
+
+    if (isDeletePartner) {
+      FirebaseFirestore.instance
+          .collection('User')
+          .doc(friendId)
+          .collection('messages')
+          .doc(myId)
+          .collection('chats')
+          .doc(deleteMessageIdPartner)
+          .delete();
+    }
   } on FirebaseException {}
 }
 
@@ -707,7 +707,7 @@ Future<AccountIsFull> readFirebaseIsAccountFull() async {
       isEmptyDataUser: false, isEmptyImageBackground: false, isStart: true);
   try {
     if (FirebaseAuth.instance.currentUser?.uid != null) {
-      await FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('StartApp')
           .doc('IsStart')
           .get()
@@ -715,35 +715,34 @@ Future<AccountIsFull> readFirebaseIsAccountFull() async {
         if (documentSnapshot.exists) {
           accountIsFull.isStart = documentSnapshot['isStart'];
         }
-      }).then((value) async {
-        if (accountIsFull.isStart) {
-          await FirebaseFirestore.instance
-              .collection('User')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .get()
-              .then((DocumentSnapshot documentSnapshot) {
-            if (documentSnapshot.exists) {
-              if (documentSnapshot['myPol'] != '' &&
-                  documentSnapshot['myCity'] != '' &&
-                  documentSnapshot['searchPol'] != '' &&
-                  documentSnapshot['rangeStart'] != '' &&
-                  documentSnapshot['rangeEnd'] != '' &&
-                  documentSnapshot['ageTime'] != '' &&
-                  documentSnapshot['ageInt'] != '' &&
-                  documentSnapshot['listInterests'] != '' &&
-                  List<String>.from(documentSnapshot['listImageUri'])
-                      .isNotEmpty &&
-                  List<String>.from(documentSnapshot['listImageUri'])
-                      .isNotEmpty) {
-                if (documentSnapshot['imageBackground'] != '') {
-                  accountIsFull.isEmptyImageBackground = true;
-                }
+      });
+
+      if (accountIsFull.isStart) {
+        await FirebaseFirestore.instance
+            .collection('User')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          if (documentSnapshot.exists) {
+            if (documentSnapshot['myPol'] != '' &&
+                documentSnapshot['myCity'] != '' &&
+                documentSnapshot['searchPol'] != '' &&
+                documentSnapshot['rangeStart'] != '' &&
+                documentSnapshot['rangeEnd'] != '' &&
+                documentSnapshot['ageTime'] != '' &&
+                documentSnapshot['listInterests'] != '' &&
+                List<String>.from(documentSnapshot['listImageUri'])
+                    .isNotEmpty &&
+                List<String>.from(documentSnapshot['listImageUri'])
+                    .isNotEmpty) {
+              if (documentSnapshot['imageBackground'] != '') {
+                accountIsFull.isEmptyImageBackground = true;
+              }
                 accountIsFull.isEmptyDataUser = true;
               }
             }
           });
         }
-      });
     }
   } on FirebaseException {}
 

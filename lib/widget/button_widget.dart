@@ -42,7 +42,7 @@ class buttonAuth extends StatelessWidget {
                 border: Border.all(color: Colors.white10, width: 0.5),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: animatedText(size.width / 34, name,
+              child: animatedText(size.width / 36, name,
                   Colors.white.withOpacity(.8), time, 1)),
         ),
       ),
@@ -407,14 +407,15 @@ ZoomTapAnimation homeAnimationButton(
         child: FlutterColorsBorder(
           animationDuration: 5,
           colors: const [
-            Colors.indigoAccent,
+            // Colors.deepOrange,
+            Colors.yellowAccent,
             Colors.purpleAccent,
             Colors.deepPurpleAccent,
             Colors.pinkAccent,
           ],
           size: Size(height * 0.10, height * 0.10),
           boardRadius: 50,
-          borderWidth: 0.8,
+          borderWidth: 1,
           child: Container(
             height: height * 0.10,
             width: height * 0.10,

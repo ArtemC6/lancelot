@@ -29,7 +29,7 @@ String filterDate(lastDateOnline) {
   try {
     if (DateTime.now().difference(getDataTime(lastDateOnline)).inDays >= 1) {
       time = '${getDataTime(lastDateOnline).day} '
-          '${months[getDataTime(lastDateOnline).month - 1]} в ${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
+          '${months[getDataTime(lastDateOnline).month - 1]} ${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
     } else {
       time =
       '${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
@@ -50,6 +50,9 @@ Future<void> setValueSharedPref(String key, int value) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setInt(key, value);
 }
+
+int ageInt(Map<String, dynamic> data) =>
+    DateTime.now().difference(getDataTime(data['ageTime'])).inDays ~/ 365;
 
 // Future checkStatusNetwork(StreamSubscription streamSubscription) async {
 //   bool isFiresState = false;

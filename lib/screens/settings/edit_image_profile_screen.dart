@@ -175,7 +175,8 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    size: size.height / 38),
                 color: Colors.white,
               ),
             if (bacImage == '') const SizedBox(),
@@ -210,7 +211,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                   (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
                   SliverAppBar(
-                    expandedHeight: 60,
+                    expandedHeight: size.height / 28,
                     automaticallyImplyLeading: false,
                     floating: false,
                     forceElevated: innerBoxIsScrolled,

@@ -100,57 +100,62 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return StreamBuilder<User>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const loadingCustom();
-          } else if (snapshot.hasData) {
-            if (isStart) {
-              if (true) {
-              // if (snapshot.data.emailVerified) {
-                if (isEmptyDataUser) {
-                  if (isEmptyImageBackground) {
-                    return ManagerScreen(
-                      currentIndex: 0,
-                    );
+      return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: StreamBuilder<User>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const loadingCustom();
+            } else if (snapshot.hasData) {
+              if (isStart) {
+                // if (true) {
+                if (snapshot.data.emailVerified) {
+                  if (isEmptyDataUser) {
+                    if (isEmptyImageBackground) {
+                      return ManagerScreen(
+                        currentIndex: 0,
+                      );
+                    } else {
+                      return EditImageProfileScreen(
+                        bacImage: '',
+                      );
+                    }
                   } else {
-                    return EditImageProfileScreen(
-                      bacImage: '',
+                    return EditProfileScreen(
+                      isFirst: true,
+                      userModel: UserModel(
+                          name: '',
+                          uid: '',
+                          myCity: '',
+                          ageTime: Timestamp.now(),
+                          ageInt: 0,
+                          userPol: '',
+                          searchPol: '',
+                          searchRangeStart: 0,
+                          userImageUrl: [],
+                          userImagePath: [],
+                          imageBackground: '',
+                          userInterests: [],
+                          searchRangeEnd: 0,
+                          state: '',
+                          token: '',
+                          notification: true),
                     );
                   }
                 } else {
-                  return EditProfileScreen(
-                    isFirst: true,
-                    userModel: UserModel(
-                        name: '',
-                        uid: '',
-                        myCity: '',
-                        ageTime: Timestamp.now(),
-                        ageInt: 0,
-                        userPol: '',
-                        searchPol: '',
-                        searchRangeStart: 0,
-                        userImageUrl: [],
-                        userImagePath: [],
-                        imageBackground: '',
-                        userInterests: [],
-                        searchRangeEnd: 0,
-                        state: '',
-                        token: '',
-                        notification: true),
-                  );
+                  return const VerifyScreen();
                 }
               } else {
-                return const VerifyScreen();
+                return const WarningScreen();
               }
             } else {
-              return const WarningScreen();
+              return const SignInScreen();
             }
-          } else {
-            return const SignInScreen();
-          }
-        },
+          },
+        ),
       );
     }
 

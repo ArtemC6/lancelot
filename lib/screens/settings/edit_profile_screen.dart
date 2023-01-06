@@ -65,12 +65,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             cancelStyle: TextStyle(color: Colors.white),
             itemStyle: TextStyle(color: Colors.white)),
         showTitleActions: true,
-        minTime: DateTime(1970),
-        maxTime: DateTime(2006), onChanged: (date) {
+        minTime: DateTime(1993),
+        maxTime: DateTime(2007), onChanged: (date) {
       setState(() {
         _dateTimeBirthday = date;
         _ageController.text =
-            (DateTime.now().year - _dateTimeBirthday.year).toString();
+            (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
+                .toString();
       });
     },
         onConfirm: (date) {},
@@ -113,7 +114,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'searchPol':
             _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
         'ageTime': _dateTimeBirthday,
-        'ageInt': DateTime.now().year - _dateTimeBirthday.year,
         'rangeStart': _valuesAge.start,
         'rangeEnd': _valuesAge.end,
         'myCity': _localController.text,
@@ -241,292 +241,327 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     if (isLoading) {
-      return Scaffold(
-        backgroundColor: color_black_88,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: AnimationLimiter(
-                child: AnimationConfiguration.staggeredList(
-                  position: 1,
-                  delay: const Duration(milliseconds: 100),
-                  child: SlideAnimation(
-                    duration: const Duration(milliseconds: 2000),
-                    verticalOffset: height * .40,
-                    curve: Curves.ease,
-                    child: FadeInAnimation(
-                      curve: Curves.easeOut,
-                      duration: const Duration(milliseconds: 4000),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, bottom: 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (!isFirst)
-                                  IconButton(
-                                    color: Colors.white,
-                                    onPressed: () {
-                                      Navigator.pop(context);
+      return WillPopScope(
+        onWillPop: () async {
+          return !isFirst;
+        },
+        child: Scaffold(
+          backgroundColor: color_black_88,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Container(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: AnimationLimiter(
+                  child: AnimationConfiguration.staggeredList(
+                    position: 1,
+                    delay: const Duration(milliseconds: 100),
+                    child: SlideAnimation(
+                      duration: const Duration(milliseconds: 2000),
+                      verticalOffset: height * .40,
+                      curve: Curves.ease,
+                      child: FadeInAnimation(
+                        curve: Curves.easeOut,
+                        duration: const Duration(milliseconds: 4000),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (!isFirst)
+                                    IconButton(
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: Icon(
+                                          Icons.arrow_back_ios_new_rounded,
+                                          size: height / 38),
+                                    ),
+                                  customIconButton(
+                                    path: 'images/ic_log_out.png',
+                                    width: height / 26,
+                                    height: height / 26,
+                                    onTap: () async {
+                                      await context
+                                          .read<FirebaseAuthMethods>()
+                                          .signOut(context, modelUser.uid);
                                     },
-                                    icon: Icon(Icons.arrow_back_ios_new_rounded,
-                                        size: height / 38),
+                                    padding: 0,
                                   ),
-                                customIconButton(
-                                  path: 'images/ic_log_out.png',
-                                  width: height / 26,
-                                  height: height / 26,
-                                  onTap: () async {
-                                    await context
-                                        .read<FirebaseAuthMethods>()
-                                        .signOut(context, modelUser.uid);
-                                  },
-                                  padding: 0,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          imageProfileSettings(
-                            height,
-                            context,
-                          ),
-                          SlideFadeTransition(
-                            animationDuration:
-                                const Duration(milliseconds: 900),
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  bottom: height / 62,
-                                  top: height / 62,
-                                  right: 8),
-                              alignment: Alignment.centerRight,
-                              child: buttonUniversalAnimationColors(
-                                  isFirst ? 'Завершить' : 'Сохронить',
-                                  [
-                                    Colors.blueAccent,
-                                    Colors.purpleAccent,
-                                    Colors.orangeAccent
-                                  ],
-                                  height / 22, () {
-                                _uploadData();
-                              }),
+                            imageProfileSettings(
+                              height,
+                              context,
                             ),
-                          ),
-                          if (isError)
-                            Padding(
-                              padding:  EdgeInsets.all(height / 66),
-                              child: animatedText(
-                                  height / 60,
-                                  'Данные введены некоректно',
-                                  Colors.red,
-                                  600,
-                                  1),
+                            SlideFadeTransition(
+                              animationDuration:
+                                  const Duration(milliseconds: 900),
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    bottom: height / 62,
+                                    top: height / 62,
+                                    right: 8),
+                                alignment: Alignment.centerRight,
+                                child: buttonUniversalAnimationColors(
+                                    isFirst ? 'Завершить' : 'Сохронить',
+                                    [
+                                      Colors.blueAccent,
+                                      Colors.purpleAccent,
+                                      Colors.orangeAccent
+                                    ],
+                                    height / 22, () {
+                                  _uploadData();
+                                }),
+                              ),
                             ),
-                          if (!isPhoto)
-                            Padding(
-                              padding:  EdgeInsets.all(height / 66),
-                              child: animatedText(height / 60, 'Добавьте главное фото',
-                                  Colors.red, 600, 1),
-                            ),
-                          textFieldProfileSettings(_nameController, false,
-                              'Имя', context, 10, height, () {}),
-                          textFieldProfileSettings(_ageController, true,
-                              'Возраст', context, 3, height, () => showDatePicker()),
-                          textFieldProfileSettings(
-                              _myPolController, true, 'Ваш пол', context, 10,height,
-                              () {
-                            showBottomSheet(context, 'Укажите свой пол',
-                                'Мужской', 'Женский', _myPolController);
-                          }),
-                          textFieldProfileSettings(_searchPolController, true,
-                              'С кем вы хотите познакомиться', context, 10, height,  () {
-                            showBottomSheet(
+                            if (isError)
+                              Padding(
+                                padding: EdgeInsets.all(height / 66),
+                                child: animatedText(
+                                    height / 66,
+                                    'Данные введены некоректно',
+                                    Colors.red,
+                                    600,
+                                    1),
+                              ),
+                            if (!isPhoto)
+                              Padding(
+                                padding: EdgeInsets.all(height / 66),
+                                child: animatedText(
+                                    height / 66,
+                                    'Добавьте главное фото',
+                                    Colors.red,
+                                    650,
+                                    1),
+                              ),
+                            textFieldProfileSettings(_nameController, false,
+                                'Имя', context, 10, height, () {}),
+                            textFieldProfileSettings(
+                                _ageController,
+                                true,
+                                'Возраст',
                                 context,
-                                'Укажите с кем вы хотите познакомиться',
-                                'С парнем',
-                                'С девушкой',
-                                _searchPolController);
-                          }),
-                          textFieldProfileSettings(_localController, true,
-                              'Вы проживаете', context, 10, height, () {
-                            showBottomSheet(
+                                3,
+                                height,
+                                () => showDatePicker()),
+                            textFieldProfileSettings(_myPolController, true,
+                                'Ваш пол', context, 10, height, () {
+                              showBottomSheet(context, 'Укажите свой пол',
+                                  'Мужской', 'Женский', _myPolController);
+                            }),
+                            textFieldProfileSettings(
+                                _searchPolController,
+                                true,
+                                'С кем вы хотите познакомиться',
                                 context,
-                                'Укажите где вы проживаете',
-                                'Бишкек',
-                                'Каракол',
-                                _localController);
-                          }),
-                          textFieldProfileSettings(_ageRangController, true,
-                              'Диапазон поиска', context, 14, height, () {
-                            showCupertinoModalBottomSheet(
-                                topRadius: const Radius.circular(30),
-                                duration: const Duration(milliseconds: 700),
-                                backgroundColor: color_black_88,
-                                context: context,
-                                builder: (context) {
-                                  return StatefulBuilder(
-                                      builder: (context, setState) {
-                                    return SizedBox(
-                                      height: 200,
-                                      width: width,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 20, bottom: 60),
-                                            child: SlideFadeTransition(
-                                              animationDuration: const Duration(
-                                                  milliseconds: 550),
-                                              child: RichText(
-                                                text: TextSpan(
-                                                  text:
-                                                      'От ${_valuesAge.start} до ${_valuesAge.end} лет',
-                                                  style: GoogleFonts.lato(
-                                                    textStyle: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 13,
-                                                        letterSpacing: .9),
+                                10,
+                                height, () {
+                              showBottomSheet(
+                                  context,
+                                  'Укажите с кем вы хотите познакомиться',
+                                  'С парнем',
+                                  'С девушкой',
+                                  _searchPolController);
+                            }),
+                            textFieldProfileSettings(_localController, true,
+                                'Вы проживаете', context, 10, height, () {
+                              showBottomSheet(
+                                  context,
+                                  'Укажите где вы проживаете',
+                                  'Бишкек',
+                                  'Каракол',
+                                  _localController);
+                            }),
+                            textFieldProfileSettings(_ageRangController, true,
+                                'Диапазон поиска', context, 14, height, () {
+                              showCupertinoModalBottomSheet(
+                                  topRadius: const Radius.circular(30),
+                                  duration: const Duration(milliseconds: 700),
+                                  backgroundColor: color_black_88,
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return SizedBox(
+                                        height: 200,
+                                        width: width,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20, bottom: 60),
+                                              child: SlideFadeTransition(
+                                                animationDuration:
+                                                    const Duration(
+                                                        milliseconds: 550),
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    text:
+                                                        'От ${_valuesAge.start} до ${_valuesAge.end} лет',
+                                                    style: GoogleFonts.lato(
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 13,
+                                                              letterSpacing:
+                                                                  .9),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          SfRangeSlider(
-                                            activeColor: Colors.blue,
-                                            min: 16,
-                                            max: 30,
-                                            values: _valuesAge,
-                                            stepSize: 1,
-                                            enableTooltip: true,
-                                            onChanged: (SfRangeValues values) {
-                                              setState(() {
-                                                _valuesAge = values;
-                                                _ageRangController.text =
-                                                    'От ${_valuesAge.start} до ${_valuesAge.end} лет';
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                            SfRangeSlider(
+                                              activeColor: Colors.blue,
+                                              min: 16,
+                                              max: 30,
+                                              values: _valuesAge,
+                                              stepSize: 1,
+                                              enableTooltip: true,
+                                              onChanged:
+                                                  (SfRangeValues values) {
+                                                setState(() {
+                                                  _valuesAge = values;
+                                                  _ageRangController.text =
+                                                      'От ${_valuesAge.start} до ${_valuesAge.end} лет';
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    });
                                   });
-                                });
-                          }),
-                          textFieldProfileSettings(_notificationController,
-                              true, 'Уведомления', context, 10, height, () {
-                            showBottomSheet(
-                                context,
-                                'Укажите хотите получать уведомления',
-                                'Включить',
-                                'Выключить',
-                                _notificationController);
-                          }),
-                          textFieldProfileSettings(_supportController, true,
-                              'Техподдержка', context, 30, height, () async {
-                            String gmail = 'supportTinder@gmail.com';
-                            _launchUrl(gmail);
-                          }),
-                          Theme(
-                            data: ThemeData.light(),
-                            child: MediaQuery(
-                              data: MediaQuery.of(context)
-                                  .copyWith(textScaleFactor: 1.0),
-                              child: Card(
-                                color: color_black_88,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18),
-                                    side: const BorderSide(
-                                      width: 0.8,
-                                      color: Colors.white38,
-                                    )),
-                                elevation: 10,
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.only(top: 8, bottom: 8),
-                                  child: MultiSelectBottomSheetField(
-                                    initialValue: modelUser.userInterests,
-                                    searchHintStyle:
-                                        const TextStyle(color: Colors.white),
-                                    buttonText: Text(
-                                      textScaleFactor: 1.0,
-                                      'Выбрать $interestsCount максимум (6)',
-                                      style:
+                            }),
+                            textFieldProfileSettings(_notificationController,
+                                true, 'Уведомления', context, 10, height, () {
+                              showBottomSheet(
+                                  context,
+                                  'Укажите хотите получать уведомления',
+                                  'Включить',
+                                  'Выключить',
+                                  _notificationController);
+                            }),
+                            textFieldProfileSettings(_supportController, true,
+                                'Техподдержка', context, 30, height, () async {
+                              String gmail = 'supportTinder@gmail.com';
+                              _launchUrl(gmail);
+                            }),
+                            Theme(
+                              data: ThemeData.light(),
+                              child: MediaQuery(
+                                data: MediaQuery.of(context)
+                                    .copyWith(textScaleFactor: 1.0),
+                                child: Card(
+                                  color: color_black_88,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18),
+                                      side: const BorderSide(
+                                        width: 0.8,
+                                        color: Colors.white38,
+                                      )),
+                                  elevation: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        top: 8, bottom: 8),
+                                    child: MultiSelectBottomSheetField(
+                                      initialValue: modelUser.userInterests,
+                                      searchHintStyle:
                                           const TextStyle(color: Colors.white),
-                                    ),
-                                    buttonIcon: const Icon(
-                                      Icons.arrow_forward_ios_outlined,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
-                                    backgroundColor: color_black_88,
-                                    checkColor: Colors.white,
-                                    confirmText: Text(
-                                      textScaleFactor: 1.0,
-                                      'Выбрать',
-                                      style: GoogleFonts.lato(
-                                          textStyle: const TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 13,
+                                      buttonText: Text(
+                                        'Выбрать $interestsCount максимум (6)',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: height / 62),
+                                      ),
+                                      buttonIcon: Icon(
+                                        Icons.arrow_forward_ios_outlined,
+                                        color: Colors.white,
+                                        size: height / 54,
+                                      ),
+                                      backgroundColor: color_black_88,
+                                      checkColor: Colors.white,
+                                      confirmText: Text(
+                                        'Выбрать',
+                                        style: GoogleFonts.lato(
+                                            textStyle: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: height / 60,
+                                                letterSpacing: .6)),
+                                      ),
+                                      cancelText: Text(
+                                        'Закрыть',
+                                        style: GoogleFonts.lato(
+                                            textStyle: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: height / 60,
+                                                letterSpacing: .6)),
+                                      ),
+                                      searchIcon: const Icon(
+                                        Icons.search,
+                                        color: Colors.white,
+                                      ),
+                                      closeSearchIcon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                      searchHint: 'Поиск',
+                                      searchTextStyle:
+                                          const TextStyle(color: Colors.white),
+                                      initialChildSize: 0.4,
+                                      listType: MultiSelectListType.CHIP,
+                                      searchable: true,
+                                      itemsTextStyle: GoogleFonts.lato(
+                                          textStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: height / 60,
                                               letterSpacing: .6)),
-                                    ),
-                                    cancelText: Text(
-                                      textScaleFactor: 1.0,
-                                      'Закрыть',
-                                      style: GoogleFonts.lato(
-                                          textStyle: const TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 13,
+                                      selectedItemsTextStyle: GoogleFonts.lato(
+                                          textStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: height / 60,
                                               letterSpacing: .6)),
-                                    ),
-                                    searchIcon: const Icon(
-                                      Icons.search,
-                                      color: Colors.white,
-                                    ),
-                                    closeSearchIcon: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                    ),
-                                    searchHint: 'Поиск',
-                                    searchTextStyle:
-                                        const TextStyle(color: Colors.white),
-                                    initialChildSize: 0.4,
-                                    listType: MultiSelectListType.CHIP,
-                                    searchable: true,
-                                    title: animatedText(
-                                        13,
-                                        "Ваши интересы ${interestsCount.toString()} максимум (6)",
-                                        Colors.white,
-                                        500,
-                                        1),
-                                    items: items,
-                                    onSelectionChanged: (value) {
-                                      setState(() {
-                                        interestsCount = value.length;
-                                      });
-                                    },
-                                    onConfirm: (values) {
-                                      setState(() {
-                                        _selectedInterests = values;
-                                      });
-                                    },
-                                    chipDisplay: MultiSelectChipDisplay(
-                                      onTap: (value) {
+                                      title: animatedText(
+                                          height / 60,
+                                          "Ваши интересы ${interestsCount.toString()} максимум (6)",
+                                          Colors.white,
+                                          500,
+                                          1),
+                                      items: items,
+                                      onSelectionChanged: (value) {
                                         setState(() {
-                                          _selectedInterests.remove(value);
+                                          interestsCount = value.length;
                                         });
                                       },
+                                      onConfirm: (values) {
+                                        setState(() {
+                                          _selectedInterests = values;
+                                        });
+                                      },
+                                      chipDisplay: MultiSelectChipDisplay(
+                                        onTap: (value) {
+                                          setState(() {
+                                            _selectedInterests.remove(value);
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: height * .05,
-                          ),
-                        ],
+                            SizedBox(
+                              height: height * .05,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -538,7 +573,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
     }
 
-    return const loadingCustom();
+    return WillPopScope(
+        onWillPop: () async {
+          return !isFirst;
+        },
+        child: const loadingCustom());
   }
 
   SizedBox imageProfileSettings(double height, BuildContext context) {

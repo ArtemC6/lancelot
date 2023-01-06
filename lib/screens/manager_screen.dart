@@ -97,12 +97,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     });
   }
 
-  // void listenNotification() {
-  //   NotificationApi.onNotifications.stream.listen((payload) {
-  //     setIndexPage(payload.split(',')[0], payload.split(',')[1]);
-  //   });
-  // }
-
   Future<void> getNotificationFcm() async {
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {

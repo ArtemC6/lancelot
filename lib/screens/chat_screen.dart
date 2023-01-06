@@ -290,7 +290,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                       );
                                                     },
                                                     child: Container(
-                                                      height: height / 7,
+                                                      height: height / 6.6,
                                                       width: width,
                                                       padding:
                                                           const EdgeInsets.all(

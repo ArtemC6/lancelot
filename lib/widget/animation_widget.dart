@@ -150,7 +150,7 @@ SlideFadeTransition showProgressWrite() {
 
 Padding showCheckMessageAnimation(double height, IconData icon, Color white) {
   return Padding(
-    padding: EdgeInsets.only(left: height / 86),
+    padding: EdgeInsets.only(left: height / 100),
     child: Icon(
       icon,
       color: white,
@@ -249,8 +249,8 @@ Column showAnimationVerify(
           ..repeat();
       },
           controller: animationController,
-          height: height * 0.38,
-          width: height * 0.52,
+          height: height * 0.34,
+          width: height * 0.48,
           path),
     ],
   );

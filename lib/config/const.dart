@@ -67,9 +67,8 @@ const List months = [
 ];
 
 final items = interestsList
-    .map((animal) => MultiSelectItem<String>(animal, animal))
+    .map((interests) => MultiSelectItem<String>(interests, interests))
     .toList();
-
 
 
 const List<IconData> listOfIcons = [

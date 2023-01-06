@@ -9,6 +9,7 @@ class Assets {
   static const String imagesAnimationEmpty = 'images/animation_empty.json';
   static const String imagesAnimationHeart = 'images/animation_heart.json';
   static const String imagesAnimationLoader = 'images/animation_loader.json';
+  static const String imagesAnimationSuccess = 'images/animation_success.json';
   static const String imagesAnimationUserChat =
       'images/animation_user_chat.json';
   static const String imagesEditIcon = 'images/edit_icon.png';

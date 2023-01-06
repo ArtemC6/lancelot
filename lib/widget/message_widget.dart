@@ -16,7 +16,7 @@ import 'animation_widget.dart';
 class MessagesItem extends StatelessWidget {
   final String message_text, friendImage, friendId;
   final bool isMyMassage;
-  final DateTime dataMessage;
+  final Timestamp dataMessage;
   final UserModel userModelCurrent;
 
   late StreamSubscription streamSubscription;
@@ -34,7 +34,6 @@ class MessagesItem extends StatelessWidget {
       bool isFiresState = false;
       streamSubscription = Connectivity().onConnectivityChanged.listen(
         (ConnectivityResult result) {
-          print(result.name);
           if (result.name == 'wifi') {
             isFiresState = true;
           } else if (result.name == 'mobile') {
@@ -49,7 +48,6 @@ class MessagesItem extends StatelessWidget {
     }
 
     Container formMessageMy(String isCheck) {
-      // print(isCheck);
       return Container(
         decoration: BoxDecoration(
             color: Colors.white.withOpacity(.01),
@@ -64,7 +62,7 @@ class MessagesItem extends StatelessWidget {
           children: <Widget>[
             RichText(
               text: TextSpan(
-                text: message_text.length < 10
+                text: message_text.length < 12
                     ? '$message_text                      '
                     : message_text,
                 style: GoogleFonts.lato(
@@ -82,11 +80,11 @@ class MessagesItem extends StatelessWidget {
               children: [
                 RichText(
                   text: TextSpan(
-                    text: '${dataMessage.hour}: ${dataMessage.minute}',
+                    text: filterDate(dataMessage),
                     style: GoogleFonts.lato(
                       textStyle: TextStyle(
                           color: Colors.white.withOpacity(.9),
-                          fontSize: height / 80,
+                          fontSize: height / 82,
                           letterSpacing: .5),
                     ),
                   ),
@@ -132,7 +130,7 @@ class MessagesItem extends StatelessWidget {
           children: <Widget>[
             RichText(
               text: TextSpan(
-                text: message_text.length < 10
+                text: message_text.length < 12
                     ? '$message_text               '
                     : message_text,
                 style: GoogleFonts.lato(
@@ -145,11 +143,11 @@ class MessagesItem extends StatelessWidget {
             ),
             RichText(
               text: TextSpan(
-                text: '${dataMessage.hour}: ${dataMessage.minute}',
+                text: filterDate(dataMessage),
                 style: GoogleFonts.lato(
                   textStyle: TextStyle(
                       color: Colors.white.withOpacity(.9),
-                      fontSize: height / 80,
+                      fontSize: height / 82,
                       letterSpacing: .5),
                 ),
               ),
@@ -175,7 +173,7 @@ class MessagesItem extends StatelessWidget {
               isLastMessage = 'read';
             } else {
               if (getDataTime(asyncSnapshot.data['last_date_close_chat'])
-                      .difference(dataMessage)
+                      .difference(getDataTime(dataMessage))
                       .inSeconds >=
                   1) {
                 isLastMessage = 'read';
@@ -378,24 +376,6 @@ class _MessageTextFieldState extends State<MessageTextField> {
                 }
                 final dateCurrent = DateTime.now();
 
-                if (!isFirstMessage) {
-                  FirebaseFirestore.instance
-                      .collection("User")
-                      .doc(friendId)
-                      .collection('messages')
-                      .doc(currentUser.uid)
-                      .collection('chats')
-                      .limit(1)
-                      .get()
-                      .then((QuerySnapshot querySnapshot) {
-                    querySnapshot.size;
-                    print(querySnapshot.size);
-
-                    // for (var document in querySnapshot.docs) {
-                    //
-                    // }
-                  });
-                }
                 final docMessage = FirebaseFirestore.instance
                     .collection('User')
                     .doc(widget.currentUser.uid)

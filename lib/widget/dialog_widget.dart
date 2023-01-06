@@ -59,7 +59,7 @@ showAlertDialogDeleteMessage(
     AsyncSnapshot snapshotMy,
     int index,
     bool isLastMessage) {
-  bool isDeletePartner = false;
+  bool isDeletePartner = true;
 
   Widget cancelButton = TextButton(
     child: const Text("Отмена"),
@@ -120,9 +120,9 @@ showAlertDialogDeleteMessage(
                         ),
                         value: isDeletePartner,
                         onChanged: (newValue) {
-                          setState(() {
-                            isDeletePartner = !isDeletePartner;
-                          });
+                          // setState(() {
+                          //   isDeletePartner = !isDeletePartner;
+                          // });
                         },
                         controlAffinity: ListTileControlAffinity
                             .leading, //  <-- leading Checkbox
@@ -313,5 +313,27 @@ showAlertDialogLoading(BuildContext context) {
     dismissable: false,
     context,
     future: Future.delayed(const Duration(seconds: 4)),
+  );
+}
+
+showAlertDialogSuccess(BuildContext context) {
+  CustomProgressDialog.future(
+    loadingWidget: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Lottie.asset(
+          'images/animation_success.json',
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          alignment: Alignment.center,
+          errorBuilder: (context, error, stackTrace) {
+            return LoadingAnimationWidget.dotsTriangle(
+              size: 48,
+              color: Colors.blueAccent,
+            );
+          },
+        )),
+    dismissable: false,
+    context,
+    future: Future.delayed(const Duration(milliseconds: 1850)),
   );
 }

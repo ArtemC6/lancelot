@@ -4,7 +4,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
-import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/component_widget.dart';
@@ -270,7 +269,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                   child: MessagesItem(
                                                     message,
                                                     isMe,
-                                                    getDataTime(date),
+                                                    date,
                                                     friendImage,
                                                     friendId,
                                                     userModelCurrent,

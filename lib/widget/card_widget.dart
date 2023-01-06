@@ -28,6 +28,7 @@ class photoUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double heightScreen = MediaQuery.of(context).size.height;
     return SizedBox(
       child: Stack(
         alignment: Alignment.bottomRight,
@@ -80,8 +81,8 @@ class photoUser extends StatelessWidget {
               animationDuration: const Duration(milliseconds: 500),
               child: customIconButton(
                   padding: padding,
-                  width: 27,
-                  height: 27,
+                  width: heightScreen / 32,
+                  height: heightScreen / 32,
                   path: 'images/ic_green_dot.png',
                   onTap: () {}),
             ),
@@ -390,7 +391,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               animatedText(
-                                  size.height / 53,
+                                  size.height / 54,
                                   '${userModelPartner[index].name}, '
                                   '${userModelPartner[index].ageInt} ',
                                   Colors.white,
@@ -399,7 +400,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                               Row(
                                 children: [
                                   animatedText(
-                                      size.height / 65,
+                                      size.height / 66,
                                       userModelPartner[index].myCity,
                                       Colors.white,
                                       550,

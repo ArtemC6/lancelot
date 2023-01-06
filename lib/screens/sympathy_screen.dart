@@ -256,7 +256,9 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                       height /
                                                                           46),
                                                           child: Row(
-                                                            // mainAxisAlignment: MainAxisAlignment.start,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             // crossAxisAlignment: CrossAxisAlignment.start,
                                                             children: [
                                                               Expanded(
@@ -268,10 +270,10 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                   uri: imageUri,
                                                                   width:
                                                                       height /
-                                                                          7.6,
+                                                                          8.2,
                                                                   height:
                                                                       height /
-                                                                          7.6,
+                                                                          8.2,
                                                                   state: state,
                                                                   padding: 5,
                                                                 ),

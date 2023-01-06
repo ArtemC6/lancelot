@@ -9,6 +9,7 @@ import 'package:lancelot/screens/profile_screen.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
+import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/button_widget.dart';
@@ -65,8 +66,8 @@ class _HomeScreen extends State<HomeScreen>
         .then((QuerySnapshot querySnapshot) async {
       for (var document in querySnapshot.docs) {
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-        if (userModelCurrent.searchRangeStart <= data['ageInt'] &&
-            userModelCurrent.searchRangeEnd >= data['ageInt'] &&
+        if (userModelCurrent.searchRangeStart <= ageInt(data) &&
+            userModelCurrent.searchRangeEnd >= ageInt(data) &&
             data['uid'] != userModelCurrent.uid) {
           bool isDislike = true;
           await Future.forEach(listDisLike, (idUser) {
@@ -88,7 +89,7 @@ class _HomeScreen extends State<HomeScreen>
                   searchRangeEnd: 0,
                   myCity: data['myCity'],
                   imageBackground: data['imageBackground'],
-                  ageInt: data['ageInt'],
+                  ageInt: ageInt(data),
                   state: data['state'],
                   token: data['token'],
                   notification: data['notification']));
@@ -97,14 +98,10 @@ class _HomeScreen extends State<HomeScreen>
         }
       }
     }).then((value) async {
-      print('Length: ${userModelPartner.length} L$limit');
       userModelPartner.toSet();
 
       setState(() {
         if (userModelPartner.isEmpty) {
-          print(
-              'limit: ${limit} list length: ${userModelPartner.length} count: $count} M');
-
           count++;
           if (count >= 6) {
             listDisLike.clear();
@@ -118,9 +115,6 @@ class _HomeScreen extends State<HomeScreen>
 
         if (userModelPartner.length < 3) {
           count++;
-          print(
-              'limit: ${limit} list length: ${userModelPartner.length} count: $count} E');
-
           if (count >= 10) {
             listDisLike.clear();
             deleteDislike(userModelCurrent.uid);
@@ -231,7 +225,7 @@ class _HomeScreen extends State<HomeScreen>
                                     } else {
                                       if (isWrite) {
                                         isWrite = false;
-                                        readFirebase(8, false);
+                                        readFirebase(14, false);
                                       }
                                       return cardLoading(size, 22);
                                     }

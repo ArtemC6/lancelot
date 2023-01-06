@@ -12,6 +12,7 @@ import 'firestore_operations.dart';
 class FirebaseAuthMethods {
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
+
   User get user => _auth.currentUser!;
   Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
 
@@ -23,9 +24,16 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      await _auth
+      _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
+        Navigator.pop(context);
+        showAlertDialogSuccess(context);
+        Future.delayed(const Duration(milliseconds: 1850), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager()));
+        });
+
         final docUser = FirebaseFirestore.instance
             .collection('User')
             .doc(FirebaseAuth.instance.currentUser?.uid);
@@ -55,10 +63,8 @@ class FirebaseAuthMethods {
           'listImageUri': [],
           'notification': true,
         };
-        await docUser.set(json);
 
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Manager()));
+        docUser.set(json);
       }).onError((error, stackTrace) {
         Navigator.pop(context);
       });
@@ -72,17 +78,18 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      await _auth
+      _auth
           .signInWithEmailAndPassword(
               email: email.trim(), password: password.trim())
           .then((value) {
         Navigator.pop(context);
-        setStateFirebase('online').then((value) {
-          setTokenUserFirebase().then((value) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Manager()));
-          });
+        showAlertDialogSuccess(context);
+        Future.delayed(const Duration(milliseconds: 1850), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager()));
         });
+        setStateFirebase('online');
+        setTokenUserFirebase();
       }).onError((error, stackTrace) {
         Navigator.pop(context);
       });
