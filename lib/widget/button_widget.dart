@@ -128,7 +128,10 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap) {
       child: FlutterColorsBorder(
         animationDuration: 4,
         colors: const [
+          // Colors.white10,
+          Colors.black12,
           Colors.white10,
+          Colors.white54,
           Colors.white70,
         ],
         size: Size(height * 3.5, height),

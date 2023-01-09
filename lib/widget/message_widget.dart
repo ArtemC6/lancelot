@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -83,9 +84,9 @@ class MessagesItem extends StatelessWidget {
                     text: filterDate(dataMessage),
                     style: GoogleFonts.lato(
                       textStyle: TextStyle(
-                          color: Colors.white.withOpacity(.9),
-                          fontSize: height / 82,
-                          letterSpacing: .5),
+                          color: Colors.white.withOpacity(.8),
+                          fontSize: height / 85,
+                          letterSpacing: .2),
                     ),
                   ),
                 ),
@@ -115,45 +116,79 @@ class MessagesItem extends StatelessWidget {
     }
 
     Widget formMessageFriend() {
-      return Container(
-        margin: const EdgeInsets.only(left: 10),
-        decoration: BoxDecoration(
-            color: Colors.white.withOpacity(.01),
-            borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-                topRight: Radius.circular(20)),
-            border: Border.all(color: Colors.white10, width: 0.9)),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            RichText(
-              text: TextSpan(
-                text: message_text.length < 12
-                    ? '$message_text               '
-                    : message_text,
-                style: GoogleFonts.lato(
-                  textStyle: TextStyle(
-                      color: Colors.white.withOpacity(.9),
-                      fontSize: height / 62,
-                      letterSpacing: .5),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CachedNetworkImage(
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            progressIndicatorBuilder: (context, url, progress) => Center(
+              child: SizedBox(
+                height: height / 32,
+                width: height / 32,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 0.8,
+                  value: progress.progress,
                 ),
               ),
             ),
-            RichText(
-              text: TextSpan(
-                text: filterDate(dataMessage),
-                style: GoogleFonts.lato(
-                  textStyle: TextStyle(
-                      color: Colors.white.withOpacity(.9),
-                      fontSize: height / 82,
-                      letterSpacing: .5),
+            imageUrl: friendImage,
+            imageBuilder: (context, imageProvider) => Container(
+              height: height / 32,
+              width: height / 32,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: const BorderRadius.all(Radius.circular(50)),
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 10),
+            decoration: BoxDecoration(
+                color: Colors.white.withOpacity(.01),
+                borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+                border: Border.all(color: Colors.white10, width: 0.9)),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                RichText(
+                  text: TextSpan(
+                    text: message_text.length < 12
+                        ? '$message_text               '
+                        : message_text,
+                    style: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                          color: Colors.white.withOpacity(.9),
+                          fontSize: height / 62,
+                          letterSpacing: .2),
+                    ),
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: filterDate(dataMessage),
+                    style: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                          color: Colors.white.withOpacity(.8),
+                          fontSize: height / 85,
+                          letterSpacing: .5),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     }
 

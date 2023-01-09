@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +12,7 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
+import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/button_widget.dart';
@@ -144,8 +146,14 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                           try {
                                             name =
                                                 asyncSnapshotUser.data['name'];
-                                            age = asyncSnapshotUser
-                                                .data['ageInt'];
+
+                                            age = DateTime.now()
+                                                    .difference(getDataTime(
+                                                        asyncSnapshotUser
+                                                            .data['ageTime']))
+                                                    .inDays ~/
+                                                365;
+
                                             state =
                                                 asyncSnapshotUser.data['state'];
                                             city = asyncSnapshotUser
@@ -296,11 +304,9 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                           MainAxisAlignment
                                                                               .spaceBetween,
                                                                       children: [
-                                                                        SlideFadeTransition(
-                                                                          animationDuration:
-                                                                              Duration(milliseconds: indexAnimation * 500 < 3000 ? indexAnimation * 500 : 600),
-                                                                          curve:
-                                                                              Curves.easeInSine,
+                                                                        DelayedDisplay(
+                                                                          delay:
+                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
                                                                           child:
                                                                               Column(
                                                                             crossAxisAlignment:
@@ -447,9 +453,10 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                       ),
                                     ),
                                   );
-                                } else {
-                                  return cardLoadingWidget(size, .18, .09);
                                 }
+                                // else {
+                                //   return cardLoadingWidget(size, .18, .09);
+                                // }
                               }
                             }
 

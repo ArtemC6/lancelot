@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:card_loading/card_loading.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -159,13 +160,12 @@ Padding showCheckMessageAnimation(double height, IconData icon, Color white) {
   );
 }
 
-SlideFadeTransition animatedText(
-    double size, String text, color, time, int line) {
-  return SlideFadeTransition(
-    animationDuration: Duration(milliseconds: time),
+DelayedDisplay animatedText(double size, String text, color, time, int line) {
+  return DelayedDisplay(
+    fadeIn: true,
+    delay: Duration(milliseconds: time),
     child: Text(
       maxLines: line,
-      textScaleFactor: 1.0,
       text,
       style: GoogleFonts.lato(
         textStyle: TextStyle(color: color, fontSize: size, letterSpacing: .6),
@@ -174,16 +174,35 @@ SlideFadeTransition animatedText(
   );
 }
 
-SizedBox showIfNoData(double height, String imagePath, String text,
-    AnimationController animationController, double share,) {
+// SlideFadeTransition animatedText(
+//     double size, String text, color, time, int line) {
+//   return SlideFadeTransition(
+//     animationDuration: Duration(milliseconds: time),
+//     child: Text(
+//       maxLines: line,
+//       textScaleFactor: 1.0,
+//       text,
+//       style: GoogleFonts.lato(
+//         textStyle: TextStyle(color: color, fontSize: size, letterSpacing: .6),
+//       ),
+//     ),
+//   );
+// }
+
+SizedBox showIfNoData(
+  double height,
+  String imagePath,
+  String text,
+  AnimationController animationController,
+  double share,
+) {
   return SizedBox(
     height: height,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Lottie.asset(
-            alignment: Alignment.center,
+        Lottie.asset(alignment: Alignment.center,
             errorBuilder: (context, error, stackTrace) {
               return const SizedBox();
 

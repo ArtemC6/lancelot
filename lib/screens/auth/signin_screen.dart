@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lancelot/screens/auth/signup_screen.dart';
 import 'package:lancelot/widget/animation_widget.dart';
-import 'package:provider/provider.dart';
 
 import '../../config/const.dart';
-import '../../config/firebase_auth.dart';
+import '../../config/firestore_operations.dart';
 import '../../main.dart';
 import '../../widget/button_widget.dart';
+import '../../widget/dialog_widget.dart';
 import '../../widget/textField_widget.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -184,12 +184,37 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               buttonAuth('Войти', 2.4, 600, () {
-                                context
-                                    .read<FirebaseAuthMethods>()
-                                    .loginWithEmail(
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        context: context);
+                                try {
+                                  showAlertDialogLoading(context);
+                                  FirebaseAuth.instance
+                                      .signInWithEmailAndPassword(
+                                          email: emailController.text.trim(),
+                                          password:
+                                              passwordController.text.trim())
+                                      .then((value) {
+                                    Navigator.pop(context);
+                                    showAlertDialogSuccess(context);
+                                    Future.delayed(
+                                        const Duration(milliseconds: 1850), () {
+                                      Navigator.pop(context);
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Manager()));
+                                    });
+                                    setStateFirebase('online');
+                                    setTokenUserFirebase();
+                                  }).onError((error, stackTrace) {
+                                    Navigator.pop(context);
+                                  });
+                                } on FirebaseAuthException {}
+
+                                // context
+                                //     .read<FirebaseAuthMethods>()
+                                //     .loginWithEmail(
+                                //         email: emailController.text,
+                                //         password: passwordController.text,
+                                //         context: context);
                               }),
                             ],
                           ),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animate_gradient/animate_gradient.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
@@ -357,7 +358,9 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                 child: FlutterColorsBorder(
                   animationDuration: 5,
                   colors: const [
+                    Colors.black12,
                     Colors.white10,
+                    Colors.white54,
                     Colors.white70,
                   ],
                   size: Size(size.height / 8, size.height / 12),
@@ -378,45 +381,56 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                           sigmaX: 12,
                           sigmaY: 12,
                         ),
-                        child: Container(
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: <Color>[
-                              Colors.white.withOpacity(0.01),
-                              Colors.black26
-                            ]),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              animatedText(
-                                  size.height / 54,
-                                  '${userModelPartner[index].name}, '
-                                  '${userModelPartner[index].ageInt} ',
-                                  Colors.white,
-                                  500,
-                                  1),
-                              Row(
-                                children: [
-                                  animatedText(
-                                      size.height / 66,
-                                      userModelPartner[index].myCity,
-                                      Colors.white,
-                                      550,
-                                      1),
-                                  if (userModelPartner[index].state == 'online')
-                                    SizedBox(
-                                      height: size.height / 41,
-                                      width: size.height / 41,
-                                      child: Image.asset(
-                                        // fit: BoxFit.fill,
-                                        'images/ic_green_dot.png',
+                        child: AnimateGradient(
+                          primaryBegin: Alignment.topLeft,
+                          primaryEnd: Alignment.bottomLeft,
+                          secondaryBegin: Alignment.bottomLeft,
+                          secondaryEnd: Alignment.topRight,
+                          primaryColors: [
+                            Colors.white.withOpacity(0.01),
+                            Colors.black26
+                          ],
+                          secondaryColors: [
+                            Colors.white.withOpacity(0.01),
+                            Colors.black26
+                          ],
+                          child: Container(
+                            alignment: Alignment.bottomLeft,
+                            padding: EdgeInsets.all(
+                              size.height / 120,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                animatedText(
+                                    size.height / 54,
+                                    '${userModelPartner[index].name}, '
+                                    '${userModelPartner[index].ageInt} ',
+                                    Colors.white,
+                                    600,
+                                    1),
+                                Row(
+                                  children: [
+                                    animatedText(
+                                        size.height / 66,
+                                        userModelPartner[index].myCity,
+                                        Colors.white,
+                                        550,
+                                        1),
+                                    if (userModelPartner[index].state ==
+                                        'online')
+                                      SizedBox(
+                                        height: size.height / 41,
+                                        width: size.height / 41,
+                                        child: Image.asset(
+                                          // fit: BoxFit.fill,
+                                          'images/ic_green_dot.png',
+                                        ),
                                       ),
-                                    ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

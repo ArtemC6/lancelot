@@ -68,9 +68,9 @@ Future<String> uploadFirstImage(BuildContext context, List<String> userImageUrl,
   FirebaseStorage storage = FirebaseStorage.instance;
   try {
     final pickedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 34, maxWidth: 1920);
+        source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 34).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 38).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
@@ -113,9 +113,9 @@ Future<void> uploadImageAdd(
 
   try {
     final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 26, maxWidth: 1920);
+        source: ImageSource.gallery, imageQuality: 28, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 26).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 28).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
@@ -164,9 +164,9 @@ Future<String> updateFirstImage(
   final picker = ImagePicker();
   try {
     final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 34, maxWidth: 1920);
+        source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
     if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 34).then((croppedFile) async {
+      await _cropImage(context, pickedImage, 38).then((croppedFile) async {
         if (croppedFile != null) {
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);

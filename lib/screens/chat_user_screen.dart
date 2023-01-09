@@ -63,7 +63,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
         });
       }
     });
-    createLastOpenChat(userModelCurrent.uid, widget.friendId);
+    createLastOpenChat(widget.friendId, userModelCurrent.uid);
     createLastCloseChat(userModelCurrent.uid, widget.friendId, '');
     super.initState();
   }

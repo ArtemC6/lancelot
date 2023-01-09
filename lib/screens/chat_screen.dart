@@ -1,5 +1,5 @@
-import 'package:auto_animated/auto_animated.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lancelot/screens/chat_user_screen.dart';
@@ -64,13 +64,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  final options = const LiveOptions(
-    delay: Duration(milliseconds: 0),
-    showItemInterval: Duration(milliseconds: 350),
-    showItemDuration: Duration(milliseconds: 1200),
-    visibleFraction: 0.05,
-    reAnimateOnVisibility: false,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -400,8 +393,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                         if (isWriteUser)
                                                                           showProgressWrite(),
                                                                         if (isNewMessage)
-                                                                          SlideFadeTransition(
-                                                                            animationDuration:
+                                                                          DelayedDisplay(
+                                                                            delay:
                                                                                 const Duration(milliseconds: 450),
                                                                             child:
                                                                                 Container(
@@ -415,9 +408,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                           ),
                                                                         if (isReadMessage &&
                                                                             !isNewMessage)
-                                                                          SlideFadeTransition(
-                                                                            animationDuration:
-                                                                                Duration(milliseconds: indexAnimation * 400 < 3200 ? indexAnimation * 400 : 600),
+                                                                          DelayedDisplay(
+                                                                            delay:
+                                                                                Duration(milliseconds: indexAnimation * 250 < 2000 ? indexAnimation * 250 : 250),
                                                                             child:
                                                                                 Padding(
                                                                               padding: EdgeInsets.only(left: height / 86),
@@ -430,8 +423,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                           ),
                                                                         if (!isReadMessage &&
                                                                             !isNewMessage)
-                                                                          SlideFadeTransition(
-                                                                            animationDuration:
+                                                                          DelayedDisplay(
+                                                                            delay:
                                                                                 Duration(milliseconds: indexAnimation * 400 < 3200 ? indexAnimation * 400 : 600),
                                                                             child:
                                                                                 Padding(

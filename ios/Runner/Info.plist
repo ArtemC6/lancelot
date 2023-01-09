@@ -47,7 +47,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
+    <key>NSPhotoLibraryUsageDescription</key>
     <string>Need to upload image</string>
     <key>NSCameraUsageDescription</key>
     <string>Need to upload image</string>
