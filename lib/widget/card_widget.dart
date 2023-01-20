@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:animate_gradient/animate_gradient.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_loading/card_loading.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,8 +79,8 @@ class photoUser extends StatelessWidget {
             ),
           ),
           if (state == 'online')
-            SlideFadeTransition(
-              animationDuration: const Duration(milliseconds: 500),
+            DelayedDisplay(
+              delay: const Duration(milliseconds: 500),
               child: customIconButton(
                   padding: padding,
                   width: heightScreen / 32,
@@ -158,8 +159,11 @@ class itemUserLike extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SlideFadeTransition(
-                          animationDuration: const Duration(milliseconds: 500),
+                        DelayedDisplay(
+                          delay: Duration(
+                              milliseconds: indexAnimation * 300 < 2700
+                                  ? indexAnimation * 300
+                                  : 300),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,12 +361,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                 ),
                 child: FlutterColorsBorder(
                   animationDuration: 5,
-                  colors: const [
-                    Colors.black12,
-                    Colors.white10,
-                    Colors.white54,
-                    Colors.white70,
-                  ],
+                  colors: listColorsAnimation,
                   size: Size(size.height / 8, size.height / 12),
                   boardRadius: 14,
                   borderWidth: 0.8,
@@ -388,7 +387,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                           secondaryEnd: Alignment.topRight,
                           primaryColors: [
                             Colors.white.withOpacity(0.01),
-                            Colors.black26
+                            Colors.black12
                           ],
                           secondaryColors: [
                             Colors.white.withOpacity(0.01),
@@ -423,7 +422,6 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                                         height: size.height / 41,
                                         width: size.height / 41,
                                         child: Image.asset(
-                                          // fit: BoxFit.fill,
                                           'images/ic_green_dot.png',
                                         ),
                                       ),

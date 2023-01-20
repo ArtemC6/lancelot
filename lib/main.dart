@@ -12,9 +12,7 @@ import 'package:lancelot/screens/settings/edit_image_profile_screen.dart';
 import 'package:lancelot/screens/settings/edit_profile_screen.dart';
 import 'package:lancelot/screens/settings/warning_screen.dart';
 import 'package:lancelot/widget/animation_widget.dart';
-import 'package:provider/provider.dart';
 
-import 'config/firebase_auth.dart';
 import 'config/firestore_operations.dart';
 import 'model/user_model.dart';
 
@@ -43,22 +41,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<FirebaseAuthMethods>(
-          create: (_) => FirebaseAuthMethods(FirebaseAuth.instance),
-        ),
-        StreamProvider(
-          create: (context) => context.read<FirebaseAuthMethods>().authState,
-          initialData: null,
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        darkTheme: ThemeData.dark(),
-        home: const Manager(),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      darkTheme: ThemeData.dark(),
+      home: const Manager(),
     );
   }
 }
@@ -87,8 +74,71 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
         isEmptyDataUser = result.isEmptyDataUser;
         isStart = result.isStart;
         isLoading = true;
+        userNavigator();
       });
     });
+  }
+
+  Future userNavigator() async {
+    if (isStart) {
+      if (FirebaseAuth.instance.currentUser?.uid != null) {
+        if (FirebaseAuth.instance.currentUser.emailVerified) {
+          if (isEmptyDataUser) {
+            if (isEmptyImageBackground) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => ManagerScreen(
+                    currentIndex: 0,
+                  ),
+                ),
+              );
+            } else {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => EditImageProfileScreen(
+                    bacImage: '',
+                  ),
+                ),
+              );
+            }
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => EditProfileScreen(
+                  isFirst: true,
+                  userModel: UserModel(
+                      name: '',
+                      uid: '',
+                      myCity: '',
+                      ageTime: Timestamp.now(),
+                      ageInt: 0,
+                      userPol: '',
+                      searchPol: '',
+                      searchRangeStart: 0,
+                      userImageUrl: [],
+                      userImagePath: [],
+                      imageBackground: '',
+                      userInterests: [],
+                      searchRangeEnd: 0,
+                      state: '',
+                      token: '',
+                      notification: true),
+                ),
+              ),
+            );
+          }
+        } else {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const VerifyScreen()));
+        }
+      } else {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const SignInScreen()));
+      }
+    } else {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const WarningScreen()));
+    }
   }
 
   @override
@@ -99,66 +149,6 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: StreamBuilder<User>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const loadingCustom();
-            } else if (snapshot.hasData) {
-              if (isStart) {
-                // if (true) {
-                if (snapshot.data.emailVerified) {
-                  if (isEmptyDataUser) {
-                    if (isEmptyImageBackground) {
-                      return ManagerScreen(
-                        currentIndex: 0,
-                      );
-                    } else {
-                      return EditImageProfileScreen(
-                        bacImage: '',
-                      );
-                    }
-                  } else {
-                    return EditProfileScreen(
-                      isFirst: true,
-                      userModel: UserModel(
-                          name: '',
-                          uid: '',
-                          myCity: '',
-                          ageTime: Timestamp.now(),
-                          ageInt: 0,
-                          userPol: '',
-                          searchPol: '',
-                          searchRangeStart: 0,
-                          userImageUrl: [],
-                          userImagePath: [],
-                          imageBackground: '',
-                          userInterests: [],
-                          searchRangeEnd: 0,
-                          state: '',
-                          token: '',
-                          notification: true),
-                    );
-                  }
-                } else {
-                  return const VerifyScreen();
-                }
-              } else {
-                return const WarningScreen();
-              }
-            } else {
-              return const SignInScreen();
-            }
-          },
-        ),
-      );
-    }
-
     return const loadingCustom();
   }
 }

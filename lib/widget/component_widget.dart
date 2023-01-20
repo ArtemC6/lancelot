@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../../config/const.dart';
@@ -15,7 +17,6 @@ import '../screens/view_likes_screen.dart';
 import 'animation_widget.dart';
 import 'button_widget.dart';
 import 'card_widget.dart';
-import 'dialog_widget.dart';
 
 class slideInterests extends StatelessWidget {
   List<InterestsModel> listStory = [];
@@ -310,6 +311,57 @@ class slideInterestsSettings extends StatelessWidget {
   }
 }
 
+class chatBackgroundPanel extends StatelessWidget {
+  List<String> listAnimationChatBac = [];
+
+  chatBackgroundPanel(this.listAnimationChatBac, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(top: 16, left: 14, right: 14),
+          height: height / 5,
+          width: width,
+          child: AnimationLimiter(
+            child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(right: 20),
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: listAnimationChatBac.length,
+                itemBuilder: (context, index) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    delay: const Duration(milliseconds: 500),
+                    child: SlideAnimation(
+                      duration: const Duration(milliseconds: 1600),
+                      horizontalOffset: 160,
+                      curve: Curves.ease,
+                      child: FadeInAnimation(
+                        curve: Curves.easeOut,
+                        duration: const Duration(milliseconds: 2200),
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 10, right: 4),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Lottie.asset(
+                              height: height / 7, listAnimationChatBac[index]),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class infoPanelWidget extends StatelessWidget {
   UserModel userModel;
 
@@ -493,6 +545,7 @@ class _topPanelChatState extends State<topPanelChat> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('User')
@@ -508,8 +561,10 @@ class _topPanelChatState extends State<topPanelChat> {
               .snapshots(),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData && asyncSnapshot.hasData) {
-              var isWriteUser = false;
+              var isWriteUser = false, isOnline = false;
               try {
+                isOnline = asyncSnapshot.data['state'] != 'offline';
+
                 if (snapshot.data['writeLastData'] != '') {
                   if (DateTime.now()
                           .difference(
@@ -525,6 +580,7 @@ class _topPanelChatState extends State<topPanelChat> {
                   }
                 }
               } catch (error) {}
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -541,8 +597,7 @@ class _topPanelChatState extends State<topPanelChat> {
                         ),
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.only(left: 22, top: 6, right: 4),
+                        padding: const EdgeInsets.only(left: 22, right: 4),
                         child: ZoomTapAnimation(
                           onTap: () {
                             Navigator.push(
@@ -587,11 +642,10 @@ class _topPanelChatState extends State<topPanelChat> {
                                       state: 'offline',
                                       padding: 0,
                                     ),
-                                    if (asyncSnapshot.data['state'] !=
-                                        'offline')
-                                      SlideFadeTransition(
-                                        animationDuration:
-                                            const Duration(milliseconds: 550),
+                                    if (isOnline)
+                                      DelayedDisplay(
+                                        delay:
+                                            const Duration(milliseconds: 500),
                                         child: customIconButton(
                                           padding: 0,
                                           width: height / 38,
@@ -627,21 +681,18 @@ class _topPanelChatState extends State<topPanelChat> {
                                             ),
                                           ),
                                         ),
-                                        if (asyncSnapshot.data['state'] ==
-                                                'offline' &&
-                                            !isWriteUser)
+                                        if (!isOnline && !isWriteUser)
                                           animatedText(
-                                              height / 78,
+                                              height / 70,
                                               'был(а) ${filterDate(asyncSnapshot.data['lastDateOnline'])}',
                                               Colors.white.withOpacity(.5),
-                                              550,
+                                              500,
                                               1),
-                                        if (asyncSnapshot.data['state'] !=
-                                                'offline' &&
-                                            !isWriteUser)
-                                          animatedText(height / 78, 'в сети',
-                                              Colors.green, 550, 1),
-                                        if (isWriteUser) showProgressWrite()
+                                        if (isOnline && !isWriteUser)
+                                          animatedText(height / 68, 'в сети',
+                                              Colors.green, 500, 1),
+                                        if (isWriteUser)
+                                          showProgressWrite(height)
                                       ],
                                     ),
                                   ],
@@ -652,41 +703,6 @@ class _topPanelChatState extends State<topPanelChat> {
                         ),
                       ),
                     ],
-                  ),
-                  PopupMenuButton<int>(
-                    enabled: true,
-                    elevation: 10,
-                    icon: Icon(
-                      Icons.more_vert,
-                      size: height / 38,
-                      color: Colors.white,
-                    ),
-                    color: Colors.white.withOpacity(0.07),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(16),
-                      ),
-                      side: BorderSide(color: Colors.white24, width: 0.7),
-                    ),
-                    onSelected: (value) {
-                      if (value == 0) {
-                        showAlertDialogDeleteChat(context, friendId, friendName,
-                            true, friendImage, height);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        PopupMenuItem(
-                          value: 0,
-                          child: animatedText(
-                              height / 58, 'Удалить чат', Colors.white, 550, 1),
-                        ),
-                        PopupMenuItem(
-                            value: 1,
-                            child: animatedText(height / 58, 'Изменить цвет',
-                                Colors.white, 650, 1)),
-                      ];
-                    },
                   ),
                 ],
               );

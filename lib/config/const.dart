@@ -66,10 +66,23 @@ const List months = [
   'декаб.',
 ];
 
+const List<Color> listColorsAnimation = [
+  Colors.black12,
+  Colors.white10,
+  Colors.white54,
+  Colors.white70,
+];
+
+const List<String> listAnimationChatBac = [
+  'images/animation_chat_bac_1.json',
+  'images/animation_chat_bac_2.json',
+  'images/animation_chat_bac_3.json',
+  'images/animation_chat_bac_4.json'
+];
+
 final items = interestsList
     .map((interests) => MultiSelectItem<String>(interests, interests))
     .toList();
-
 
 const List<IconData> listOfIcons = [
   Icons.home_rounded,

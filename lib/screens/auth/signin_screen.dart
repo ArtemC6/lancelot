@@ -6,10 +6,9 @@ import 'package:lancelot/screens/auth/signup_screen.dart';
 import 'package:lancelot/widget/animation_widget.dart';
 
 import '../../config/const.dart';
-import '../../config/firestore_operations.dart';
+import '../../config/firebase_auth.dart';
 import '../../main.dart';
 import '../../widget/button_widget.dart';
-import '../../widget/dialog_widget.dart';
 import '../../widget/textField_widget.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -24,6 +23,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
   late Animation<double> animation1, animation2, animation3, animation4;
   final TextEditingController emailController = TextEditingController(),
       passwordController = TextEditingController();
+  bool signStart = false;
 
   @override
   void initState() {
@@ -99,6 +99,44 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
     });
 
     controller2.forward();
+    userValidatorSigIn();
+  }
+
+  void userValidatorSigIn() {
+    bool passwordValid = false;
+    emailController.addListener(() {
+      final bool emailValid = RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(emailController.text);
+
+      passwordController.addListener(() {
+        if (passwordController.text.length > 5) {
+          passwordValid = true;
+        } else {
+          passwordValid = false;
+        }
+
+        if (emailValid && passwordValid) {
+          setState(() {
+            signStart = true;
+          });
+        } else {
+          setState(() {
+            signStart = false;
+          });
+        }
+      });
+
+      if (emailValid && passwordValid) {
+        setState(() {
+          signStart = true;
+        });
+      } else {
+        setState(() {
+          signStart = false;
+        });
+      }
+    });
   }
 
   @override
@@ -183,39 +221,19 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              buttonAuth('Войти', 2.4, 600, () {
-                                try {
-                                  showAlertDialogLoading(context);
-                                  FirebaseAuth.instance
-                                      .signInWithEmailAndPassword(
-                                          email: emailController.text.trim(),
-                                          password:
-                                              passwordController.text.trim())
-                                      .then((value) {
-                                    Navigator.pop(context);
-                                    showAlertDialogSuccess(context);
-                                    Future.delayed(
-                                        const Duration(milliseconds: 1850), () {
-                                      Navigator.pop(context);
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Manager()));
-                                    });
-                                    setStateFirebase('online');
-                                    setTokenUserFirebase();
-                                  }).onError((error, stackTrace) {
-                                    Navigator.pop(context);
-                                  });
-                                } on FirebaseAuthException {}
-
-                                // context
-                                //     .read<FirebaseAuthMethods>()
-                                //     .loginWithEmail(
-                                //         email: emailController.text,
-                                //         password: passwordController.text,
-                                //         context: context);
-                              }),
+                              signStart
+                                  ? buttonAuthAnimation('Войти', 2.4, 350, () {
+                                      FirebaseAuthMethods.loginWithEmail(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                          context: context);
+                                    })
+                                  : buttonAuth('Войти', 2.4, 500, () {
+                                      FirebaseAuthMethods.loginWithEmail(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                          context: context);
+                                    }),
                             ],
                           ),
                         ],

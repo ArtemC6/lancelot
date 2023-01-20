@@ -208,6 +208,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           userModel: userModel,
                                         )));
                                   },
+                                  480,
                                 ),
                                 const SizedBox()
                               ],

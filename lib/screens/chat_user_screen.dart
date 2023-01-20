@@ -1,6 +1,16 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
@@ -32,11 +42,17 @@ class ChatUserScreen extends StatefulWidget {
 
 class _ChatUserScreenState extends State<ChatUserScreen>
     with TickerProviderStateMixin {
-  String friendId, friendName, friendImage, token;
+  String friendId,
+      friendName,
+      friendImage,
+      token,
+      chatBackground = 'images/animation_chat_bac_2.json';
+
   bool notification;
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
   int limit = 20;
+  double chatBlur = 2, chatBlackout = 0, chatBlackoutFinal = 0.2;
   bool isLoading = false;
   late final AnimationController animationController;
 
@@ -70,6 +86,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
 
   Future readUser() async {
     animationController = AnimationController(vsync: this);
+    final prefs = await SharedPreferences.getInstance();
+
     if (friendName.isEmpty && friendImage.isEmpty && token.isEmpty) {
       await readUserFirebase(friendId).then((user) {
         setState(() {
@@ -81,7 +99,48 @@ class _ChatUserScreenState extends State<ChatUserScreen>
         isLoading = true;
       });
     }
-    setState(() => isLoading = true);
+
+    setState(() {
+      chatBackground = prefs.getString('chatBackground') ??
+          'images/animation_chat_bac_2.json';
+
+      chatBlur = prefs.getDouble('chatBlur') ?? 2;
+      chatBlackoutFinal = prefs.getDouble('chatBlackout') ?? 0.2;
+      isLoading = true;
+    });
+  }
+
+  Future setBackground(String listAnimationChatBac) async {
+    await SharedPreferences.getInstance()
+        .then((i) => i.setString('chatBackground', listAnimationChatBac));
+
+    setState(() {
+      chatBackground = listAnimationChatBac;
+    });
+  }
+
+  Future setBlur(value) async {
+    await SharedPreferences.getInstance()
+        .then((i) => i.setDouble('chatBlur', value));
+    setState(() {
+      chatBlur = value;
+    });
+  }
+
+  Future setBlackout(double value) async {
+    double result;
+    if (value < 10.0) {
+      result = double.parse('0.${value.toInt()}');
+    } else {
+      result = 1;
+    }
+
+    await SharedPreferences.getInstance()
+        .then((i) => i.setDouble('chatBlackout', result));
+
+    setState(() {
+      chatBlackoutFinal = result;
+    });
   }
 
   @override
@@ -96,82 +155,299 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     if (isLoading) {
       return Scaffold(
         backgroundColor: color_black_88,
-        body: SafeArea(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: height / 14,
-                  color: color_black_88,
-                  padding: const EdgeInsets.only(
-                    left: 14,
-                    top: 0,
-                    right: 14,
-                  ),
-                  child: topPanelChat(
-                    userModelCurrent: userModelCurrent,
-                    friendId: friendId,
-                    friendImage: friendImage,
-                    friendName: friendName,
-                  ),
-                ),
-                Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                          color: color_black_88,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(25),
-                              topRight: Radius.circular(25))),
-                      child: StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection("User")
-                              .doc(userModelCurrent.uid)
-                              .collection('messages')
-                              .doc(friendId)
-                              .collection('chats')
-                              .limit(limit)
-                              .orderBy("date", descending: true)
-                              .snapshots(),
-                          builder: (context, AsyncSnapshot snapshotMy) {
-                            if (snapshotMy.hasData) {
-                              int lengthDoc = snapshotMy.data.docs.length;
-                          bool isFirstMessage = false;
-                          if (snapshotMy.data.docs.length == 0) {
-                            isFirstMessage = false;
-                          } else {
-                            isFirstMessage = true;
-                          }
-
-                          if (snapshotMy.data.docs.length <= 0) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: showAnimationNoMessage(
-                                    height,
-                                    'images/animation_user_chat.json',
-                                    animationController,
+        body: Stack(
+          children: [
+            Lottie.asset(
+                width: width, height: height, fit: BoxFit.fill, chatBackground),
+            BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: chatBlur,
+                sigmaY: chatBlur,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(chatBlackoutFinal),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: height / 26,
+                        left: 14,
+                        right: 14,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          topPanelChat(
+                            userModelCurrent: userModelCurrent,
+                            friendId: friendId,
+                            friendImage: friendImage,
+                            friendName: friendName,
+                          ),
+                          PopupMenuButton<int>(
+                            enabled: true,
+                            icon: Icon(
+                              Icons.more_vert,
+                              size: height / 38,
+                              color: Colors.white,
+                            ),
+                            color: Colors.transparent,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                              side:
+                                  BorderSide(color: Colors.white38, width: 0.7),
+                            ),
+                            onSelected: (value) {
+                              if (value == 0) {
+                                showAlertDialogDeleteChat(context, friendId,
+                                    friendName, true, friendImage, height);
+                              } else if (value == 1) {
+                                showCupertinoModalBottomSheet(
+                                  topRadius: const Radius.circular(26),
+                                  duration: const Duration(milliseconds: 700),
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return Container(
+                                        height: height / 2.6,
+                                        padding: const EdgeInsets.only(
+                                            top: 10,
+                                            left: 10,
+                                            right: 10,
+                                            bottom: 20),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  top: 2, left: 8),
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: width / 4.2,
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        text: 'Размытие',
+                                                        style: GoogleFonts.lato(
+                                                          textStyle: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  height / 62,
+                                                              letterSpacing:
+                                                                  .9),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: width / 1.5,
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8, left: 4),
+                                                    child: SfSlider(
+                                                      activeColor: Colors.blue,
+                                                      min: 0,
+                                                      max: 20,
+                                                      value: chatBlur,
+                                                      stepSize: 1,
+                                                      enableTooltip: false,
+                                                      onChanged:
+                                                          (dynamic value) {
+                                                        setState(() {
+                                                          chatBlur = value;
+                                                        });
+                                                        setBlur(value);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10, left: 8),
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: width / 4.2,
+                                                    child: RichText(
+                                                      text: TextSpan(
+                                                        text: 'Затемнение',
+                                                        style: GoogleFonts.lato(
+                                                          textStyle: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  height / 62,
+                                                              letterSpacing:
+                                                                  .9),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8, left: 4),
+                                                    width: width / 1.5,
+                                                    child: SfSlider(
+                                                      activeColor: Colors.blue,
+                                                      min: 0,
+                                                      max: 10,
+                                                      value: chatBlackout,
+                                                      stepSize: 1,
+                                                      enableTooltip: false,
+                                                      onChanged:
+                                                          (dynamic value) {
+                                                        setState(() {
+                                                          chatBlackout = value;
+                                                        });
+                                                        setBlackout(value);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: height / 5.5,
+                                              child: AnimationLimiter(
+                                                child: ListView.builder(
+                                                    physics:
+                                                        const BouncingScrollPhysics(),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 20),
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        listAnimationChatBac
+                                                            .length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return AnimationConfiguration
+                                                          .staggeredList(
+                                                        position: index,
+                                                        delay: const Duration(
+                                                            milliseconds: 450),
+                                                        child: SlideAnimation(
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      1500),
+                                                          horizontalOffset: 160,
+                                                          curve: Curves.ease,
+                                                          child:
+                                                              FadeInAnimation(
+                                                            curve:
+                                                                Curves.easeOut,
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        2000),
+                                                            child:
+                                                                ZoomTapAnimation(
+                                                              onTap: () async {
+                                                                setBackground(
+                                                                    listAnimationChatBac[
+                                                                        index]);
+                                                              },
+                                                              end: 0.990,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            10,
+                                                                        right:
+                                                                            4),
+                                                                child:
+                                                                    FlutterColorsBorder(
+                                                                  animationDuration:
+                                                                      5,
+                                                                  colors:
+                                                                      listColorsAnimation,
+                                                                  size: Size(
+                                                                      height /
+                                                                          10,
+                                                                      height /
+                                                                          5.65),
+                                                                  boardRadius:
+                                                                      0,
+                                                                  borderWidth:
+                                                                      0.6,
+                                                                  child: Lottie.asset(
+                                                                      listAnimationChatBac[
+                                                                          index]),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    });
+                                  },
+                                );
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return [
+                                PopupMenuItem(
+                                  value: 0,
+                                  child: Container(
+                                    child: animatedText(height / 58,
+                                        'Удалить чат', Colors.white, 450, 1),
                                   ),
                                 ),
-                                Container(
-                                  alignment: Alignment.bottomCenter,
-                                  child: MessageTextField(
-                                      userModelCurrent,
-                                      friendId,
-                                      token,
-                                      friendName,
-                                      notification,
-                                      isFirstMessage),
-                                ),
-                              ],
-                            );
-                          } else {
+                                PopupMenuItem(
+                                    value: 1,
+                                    child: animatedText(
+                                        height / 58,
+                                        'Изменить фон чата',
+                                        Colors.white,
+                                        500,
+                                        1)),
+                              ];
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("User")
+                            .doc(userModelCurrent.uid)
+                            .collection('messages')
+                            .doc(friendId)
+                            .collection('chats')
+                            .limit(limit)
+                            .orderBy("date", descending: true)
+                            .snapshots(),
+                        builder: (context, AsyncSnapshot snapshotMy) {
+                          if (snapshotMy.hasData) {
+                            int lengthDoc = snapshotMy.data.docs.length;
+                            bool isFirstMessage = false;
+                            if (snapshotMy.data.docs.length == 0) {
+                              isFirstMessage = false;
+                            } else {
+                              isFirstMessage = true;
+                            }
+
                             return Column(
                               children: [
                                 Expanded(
@@ -196,9 +472,9 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                             message = snapshotMy
                                                 .data.docs[index]['message'];
                                             date = snapshotMy.data.docs[index]
-                                                ['date'];
+                                            ['date'];
                                             isMe = snapshotMy.data.docs[index]
-                                                    ['senderId'] ==
+                                            ['senderId'] ==
                                                 userModelCurrent.uid;
                                           } catch (E) {}
                                           return AnimationConfiguration
@@ -232,24 +508,24 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                         .doc(friendId)
                                                         .collection('messages')
                                                         .doc(userModelCurrent
-                                                            .uid)
+                                                        .uid)
                                                         .collection('chats')
                                                         .where('message',
-                                                            isEqualTo: message)
+                                                        isEqualTo: message)
                                                         .where('date',
-                                                            isEqualTo: date)
+                                                        isEqualTo: date)
                                                         .get()
                                                         .then(
-                                                      (QuerySnapshot
-                                                          querySnapshot) async {
+                                                          (QuerySnapshot
+                                                      querySnapshot) async {
                                                         for (var document
-                                                            in querySnapshot
-                                                                .docs) {
+                                                        in querySnapshot
+                                                            .docs) {
                                                           Map<String, dynamic>
-                                                              data =
-                                                              document.data()
-                                                                  as Map<String,
-                                                                      dynamic>;
+                                                          data =
+                                                          document.data()
+                                                          as Map<String,
+                                                              dynamic>;
 
                                                           showAlertDialogDeleteMessage(
                                                               context,
@@ -291,7 +567,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                   height: 24,
                                                   width: 24,
                                                   child:
-                                                      CircularProgressIndicator(
+                                                  CircularProgressIndicator(
                                                     color: Colors.white,
                                                     strokeWidth: 0.8,
                                                   ),
@@ -314,29 +590,29 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                     notification,
                                     isFirstMessage),
                                 const SizedBox(
-                                  width: .09,
+                                  width: .05,
                                 )
                               ],
                             );
                           }
-                        }
-                        return const Center(
-                          child: SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 0.8,
+                          return const Center(
+                            child: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 0.8,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       );
     }

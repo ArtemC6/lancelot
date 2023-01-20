@@ -61,6 +61,8 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
   Future checkEmailVerify() async {
     FirebaseAuth.instance.currentUser?.reload().then((value) {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
+        animationController.dispose();
+        timer.cancel();
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Manager()));
       }
@@ -160,18 +162,19 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                       ],
                       size.height / 20, () {
                       sendEmail();
-                    })
+                    }, 400)
                   : buttonUniversalAnimationColors(
                       'Отправить повторно',
                       [color_black_88, color_black_88],
                       size.height / 20,
-                      () {}),
+                      () {},
+                      400),
             ),
             Padding(
               padding: EdgeInsets.only(bottom: size.height / 14),
               child: buttonUniversalAnimationColors('Другая почта',
                   [color_black_88, color_black_88], size.height / 20, () async {
-                if (FirebaseAuth.instance.currentUser!.uid.isNotEmpty) {
+                    if (FirebaseAuth.instance.currentUser?.uid != null) {
                   await FirebaseFirestore.instance
                       .collection("User")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -183,7 +186,9 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 } else {
                   FirebaseAuth.instance.signOut();
                 }
-              }),
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const Manager()));
+              }, 400),
             ),
           ],
         ),

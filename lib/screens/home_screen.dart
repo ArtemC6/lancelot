@@ -386,7 +386,7 @@ class _HomeScreen extends State<HomeScreen>
                                       10,
                                       true,
                                     );
-                                  }),
+                                  }, 750),
                                 ),
                               ),
                             ],

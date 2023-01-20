@@ -4,6 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
+import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/card_widget.dart';
 import '../widget/component_widget.dart';
@@ -71,7 +72,7 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
                   searchRangeEnd: 0,
                   myCity: data['myCity'],
                   imageBackground: data['imageBackground'],
-                  ageInt: data['ageInt'],
+                  ageInt: ageInt(data),
                   state: data['state'],
                   token: data['token'],
                   notification: data['notification']));
@@ -96,13 +97,6 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
         readFirebase(5, false);
-        // Future.delayed(const Duration(milliseconds: 500), () {
-        //   scrollController.animateTo(
-        //     scrollController.position.maxScrollExtent - 70,
-        //     duration: const Duration(milliseconds: 1500),
-        //     curve: Curves.fastOutSlowIn,
-        //   );
-        // });
       }
     });
 
@@ -181,14 +175,6 @@ class _ViewLikesScreenState extends State<ViewLikesScreen> {
       );
     }
 
-    return Scaffold(
-        backgroundColor: color_black_88,
-        body: SizedBox(
-          height: size.height,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: cardLoadingWidget(size, .12, .07),
-          ),
-        ));
+    return const Scaffold(backgroundColor: color_black_88, body: SizedBox());
   }
 }

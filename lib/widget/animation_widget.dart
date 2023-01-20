@@ -119,15 +119,15 @@ class loadingCustom extends StatelessWidget {
   }
 }
 
-SlideFadeTransition showProgressWrite() {
-  return SlideFadeTransition(
-    animationDuration: const Duration(milliseconds: 400),
+DelayedDisplay showProgressWrite(double height) {
+  return DelayedDisplay(
+    delay: const Duration(milliseconds: 500),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         LoadingAnimationWidget.horizontalRotatingDots(
-          size: 20,
+          size: height / 40,
           color: Colors.blueAccent,
         ),
         Padding(
@@ -136,9 +136,9 @@ SlideFadeTransition showProgressWrite() {
             text: TextSpan(
               text: 'печатает...',
               style: GoogleFonts.lato(
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                     color: Colors.blueAccent,
-                    fontSize: 10.5,
+                    fontSize: height / 72,
                     letterSpacing: .7),
               ),
             ),
@@ -174,21 +174,6 @@ DelayedDisplay animatedText(double size, String text, color, time, int line) {
   );
 }
 
-// SlideFadeTransition animatedText(
-//     double size, String text, color, time, int line) {
-//   return SlideFadeTransition(
-//     animationDuration: Duration(milliseconds: time),
-//     child: Text(
-//       maxLines: line,
-//       textScaleFactor: 1.0,
-//       text,
-//       style: GoogleFonts.lato(
-//         textStyle: TextStyle(color: color, fontSize: size, letterSpacing: .6),
-//       ),
-//     ),
-//   );
-// }
-
 SizedBox showIfNoData(
   double height,
   String imagePath,
@@ -212,13 +197,13 @@ SizedBox showIfNoData(
             ..repeat();
         },
             controller: animationController,
-            height: height / share,
+            height: height / 2.2,
             fit: BoxFit.contain,
             imagePath),
 
         Padding(
           padding: const EdgeInsets.only(top: 40),
-          child: animatedText(14.5, text, Colors.white, 600, 2),
+          child: animatedText( height / 48, text, Colors.white, 400, 2),
         ),
         SizedBox(
           height: height / 3.5,
@@ -295,17 +280,17 @@ Padding showAnimationNoUser(
             height: height * 0.50,
             width: height * 0.50,
             'images/animation_empty.json'),
-        SlideFadeTransition(
-          animationDuration: const Duration(milliseconds: 600),
+        DelayedDisplay(
+          delay: const Duration(milliseconds: 600),
           child: RichText(
             textAlign: TextAlign.center,
             maxLines: 2,
             text: TextSpan(
               text: 'К сожалению никого не найдено попробуйте позже',
               style: GoogleFonts.lato(
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: height / 52,
                   letterSpacing: .0,
                 ),
               ),
@@ -321,7 +306,9 @@ FlutterColorsBorder loadingPhotoAnimation(double height) {
   return FlutterColorsBorder(
     animationDuration: 1,
     colors: const [
+      Colors.black12,
       Colors.white10,
+      Colors.white54,
       Colors.white70,
     ],
     size: Size(height, height),

@@ -42,7 +42,7 @@ class buttonAuth extends StatelessWidget {
                 border: Border.all(color: Colors.white10, width: 0.5),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: animatedText(size.width / 36, name,
+              child: animatedText(size.width / 30, name,
                   Colors.white.withOpacity(.8), time, 1)),
         ),
       ),
@@ -50,7 +50,49 @@ class buttonAuth extends StatelessWidget {
   }
 }
 
-Widget buttonUniversal(String name, color, height, onTap) {
+class buttonAuthAnimation extends StatelessWidget {
+  String name;
+  double width;
+  int time;
+  VoidCallback voidCallback;
+
+  buttonAuthAnimation(this.name, this.width, this.time, this.voidCallback,
+      {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
+        child: InkWell(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onTap: voidCallback,
+          child: FlutterColorsBorder(
+            animationDuration: 5,
+            colors: const [Colors.black12, Colors.white],
+            size: Size(size.width / width, size.height / 16),
+            boardRadius: 15,
+            borderWidth: 0.7,
+            child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.05),
+                  border: Border.all(color: Colors.white10, width: 0.5),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child:
+                    animatedText(size.width / 30, name, Colors.white, time, 1)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Widget buttonUniversal(String name, color, height, onTap, time) {
   return ZoomTapAnimation(
     onTap: () {},
     child: SizedBox(
@@ -80,7 +122,7 @@ Widget buttonUniversal(String name, color, height, onTap) {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
             ),
-            child: animatedText(height / 3.5, name, Colors.white, 550, 1)),
+            child: animatedText(height / 3.5, name, Colors.white, time, 1)),
       ),
     ),
   );
@@ -107,14 +149,14 @@ Widget buttonUniversalAnimationNoColor(String name, color, height, onTap) {
         borderWidth: 0.6,
         child: Container(
           alignment: Alignment.center,
-          child: animatedText(height / 3.6, name, Colors.white, 500, 1),
+          child: animatedText(height / 3.3, name, Colors.white, 500, 1),
         ),
       ),
     ),
   );
 }
 
-Widget buttonUniversalAnimationColors(String name, color, height, onTap) {
+Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
   return ZoomTapAnimation(
     onTap: onTap,
     child: Container(
@@ -127,19 +169,13 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap) {
       ),
       child: FlutterColorsBorder(
         animationDuration: 4,
-        colors: const [
-          // Colors.white10,
-          Colors.black12,
-          Colors.white10,
-          Colors.white54,
-          Colors.white70,
-        ],
+        colors: listColorsAnimation,
         size: Size(height * 3.5, height),
         boardRadius: 20,
         borderWidth: 0.6,
         child: Container(
           alignment: Alignment.center,
-          child: animatedText(height / 3.6, name, Colors.white, 500, 1),
+          child: animatedText(height / 3.3, name, Colors.white, time, 1),
         ),
       ),
     ),
@@ -217,7 +253,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           if (!isMutuallyMy && isMutuallyFriend) {
             deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid);
           }
-        });
+        }, 400);
       } else if (!isMutuallyMy && !isMutuallyFriend) {
         return buttonUniversalAnimationColors(
             'Оставить симпатию', [color_black_88, color_black_88], height / 21,
@@ -237,7 +273,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           } else {
             deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid);
           }
-        });
+        }, 400);
       } else if (isMutuallyMy && !isMutuallyFriend) {
         return buttonUniversalAnimationColors('Принять симпатию',
             [Colors.blueAccent, Colors.purpleAccent], height / 21, () {
@@ -256,7 +292,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           } else {
             deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid);
           }
-        });
+        }, 400);
       } else {
         return buttonUniversalAnimationColors(
             'Написать',
@@ -272,7 +308,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                 token: userModelFriend.token,
                 notification: userModelFriend.notification,
               )));
-        });
+        }, 400);
       }
     }
 

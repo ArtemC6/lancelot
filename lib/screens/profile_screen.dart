@@ -285,14 +285,14 @@ class _ProfileScreen extends State<ProfileScreen> {
                                             isFirst: false,
                                             userModel: userModelCurrent,
                                           )));
-                                    }),
-                              if (!isProprietor)
-                                buttonProfileUser(
-                                  userModelCurrent,
-                                  userModelPartner,
-                                ),
-                              const SizedBox()
-                            ],
+                                    }, 480),
+                                  if (!isProprietor)
+                                    buttonProfileUser(
+                                      userModelCurrent,
+                                      userModelPartner,
+                                    ),
+                                  const SizedBox()
+                                ],
                           ),
                           Container(
                             margin: EdgeInsets.only(top: size.height / 32),

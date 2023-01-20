@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -328,9 +329,9 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     return const loadingCustom();
   }
 
-  SlideFadeTransition showAnimationBottomNotification(int indexNotification) {
-    return SlideFadeTransition(
-      animationDuration: const Duration(milliseconds: 750),
+  DelayedDisplay showAnimationBottomNotification(int indexNotification) {
+    return DelayedDisplay(
+      delay: const Duration(milliseconds: 650),
       child: Container(
         alignment: Alignment.center,
         width: 15,

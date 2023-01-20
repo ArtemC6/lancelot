@@ -241,48 +241,63 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
   );
 
   showDialog(
+      barrierColor: const Color(0x01000000),
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                backgroundColor: color_black_88,
+                backgroundColor: Colors.transparent,
                 actions: <Widget>[
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: animatedText(
-                            height / 50, 'Удалить чат', Colors.white, 400, 1),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.01),
+                            border:
+                                Border.all(width: 0.8, color: Colors.white38),
+                            borderRadius: BorderRadius.circular(18)),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: animatedText(height / 50, 'Удалить чат',
+                                  Colors.white, 400, 1),
+                            ),
+                            CheckboxListTile(
+                              activeColor: Colors.blue,
+                              title: animatedText(
+                                  height / 60,
+                                  'Также удалить для $friendName',
+                                  Colors.white,
+                                  450,
+                                  1),
+                              value: isDeletePartner,
+                              onChanged: (newValue) {
+                                // setState(() {
+                                //   isDeletePartner = !isDeletePartner;
+                                // });
+                              },
+                              controlAffinity: ListTileControlAffinity
+                                  .leading, //  <-- leading Checkbox
+                            ),
+                            Row(
+                              children: [
+                                Expanded(child: cancelButton),
+                                Expanded(child: continueButton),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                      CheckboxListTile(
-                        activeColor: Colors.blue,
-                        title: animatedText(
-                            height / 60,
-                            'Также удалить для $friendName',
-                            Colors.white,
-                            450,
-                            1),
-                        value: isDeletePartner,
-                        onChanged: (newValue) {
-                          // setState(() {
-                          //   isDeletePartner = !isDeletePartner;
-                          // });
-                        },
-                        controlAffinity: ListTileControlAffinity
-                            .leading, //  <-- leading Checkbox
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: cancelButton),
-                          Expanded(child: continueButton),
-                        ],
-                      )
-                    ],
+                    ),
                   ),
                 ],
               ),

@@ -118,6 +118,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                   state = '',
                                   uid = '',
                                   isMutuallyMy = false,
+                                  isStart = true,
                                   token = '';
                               try {
                                 uid = snapshot.data.docs[index]['uid'];
@@ -177,6 +178,10 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                               builder: (context,
                                                   AsyncSnapshot asyncSnapshot) {
                                                 if (asyncSnapshot.hasData) {
+                                                  getState(150).then((value) {
+                                                    isMutuallyMy = false;
+                                                  });
+
                                                   try {
                                                     for (int i = 0;
                                                         i <
@@ -202,34 +207,34 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                           context,
                                                           FadeRouteAnimation(
                                                               ProfileScreen(
-                                                            userModelPartner: UserModel(
-                                                                name: '',
-                                                                uid: '',
-                                                                myCity: '',
-                                                                ageTime:
+                                                                userModelPartner: UserModel(
+                                                                    name: '',
+                                                                    uid: '',
+                                                                    myCity: '',
+                                                                    ageTime:
                                                                     Timestamp
                                                                         .now(),
-                                                                userPol: '',
-                                                                searchPol: '',
-                                                                searchRangeStart:
+                                                                    userPol: '',
+                                                                    searchPol: '',
+                                                                    searchRangeStart:
                                                                     0,
-                                                                userImageUrl: [],
-                                                                userImagePath: [],
-                                                                imageBackground:
+                                                                    userImageUrl: [],
+                                                                    userImagePath: [],
+                                                                    imageBackground:
                                                                     '',
-                                                                userInterests: [],
-                                                                searchRangeEnd:
+                                                                    userInterests: [],
+                                                                    searchRangeEnd:
                                                                     0,
-                                                                ageInt: 0,
-                                                                state: '',
-                                                                token: '',
-                                                                notification:
+                                                                    ageInt: 0,
+                                                                    state: '',
+                                                                    token: '',
+                                                                    notification:
                                                                     true),
-                                                            isBack: true,
-                                                            idUser: uid,
-                                                            userModelCurrent:
+                                                                isBack: true,
+                                                                idUser: uid,
+                                                                userModelCurrent:
                                                                 userModelCurrent,
-                                                          )));
+                                                              )));
                                                     },
                                                     child: Container(
                                                       height: height / 4.5,
@@ -242,75 +247,72 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                             .withOpacity(.10),
                                                         color: color_black_88,
                                                         shape:
-                                                            RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            30),
-                                                                side:
-                                                                    const BorderSide(
-                                                                  width: 0.8,
-                                                                  color: Colors
-                                                                      .white10,
-                                                                )),
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                30),
+                                                            side:
+                                                            const BorderSide(
+                                                              width: 0.8,
+                                                              color: Colors
+                                                                  .white10,
+                                                            )),
                                                         elevation: 14,
                                                         child: Padding(
                                                           padding: EdgeInsets
                                                               .symmetric(
-                                                                  horizontal:
-                                                                      height /
-                                                                          58,
-                                                                  vertical:
-                                                                      height /
-                                                                          46),
+                                                              horizontal:
+                                                              height /
+                                                                  58,
+                                                              vertical:
+                                                              height /
+                                                                  46),
                                                           child: Row(
                                                             mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            // crossAxisAlignment: CrossAxisAlignment.start,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                             children: [
                                                               Expanded(
                                                                 flex: 1,
 
                                                                 // width: width / 3.2,
                                                                 child:
-                                                                    photoUser(
+                                                                photoUser(
                                                                   uri: imageUri,
                                                                   width:
-                                                                      height /
-                                                                          8.2,
+                                                                  height /
+                                                                      8.2,
                                                                   height:
-                                                                      height /
-                                                                          8.2,
+                                                                  height /
+                                                                      8.2,
                                                                   state: state,
                                                                   padding: 5,
                                                                 ),
                                                               ),
                                                               SizedBox(
                                                                   width:
-                                                                      height /
-                                                                          77),
+                                                                  height /
+                                                                      77),
                                                               Expanded(
-                                                                // width: width / 2,
                                                                 flex: 2,
-
                                                                 child: Column(
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceEvenly,
+                                                                  MainAxisAlignment
+                                                                      .spaceEvenly,
                                                                   children: [
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
                                                                       children: [
                                                                         DelayedDisplay(
                                                                           delay:
-                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
+                                                                          Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
                                                                           child:
-                                                                              Column(
+                                                                          Column(
                                                                             crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
+                                                                            CrossAxisAlignment.start,
                                                                             children: [
                                                                               RichText(
                                                                                 text: TextSpan(
@@ -332,30 +334,30 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                           ),
                                                                         ),
                                                                         Container(
-                                                                          margin:  EdgeInsets.only(
+                                                                          margin: EdgeInsets.only(
                                                                               bottom: height / 76,
                                                                               left: 10),
                                                                           alignment:
-                                                                              Alignment.topRight,
+                                                                          Alignment.topRight,
                                                                           child:
-                                                                              IconButton(
+                                                                          IconButton(
                                                                             onPressed:
                                                                                 () async {
                                                                               deleteSympathy(idDoc, userModelCurrent.uid);
                                                                               await CachedNetworkImage.evictFromCache(imageUri);
                                                                             },
                                                                             icon:
-                                                                                Icon(Icons.close, size: height / 40),
+                                                                            Icon(Icons.close, size: height / 40),
                                                                             color:
-                                                                                Colors.white,
+                                                                            Colors.white,
                                                                           ),
                                                                         ),
                                                                       ],
                                                                     ),
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceAround,
+                                                                      MainAxisAlignment
+                                                                          .spaceAround,
                                                                       children: [
                                                                         if (!isMutuallyMy)
                                                                           buttonUniversalAnimationColors(
@@ -374,7 +376,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                                 }
                                                                               });
                                                                             }
-                                                                          }),
+                                                                          }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
                                                                         if (isMutuallyMy)
                                                                           buttonUniversal(
                                                                               'У вас взаимно',
@@ -386,11 +388,11 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                               height / 22,
                                                                               () {
                                                                             deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
-                                                                              Future.delayed(const Duration(milliseconds: 300), () {
+                                                                              Future.delayed(const Duration(milliseconds: 250), () {
                                                                                 setState(() {});
                                                                               });
                                                                             });
-                                                                          }),
+                                                                          }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
                                                                         customIconButton(
                                                                           onTap:
                                                                               () {
@@ -402,16 +404,16 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                                       userModelCurrent: userModelCurrent,
                                                                                       token: token,
                                                                                       notification: asyncSnapshotUser.data['notification'],
-                                                                                    )));
+                                                                                        )));
                                                                           },
                                                                           path:
-                                                                              'images/ic_send.png',
+                                                                          'images/ic_send.png',
                                                                           height:
-                                                                              height / 28,
+                                                                          height / 28,
                                                                           width:
-                                                                              height / 28,
+                                                                          height / 28,
                                                                           padding:
-                                                                              4,
+                                                                          4,
                                                                         )
                                                                       ],
                                                                     ),

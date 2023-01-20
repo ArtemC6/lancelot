@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -287,9 +287,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     width: height / 26,
                                     height: height / 26,
                                     onTap: () async {
-                                      await context
-                                          .read<FirebaseAuthMethods>()
-                                          .signOut(context, modelUser.uid);
+                                      FirebaseAuthMethods.signOut(
+                                          context, modelUser.uid);
                                     },
                                     padding: 0,
                                   ),
@@ -302,7 +301,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             SlideFadeTransition(
                               animationDuration:
-                                  const Duration(milliseconds: 900),
+                                  const Duration(milliseconds: 800),
                               child: Container(
                                 padding: EdgeInsets.only(
                                     bottom: height / 62,
@@ -318,7 +317,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ],
                                     height / 22, () {
                                   _uploadData();
-                                }),
+                                }, 900),
                               ),
                             ),
                             if (isError)
@@ -397,10 +396,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 20, bottom: 60),
-                                              child: SlideFadeTransition(
-                                                animationDuration:
-                                                    const Duration(
-                                                        milliseconds: 550),
+                                              child: DelayedDisplay(
+                                                delay: const Duration(
+                                                    milliseconds: 450),
                                                 child: RichText(
                                                   text: TextSpan(
                                                     text:

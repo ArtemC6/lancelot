@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lancelot/screens/auth/signin_screen.dart';
-import 'package:provider/provider.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase_auth.dart';
@@ -25,6 +24,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
   final TextEditingController nameController = TextEditingController(),
       emailController = TextEditingController(),
       passwordController = TextEditingController();
+  bool signStart = false;
 
   @override
   void initState() {
@@ -100,6 +100,64 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
     });
 
     controller2.forward();
+
+    userValidatorSigUp();
+  }
+
+  void userValidatorSigUp() {
+    bool passwordValid = false, nameValid = false, emailValid = false;
+
+    nameController.addListener(() {
+      if (nameController.text.length > 2) {
+        nameValid = true;
+      } else {
+        nameValid = false;
+      }
+
+      emailController.addListener(() {
+        emailValid = RegExp(
+                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(emailController.text);
+
+        passwordController.addListener(() {
+          if (passwordController.text.length > 5) {
+            passwordValid = true;
+          } else {
+            passwordValid = false;
+          }
+
+          if (emailValid && passwordValid && nameValid) {
+            setState(() {
+              signStart = true;
+            });
+          } else {
+            setState(() {
+              signStart = false;
+            });
+          }
+        });
+
+        if (emailValid && passwordValid && nameValid) {
+          setState(() {
+            signStart = true;
+          });
+        } else {
+          setState(() {
+            signStart = false;
+          });
+        }
+      });
+
+      if (emailValid && passwordValid && nameValid) {
+        setState(() {
+          signStart = true;
+        });
+      } else {
+        setState(() {
+          signStart = false;
+        });
+      }
+    });
   }
 
   @override
@@ -189,7 +247,8 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               20,
                               context),
                           Container(
-                              padding: EdgeInsets.only(right: size.height / 22),
+                              padding: EdgeInsets.only(
+                                  right: size.height / 22, top: 4, bottom: 4),
                               alignment: Alignment.centerRight,
                               child: animatedText(
                                   size.height / 72,
@@ -200,11 +259,10 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              buttonAuth('Зарегистрироваться', 2, 600, () {
-                                if (nameController.text.length >= 3) {
-                                  context
-                                      .read<FirebaseAuthMethods>()
-                                      .signUpWithEmail(
+                              signStart
+                                  ? buttonAuthAnimation(
+                                      'Зарегистрироваться', 2, 350, () {
+                                      FirebaseAuthMethods.signUpWithEmail(
                                           email: emailController.text,
                                           password: passwordController.text,
                                           name: nameController.text[0]
@@ -213,8 +271,19 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                                                   .substring(1)
                                                   .toLowerCase(),
                                           context: context);
-                                }
-                              }),
+                                    })
+                                  : buttonAuth('Зарегистрироваться', 2, 500,
+                                      () {
+                                      FirebaseAuthMethods.signUpWithEmail(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                          name: nameController.text[0]
+                                                  .toUpperCase() +
+                                              nameController.text
+                                                  .substring(1)
+                                                  .toLowerCase(),
+                                          context: context);
+                                    }),
                             ],
                           ),
                         ],

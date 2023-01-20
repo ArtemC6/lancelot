@@ -9,14 +9,8 @@ import '../widget/dialog_widget.dart';
 import 'const.dart';
 import 'firestore_operations.dart';
 
-class FirebaseAuthMethods {
-  final FirebaseAuth _auth;
-  FirebaseAuthMethods(this._auth);
-
-  User get user => _auth.currentUser!;
-  Stream<User?> get authState => FirebaseAuth.instance.authStateChanges();
-
-  Future<void> signUpWithEmail({
+class FirebaseAuthMethods extends ChangeNotifier {
+  static Future<void> signUpWithEmail({
     required String email,
     required String password,
     required String name,
@@ -24,7 +18,7 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      _auth
+      FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
         Navigator.pop(context);
@@ -71,14 +65,14 @@ class FirebaseAuthMethods {
     } on FirebaseAuthException {}
   }
 
-  Future<void> loginWithEmail({
+  static Future<void> loginWithEmail({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
     try {
       showAlertDialogLoading(context);
-      _auth
+      FirebaseAuth.instance
           .signInWithEmailAndPassword(
               email: email.trim(), password: password.trim())
           .then((value) {
@@ -96,14 +90,13 @@ class FirebaseAuthMethods {
     } on FirebaseAuthException {}
   }
 
-  Future<void> signOut(BuildContext context, String uid) async {
+  static Future<void> signOut(BuildContext context, String uid) async {
     try {
-      _auth.signOut().then((value) {
+      FirebaseAuth.instance.signOut().then((value) {
         Navigator.pushReplacement(
             context, FadeRouteAnimation(const SignInScreen()));
-        setStateFirebase('offline', uid).then((value) async {
-          deleteUserTokenFirebase(uid);
-        });
+        setStateFirebase('offline', uid);
+        deleteUserTokenFirebase(uid);
       });
     } on FirebaseAuthException {}
   }

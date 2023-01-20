@@ -76,6 +76,8 @@ dependencies:
   connectivity_plus: ^3.0.2
   animate_gradient: ^0.0.2
   delayed_display: ^2.0.0
+  bubble: 1.2.1
+  blur: ^3.1.0
 
 dev_dependencies:
   flutter_test:

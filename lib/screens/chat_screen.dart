@@ -100,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       if (snapshotFriendId.data.docs.length <= 0) {
                         return showIfNoData(
                             height,
-                            'images/animation_chat.json',
+                            'images/animation_user_chat.json',
                             'У вас нет сообщений',
                             animationController,
                             3.5);
@@ -117,10 +117,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     snapshotFriendId.data.docs[index].id;
                                 return AnimationConfiguration.staggeredList(
                                   position: index,
-                                  delay: const Duration(milliseconds: 300),
+                                  delay: const Duration(milliseconds: 350),
                                   child: SlideAnimation(
                                     duration: const Duration(milliseconds: 950),
-                                    verticalOffset: 80,
+                                    verticalOffset: 100,
                                     curve: Curves.ease,
                                     child: FadeInAnimation(
                                       curve: Curves.easeOut,
@@ -305,7 +305,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                   color: Colors
                                                                       .white10,
                                                                 )),
-                                                        elevation: 14,
+                                                        elevation: 16,
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
@@ -387,11 +387,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             child:
                                                                                 Padding(
                                                                               padding: const EdgeInsets.only(right: 10),
-                                                                              child: animatedText(height / 68, lastMsg, Colors.white.withOpacity(.3), indexAnimation * 400 < 3200 ? indexAnimation * 400 : 600, 2),
+                                                                              child: animatedText(height / 68, lastMsg, Colors.white.withOpacity(.3), indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350, 2),
                                                                             ),
                                                                           ),
                                                                         if (isWriteUser)
-                                                                          showProgressWrite(),
+                                                                          showProgressWrite(
+                                                                              height),
                                                                         if (isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
@@ -410,7 +411,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             !isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
-                                                                                Duration(milliseconds: indexAnimation * 250 < 2000 ? indexAnimation * 250 : 250),
+                                                                                Duration(milliseconds: indexAnimation * 250 < 2300 ? indexAnimation * 250 : 250),
                                                                             child:
                                                                                 Padding(
                                                                               padding: EdgeInsets.only(left: height / 86),
@@ -425,7 +426,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             !isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
-                                                                                Duration(milliseconds: indexAnimation * 400 < 3200 ? indexAnimation * 400 : 600),
+                                                                                Duration(milliseconds: indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350),
                                                                             child:
                                                                                 Padding(
                                                                               padding: EdgeInsets.only(left: height / 86),
@@ -475,8 +476,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     );
-                                  } else {
-                                    return cardLoadingWidget(size, .12, .08);
                                   }
                                 }
                                 return const SizedBox();

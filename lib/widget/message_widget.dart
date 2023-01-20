@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-import '../config/const.dart';
 import '../config/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
@@ -48,16 +48,15 @@ class MessagesItem extends StatelessWidget {
       return isFiresState;
     }
 
-    Container formMessageMy(String isCheck) {
-      return Container(
-        decoration: BoxDecoration(
-            color: Colors.white.withOpacity(.01),
-            borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-                topLeft: Radius.circular(20)),
-            border: Border.all(color: Colors.white10, width: 0.9)),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+    Bubble formMessageMy(String isCheck) {
+      return Bubble(
+        nip: BubbleNip.rightBottom,
+        stick: true,
+        shadowColor: Colors.transparent,
+        color: Colors.transparent,
+        borderWidth: 1,
+        radius: const Radius.circular(10),
+        borderColor: Colors.white.withOpacity(.4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
@@ -91,20 +90,20 @@ class MessagesItem extends StatelessWidget {
                   ),
                 ),
                 if (isCheck == '')
-                  SlideFadeTransition(
-                    animationDuration: const Duration(milliseconds: 400),
+                  DelayedDisplay(
+                    delay: const Duration(milliseconds: 350),
                     child: showCheckMessageAnimation(
                         height, Icons.access_time_outlined, Colors.white),
                   ),
                 if (isCheck == 'read')
-                  SlideFadeTransition(
-                    animationDuration: const Duration(milliseconds: 400),
+                  DelayedDisplay(
+                    delay: const Duration(milliseconds: 350),
                     child: showCheckMessageAnimation(
                         height, Icons.done_all, Colors.blueAccent),
                   )
                 else
-                  SlideFadeTransition(
-                    animationDuration: const Duration(milliseconds: 400),
+                  DelayedDisplay(
+                    delay: const Duration(milliseconds: 350),
                     child: showCheckMessageAnimation(
                         height, Icons.check_rounded, Colors.white),
                   ),
@@ -116,79 +115,43 @@ class MessagesItem extends StatelessWidget {
     }
 
     Widget formMessageFriend() {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CachedNetworkImage(
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            progressIndicatorBuilder: (context, url, progress) => Center(
-              child: SizedBox(
-                height: height / 32,
-                width: height / 32,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 0.8,
-                  value: progress.progress,
+      return Bubble(
+        nip: BubbleNip.leftBottom,
+        stick: true,
+        shadowColor: Colors.transparent,
+        color: Colors.transparent,
+        borderWidth: 1,
+        radius: const Radius.circular(10),
+        borderColor: Colors.white.withOpacity(.4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            RichText(
+              text: TextSpan(
+                text: message_text.length < 12
+                    ? '$message_text               '
+                    : message_text,
+                style: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                      color: Colors.white.withOpacity(.9),
+                      fontSize: height / 62,
+                      letterSpacing: .2),
                 ),
               ),
             ),
-            imageUrl: friendImage,
-            imageBuilder: (context, imageProvider) => Container(
-              height: height / 32,
-              width: height / 32,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: const BorderRadius.all(Radius.circular(50)),
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
+            RichText(
+              text: TextSpan(
+                text: filterDate(dataMessage),
+                style: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                      color: Colors.white.withOpacity(.8),
+                      fontSize: height / 85,
+                      letterSpacing: .5),
                 ),
               ),
             ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 10),
-            decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.01),
-                borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-                border: Border.all(color: Colors.white10, width: 0.9)),
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                RichText(
-                  text: TextSpan(
-                    text: message_text.length < 12
-                        ? '$message_text               '
-                        : message_text,
-                    style: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                          color: Colors.white.withOpacity(.9),
-                          fontSize: height / 62,
-                          letterSpacing: .2),
-                    ),
-                  ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    text: filterDate(dataMessage),
-                    style: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                          color: Colors.white.withOpacity(.8),
-                          fontSize: height / 85,
-                          letterSpacing: .5),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
@@ -338,64 +301,181 @@ class _MessageTextFieldState extends State<MessageTextField> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    double textFieldHeight = width / 7.5;
+    final node = FocusNode();
+
     return Padding(
-        padding: const EdgeInsets.only(bottom: 20, left: 14, right: 24),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+      padding: const EdgeInsets.only(bottom: 20, left: 14, right: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Container(
-            width: width / 1.35,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [
-                Colors.pinkAccent,
-                Colors.purpleAccent,
-                Colors.blueAccent,
-              ]),
-              borderRadius: BorderRadius.circular(26),
+            width: width / 1.32,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 2,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(
-                1.2,
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: color_black_88,
-                  border: Border.all(color: color_black_88),
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(550),
-                  ],
-                  controller: _controllerMessage,
-                  minLines: 1,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: height / 52, horizontal: 15),
-                      counterStyle: const TextStyle(color: Colors.white),
-                      hintStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.9)),
-                      hintText: "Сообщение..."),
-                  style: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: height / 58,
-                          letterSpacing: .5)),
-                ),
-              ),
+            child: TextFormField(
+              focusNode: node,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(550),
+              ],
+              controller: _controllerMessage,
+              minLines: 1,
+              maxLines: 7,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(26),
+                    borderSide:
+                        const BorderSide(color: Colors.white70, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(26),
+                    borderSide:
+                        const BorderSide(color: Colors.white70, width: 1.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(26),
+                    borderSide:
+                        const BorderSide(color: Colors.white70, width: 1.5),
+                  ),
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: height / 94, horizontal: 16),
+                  counterStyle: const TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+                  hintText: "Сообщение..."),
+              style: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: height / 58,
+                      letterSpacing: .5)),
             ),
           ),
+
+          // ZoomTapAnimation(
+          //            enableLongTapRepeatEvent: false,
+          //            longTapRepeatDuration: const Duration(milliseconds: 200),
+          //            begin: 1.0,
+          //            end: 0.9999,
+          //            beginDuration: const Duration(milliseconds: 20),
+          //            endDuration: const Duration(milliseconds: 200),
+          //            beginCurve: Curves.decelerate,
+          //            endCurve: Curves.fastOutSlowIn,
+          //            onTap: () {
+          //              // FocusScope.of(context).requestFocus(node);
+          //              setState((){
+          //                print('object');
+          //                textFieldHeight = 300;
+          //              });
+          //            },
+          //            child: Container(
+          //              alignment: Alignment.center,
+          //              padding: const EdgeInsets.symmetric(
+          //                horizontal: 2,
+          //              ),
+          //              child: FlutterColorsBorder(
+          //                animationDuration: 8,
+          //                colors: const [
+          //                  Colors.black12,
+          //                  Colors.white10,
+          //                  Colors.white54,
+          //                  Colors.white70,
+          //                ],
+          //                size: Size(width / 1.32, textFieldHeight),
+          //                boardRadius: 26,
+          //                borderWidth: 0.8,
+          //                child: TextFormField(
+          //                  onChanged: (value) {
+          //                    if(value.length > 10) {
+          //                      setState((){
+          //                        print('object');
+          //                        textFieldHeight = 590;
+          //                      });
+          //                    }
+          //                  },
+          //                  focusNode: node,
+          //                  inputFormatters: [
+          //                    LengthLimitingTextInputFormatter(550),
+          //                  ],
+          //                  controller: _controllerMessage,
+          //                  minLines: 1,
+          //                  maxLines: 2,
+          //                  decoration: InputDecoration(
+          //                      border: InputBorder.none,
+          //                      focusedBorder: InputBorder.none,
+          //                      enabledBorder: InputBorder.none,
+          //                      errorBorder: InputBorder.none,
+          //                      disabledBorder: InputBorder.none,
+          //                      contentPadding: EdgeInsets.symmetric(
+          //                          vertical: height / 80, horizontal: 16),
+          //                      counterStyle: const TextStyle(color: Colors.white),
+          //                      hintStyle:
+          //                          TextStyle(color: Colors.white.withOpacity(0.9)),
+          //                      hintText: "Сообщение..."),
+          //                  style: GoogleFonts.lato(
+          //                      textStyle: TextStyle(
+          //                          color: Colors.white,
+          //                          fontSize: height / 58,
+          //                          letterSpacing: .5)),
+          //                ),
+          //              ),
+          //            ),
+          //          ),
+
+          //   Container(
+          //   width: width / 1.35,
+          //   decoration: BoxDecoration(
+          //     gradient: const LinearGradient(colors: [
+          //       Colors.pinkAccent,
+          //       Colors.purpleAccent,
+          //       Colors.blueAccent,
+          //     ]),
+          //     borderRadius: BorderRadius.circular(26),
+          //   ),
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(
+          //       1.2,
+          //     ),
+          //     child: Container(
+          //       alignment: Alignment.center,
+          //       padding: const EdgeInsets.symmetric(
+          //         horizontal: 2,
+          //       ),
+          //       decoration: BoxDecoration(
+          //         color: color_black_88,
+          //         border: Border.all(color: color_black_88),
+          //         borderRadius: BorderRadius.circular(26),
+          //       ),
+          //       child: TextFormField(
+          //         inputFormatters: [
+          //           LengthLimitingTextInputFormatter(550),
+          //         ],
+          //         controller: _controllerMessage,
+          //         minLines: 1,
+          //         maxLines: 4,
+          //         decoration: InputDecoration(
+          //             border: InputBorder.none,
+          //             focusedBorder: InputBorder.none,
+          //             enabledBorder: InputBorder.none,
+          //             errorBorder: InputBorder.none,
+          //             disabledBorder: InputBorder.none,
+          //             contentPadding: EdgeInsets.symmetric(
+          //                 vertical: height / 52, horizontal: 15),
+          //             counterStyle: const TextStyle(color: Colors.white),
+          //             hintStyle:
+          //                 TextStyle(color: Colors.white.withOpacity(0.9)),
+          //             hintText: "Сообщение..."),
+          //         style: GoogleFonts.lato(
+          //             textStyle: TextStyle(
+          //                 color: Colors.white,
+          //                 fontSize: height / 58,
+          //                 letterSpacing: .5)),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           ZoomTapAnimation(
             onTap: () async {
               if (_controllerMessage.text.trim().isNotEmpty) {
@@ -490,7 +570,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
               }
             },
             child: Padding(
-              padding: EdgeInsets.only(left: width / 66),
+              padding: EdgeInsets.only(left: width / 132),
               child: Image.asset(
                 'images/ic_send.png',
                 height: width / 11,
