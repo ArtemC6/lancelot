@@ -244,7 +244,7 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                       child: Padding(
                                         padding: const EdgeInsets.all(4),
                                         child: Image.asset(
-                                          'images/edit_icon.png',
+                                          'images/ic_edit.png',
                                           height: height / 36,
                                           width: height / 36,
                                         ),

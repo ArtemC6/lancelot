@@ -362,7 +362,10 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                 child: FlutterColorsBorder(
                   animationDuration: 5,
                   colors: listColorsAnimation,
-                  size: Size(size.height / 8, size.height / 12),
+                  size: Size(
+                      size.height / 9.0 +
+                          userModelPartner[index].name.length * 4,
+                      size.height / 12),
                   boardRadius: 14,
                   borderWidth: 0.8,
                   child: ClipRRect(

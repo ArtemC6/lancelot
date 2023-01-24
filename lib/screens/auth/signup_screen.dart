@@ -219,12 +219,13 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                     Expanded(
                       flex: 4,
                       child: Padding(
-                        padding: EdgeInsets.only(top: size.height * .1),
-                          child: animatedText( size.width / 11, 'Lancelot', Colors.white.withOpacity(.8), 0, 1)
-                      ),
+                          padding: EdgeInsets.only(top: size.height * .1),
+                          child: animatedText(size.width / 11, 'Lancelot',
+                              Colors.white.withOpacity(.8), 0, 1)),
                     ),
+                    const Spacer(flex: 2),
                     Expanded(
-                      flex: 7,
+                      flex: 10,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -235,9 +236,19 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               size,
                               false,
                               10,
-                              context),
-                          textFieldAuth('Email...', emailController,
-                              Icons.email_outlined, size, false, 35, context),
+                              context, (String onTap) {
+                            sigUpTap(context);
+                          }),
+                          textFieldAuth(
+                              'Email...',
+                              emailController,
+                              Icons.email_outlined,
+                              size,
+                              false,
+                              35,
+                              context, (String onTap) {
+                            sigUpTap(context);
+                          }),
                           textFieldAuth(
                               'Password...',
                               passwordController,
@@ -245,7 +256,9 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               size,
                               true,
                               20,
-                              context),
+                              context, (String onTap) {
+                            sigUpTap(context);
+                          }),
                           Container(
                               padding: EdgeInsets.only(
                                   right: size.height / 22, top: 4, bottom: 4),
@@ -262,27 +275,11 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                               signStart
                                   ? buttonAuthAnimation(
                                       'Зарегистрироваться', 2, 350, () {
-                                      FirebaseAuthMethods.signUpWithEmail(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          name: nameController.text[0]
-                                                  .toUpperCase() +
-                                              nameController.text
-                                                  .substring(1)
-                                                  .toLowerCase(),
-                                          context: context);
+                                sigUpTap(context);
                                     })
                                   : buttonAuth('Зарегистрироваться', 2, 500,
                                       () {
-                                      FirebaseAuthMethods.signUpWithEmail(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          name: nameController.text[0]
-                                                  .toUpperCase() +
-                                              nameController.text
-                                                  .substring(1)
-                                                  .toLowerCase(),
-                                          context: context);
+                                    sigUpTap(context);
                                     }),
                             ],
                           ),
@@ -312,6 +309,15 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void sigUpTap(BuildContext context) {
+    FirebaseAuthMethods.signUpWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        name: nameController.text[0].toUpperCase() +
+            nameController.text.substring(1).toLowerCase(),
+        context: context);
   }
 }
 

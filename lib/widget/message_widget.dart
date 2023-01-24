@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,23 +29,6 @@ class MessagesItem extends StatelessWidget {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-
-    Future<bool> checkStatusNetwork() async {
-      bool isFiresState = false;
-      streamSubscription = Connectivity().onConnectivityChanged.listen(
-        (ConnectivityResult result) {
-          if (result.name == 'wifi') {
-            isFiresState = true;
-          } else if (result.name == 'mobile') {
-            isFiresState = true;
-          } else {
-            isFiresState = false;
-          }
-        },
-      );
-
-      return isFiresState;
-    }
 
     Bubble formMessageMy(String isCheck) {
       return Bubble(
@@ -91,19 +73,19 @@ class MessagesItem extends StatelessWidget {
                 ),
                 if (isCheck == '')
                   DelayedDisplay(
-                    delay: const Duration(milliseconds: 350),
+                    delay: const Duration(milliseconds: 300),
                     child: showCheckMessageAnimation(
                         height, Icons.access_time_outlined, Colors.white),
                   ),
                 if (isCheck == 'read')
                   DelayedDisplay(
-                    delay: const Duration(milliseconds: 350),
+                    delay: const Duration(milliseconds: 300),
                     child: showCheckMessageAnimation(
                         height, Icons.done_all, Colors.blueAccent),
                   )
                 else
                   DelayedDisplay(
-                    delay: const Duration(milliseconds: 350),
+                    delay: const Duration(milliseconds: 300),
                     child: showCheckMessageAnimation(
                         height, Icons.check_rounded, Colors.white),
                   ),
@@ -177,12 +159,6 @@ class MessagesItem extends StatelessWidget {
                 isLastMessage = 'read';
               }
             }
-            // checkStatusNetwork().then((result) {
-            //   print(result);
-            //   // if (!result) {
-            //   //   isLastMessage = '';
-            //   // }
-            // });
           } catch (error) {}
 
           return Padding(

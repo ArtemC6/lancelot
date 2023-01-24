@@ -227,14 +227,14 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
     String friendName, bool isBack, String friendUri, double height) {
   bool isDeletePartner = true;
   Widget cancelButton = TextButton(
-    child: animatedText(height / 64, 'Отмена', Colors.blueAccent, 500, 1),
+    child: animatedText(height / 64, 'Отмена', Colors.blueAccent, 400, 1),
     onPressed: () {
       Navigator.pop(context);
     },
   );
 
   Widget continueButton = TextButton(
-    child: animatedText(height / 64, 'Удалить', Colors.blueAccent, 500, 1),
+    child: animatedText(height / 64, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () {
       deleteChatFirebase(isDeletePartner, friendId, isBack, context, friendUri);
     },
@@ -247,7 +247,7 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
         return StatefulBuilder(
           builder: (context, setState) {
             return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+              filter: ImageFilter.blur(sigmaX: 2.2, sigmaY: 2.2),
               child: AlertDialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
@@ -256,7 +256,7 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
                   ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -269,22 +269,18 @@ showAlertDialogDeleteChat(BuildContext context, String friendId,
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: animatedText(height / 50, 'Удалить чат',
-                                  Colors.white, 400, 1),
+                                  Colors.white, 320, 1),
                             ),
                             CheckboxListTile(
-                              activeColor: Colors.blue,
+                              activeColor: Colors.blueAccent,
                               title: animatedText(
                                   height / 60,
                                   'Также удалить для $friendName',
                                   Colors.white,
-                                  450,
+                                  360,
                                   1),
                               value: isDeletePartner,
-                              onChanged: (newValue) {
-                                // setState(() {
-                                //   isDeletePartner = !isDeletePartner;
-                                // });
-                              },
+                              onChanged: (newValue) {},
                               controlAffinity: ListTileControlAffinity
                                   .leading, //  <-- leading Checkbox
                             ),

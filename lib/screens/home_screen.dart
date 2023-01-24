@@ -92,7 +92,8 @@ class _HomeScreen extends State<HomeScreen>
                   ageInt: ageInt(data),
                   state: data['state'],
                   token: data['token'],
-                  notification: data['notification']));
+                  notification: data['notification'],
+                  description: data['description']));
             }
           });
         }
@@ -300,7 +301,7 @@ class _HomeScreen extends State<HomeScreen>
                                               userModelPartner[index]
                                                   .notification) {
                                             await sendFcmMessage(
-                                                'tinder',
+                                                'Lancelot',
                                                 'У вас симпатия',
                                                 userModelPartner[index].token,
                                                 'sympathy',

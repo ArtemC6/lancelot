@@ -106,8 +106,8 @@ class loadingCustom extends StatelessWidget {
         body: Center(
             child: Lottie.asset(
           'images/animation_loader.json',
-          width: MediaQuery.of(context).size.width * 0.20,
-          height: MediaQuery.of(context).size.height * 0.20,
+          width: MediaQuery.of(context).size.width * 0.24,
+          height: MediaQuery.of(context).size.height * 0.24,
           alignment: Alignment.center,
           errorBuilder: (context, error, stackTrace) {
             return LoadingAnimationWidget.dotsTriangle(
@@ -121,7 +121,7 @@ class loadingCustom extends StatelessWidget {
 
 DelayedDisplay showProgressWrite(double height) {
   return DelayedDisplay(
-    delay: const Duration(milliseconds: 500),
+    delay: const Duration(milliseconds: 440),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

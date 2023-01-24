@@ -9,6 +9,7 @@ class UserModel {
   String imageBackground;
   String state;
   String token;
+  String description;
   num ageInt;
   num searchRangeStart;
   num searchRangeEnd;
@@ -22,6 +23,7 @@ class UserModel {
       {required this.name,
       required this.uid,
       required this.state,
+      required this.description,
       required this.myCity,
       required this.ageInt,
       required this.ageTime,

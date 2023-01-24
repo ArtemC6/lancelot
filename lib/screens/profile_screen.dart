@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lancelot/screens/settings/edit_profile_screen.dart';
 import 'package:lancelot/screens/settings/settiongs_profile_screen.dart';
 
@@ -78,7 +80,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                 ageInt: user.ageInt,
                 state: user.state,
                 token: user.token,
-                notification: user.notification);
+                notification: user.notification,
+                description: user.description);
             isLoading = true;
           });
         });
@@ -148,20 +151,20 @@ class _ProfileScreen extends State<ProfileScreen> {
                         height: size.height / 10,
                         child: Container(
                           alignment: Alignment.bottomLeft,
-                          padding:  EdgeInsets.only(
-                            left: size.height / 62,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: Colors.white38,
-                                  width: 1,
-                                ),
+                              padding: EdgeInsets.only(
+                                left: size.height / 50,
                               ),
-                              child: BackdropFilter(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: Colors.white38,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: BackdropFilter(
                                 filter: ImageFilter.blur(
                                   sigmaX: 8,
                                   sigmaY: 8,
@@ -186,29 +189,29 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                     if (isProprietor)
                       Positioned(
-                        height: size.height / 10,
-                        child: Container(
-                          alignment: Alignment.bottomRight,
-                          padding:  EdgeInsets.only(
-                            right: size.height / 52,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: Colors.white54,
-                                  width: 1,
-                                ),
+                            height: size.height / 9,
+                            child: Container(
+                              alignment: Alignment.bottomRight,
+                              padding: EdgeInsets.only(
+                                right: size.height / 54,
                               ),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 8,
-                                  sigmaY: 8,
-                                ),
-                                child: SizedBox(
-                                  height: size.height / 20,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      color: Colors.white54,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 8,
+                                      sigmaY: 8,
+                                    ),
+                                    child: SizedBox(
+                                      height: size.height / 20,
                                   width: size.height / 20,
                                   child: IconButton(
                                     onPressed: () {
@@ -293,12 +296,35 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ),
                                   const SizedBox()
                                 ],
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: size.height / 32),
-                            alignment: Alignment.topLeft,
-                            decoration: const BoxDecoration(
-                                color: color_black_88,
+                              ),
+                              if (userModelPartner.description != '')
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.only(
+                                      left: 14,
+                                      top: size.height / 48,
+                                      right: size.width / 24),
+                                  child: DelayedDisplay(
+                                    fadeIn: true,
+                                    delay: const Duration(milliseconds: 600),
+                                    child: Text(
+                                      textAlign: TextAlign.start,
+                                      maxLines: 2,
+                                      userModelPartner.description,
+                                      style: GoogleFonts.lato(
+                                        textStyle: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: size.height / 68,
+                                            letterSpacing: .15),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              Container(
+                                margin: EdgeInsets.only(top: size.height / 32),
+                                alignment: Alignment.topLeft,
+                                decoration: const BoxDecoration(
+                                    color: color_black_88,
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(22),
                                         topRight: Radius.circular(22))),

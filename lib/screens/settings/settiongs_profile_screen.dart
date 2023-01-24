@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../config/const.dart';
 import '../../config/firestore_operations.dart';
@@ -155,7 +157,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                         photoProfile(
                                             uri: userModel.userImageUrl[0]),
                                         customIconButton(
-                                          path: 'images/edit_icon.png',
+                                          path: 'images/ic_edit.png',
                                           width: size.height / 30,
                                           height: size.height / 30,
                                           onTap: () async {
@@ -213,6 +215,29 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 const SizedBox()
                               ],
                             ),
+                            if (userModel.description != '')
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.only(
+                                    left: 14,
+                                    top: size.height / 48,
+                                    right: size.width / 24),
+                                child: DelayedDisplay(
+                                  fadeIn: true,
+                                  delay: const Duration(milliseconds: 600),
+                                  child: Text(
+                                    textAlign: TextAlign.start,
+                                    maxLines: 2,
+                                    userModel.description,
+                                    style: GoogleFonts.lato(
+                                      textStyle: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: size.height / 68,
+                                          letterSpacing: .15),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             Container(
                               margin: const EdgeInsets.only(top: 20),
                               alignment: Alignment.topLeft,

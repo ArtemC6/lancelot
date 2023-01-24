@@ -250,9 +250,9 @@ class slideInterestsSettings extends StatelessWidget {
                                           child: Padding(
                                             padding: const EdgeInsets.all(2),
                                             child: Image.asset(
-                                              'images/edit_icon.png',
+                                              'images/ic_edit.png',
                                               height: height / 39,
-                                              width:  height / 39,
+                                              width: height / 39,
                                             ),
                                           ),
                                         ),
@@ -619,7 +619,8 @@ class _topPanelChatState extends State<topPanelChat> {
                                       ageInt: 0,
                                       state: '',
                                       token: '',
-                                      notification: true),
+                                      notification: true,
+                                      description: ''),
                                   isBack: true,
                                   idUser: friendId,
                                   userModelCurrent: userModelCurrent,

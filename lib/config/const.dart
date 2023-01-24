@@ -47,7 +47,6 @@ final List<String> interestsList = [
   'Танцы',
   'Рукоделие',
   'Астрология',
-  'Рыбалка',
   'Поэзия',
 ];
 
@@ -77,7 +76,7 @@ const List<String> listAnimationChatBac = [
   'images/animation_chat_bac_1.json',
   'images/animation_chat_bac_2.json',
   'images/animation_chat_bac_3.json',
-  'images/animation_chat_bac_4.json'
+  'images/animation_chat_bac_4.json',
 ];
 
 final items = interestsList

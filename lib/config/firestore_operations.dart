@@ -225,7 +225,8 @@ Future<String> updateFirstImage(
                           ageInt: 0,
                           state: '',
                           token: '',
-                          notification: true),
+                          notification: true,
+                          description: ''),
                     )));
               } else {
                 Navigator.pushReplacement(
@@ -247,33 +248,34 @@ Future<String> updateFirstImage(
 
 Future<void> createSympathy(
     String idPartner, UserModel userModelCurrent) async {
-  bool isSympathy = false;
+  // bool isSympathy = false;
   try {
     await FirebaseFirestore.instance
         .collection('User')
         .doc(idPartner)
         .collection('sympathy')
+        .where('uid', isEqualTo: userModelCurrent.uid)
         .get()
         .then((querySnapshot) {
-      for (var result in querySnapshot.docs) {
-        Map<String, dynamic> data = result.data();
-        if (userModelCurrent.uid == data['uid']) {
-          isSympathy = true;
-        }
-      }
+      // for (var result in querySnapshot.docs) {
+      // Map<String, dynamic> data = result.data();
+      // if (userModelCurrent.uid == data['uid']) {
+      //   isSympathy = true;
+      // }
+      // }
 
-      if (!isSympathy) {
-        final docUser = FirebaseFirestore.instance
-            .collection("User")
-            .doc(idPartner)
-            .collection('sympathy')
-            .doc();
-        docUser.set({
-          'id_doc': docUser.id,
-          'uid': userModelCurrent.uid,
-          'time': DateTime.now(),
-        });
-      }
+      // if (!isSympathy) {
+      final docUser = FirebaseFirestore.instance
+          .collection("User")
+          .doc(idPartner)
+          .collection('sympathy')
+          .doc();
+      docUser.set({
+        'id_doc': docUser.id,
+        'uid': userModelCurrent.uid,
+        'time': DateTime.now(),
+      });
+      // }
     });
   } on FirebaseException {}
 }
@@ -293,19 +295,20 @@ Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
       .collection('User')
       .doc(idPartner)
       .collection('sympathy')
+      .where('uid', isEqualTo: idUser)
       .get()
       .then((querySnapshot) {
     for (var result in querySnapshot.docs) {
       Map<String, dynamic> data = result.data();
 
-      if (idUser == data['uid']) {
-        final docUser = FirebaseFirestore.instance
-            .collection("User")
-            .doc(idPartner)
-            .collection('sympathy');
-        docUser.doc(data['id_doc']).delete().then((value) {});
-      }
+      // if (idUser == data['uid']) {
+      final docUser = FirebaseFirestore.instance
+          .collection("User")
+          .doc(idPartner)
+          .collection('sympathy');
+      docUser.doc(data['id_doc']).delete().then((value) {});
     }
+    // }
   });
 }
 
@@ -498,7 +501,8 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
       userInterests: [],
       searchRangeEnd: 0,
       token: '',
-      notification: true);
+      notification: true,
+      description: '');
 
   try {
     await FirebaseFirestore.instance
@@ -525,7 +529,8 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
           ageInt: ageInt(data),
           state: data['state'],
           token: data['token'],
-          notification: data['notification']);
+          notification: data['notification'],
+          description: data['description']);
     });
   } on FirebaseException {}
   return userModel;
@@ -654,7 +659,7 @@ Future<bool> putLike(
 
       if (isLikeOnTap) {
         if (!isLike) {
-          await FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection("User")
               .doc(userModel.uid)
               .collection('likes')
@@ -665,7 +670,7 @@ Future<bool> putLike(
               userModel.notification &&
               userModel.token != '') {
             sendFcmMessage(
-                'tinder',
+                'Lancelot',
                 '${userModelCurrent.name}: нравится вашь профиль',
                 userModel.token,
                 'like');

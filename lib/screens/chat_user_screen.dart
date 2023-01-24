@@ -52,7 +52,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
   int limit = 20;
-  double chatBlur = 2, chatBlackout = 0, chatBlackoutFinal = 0.2;
+  double chatBlur = 2, chatBlackout = 2, chatBlackoutFinal = 0.2;
   bool isLoading = false;
   late final AnimationController animationController;
 
@@ -106,6 +106,14 @@ class _ChatUserScreenState extends State<ChatUserScreen>
 
       chatBlur = prefs.getDouble('chatBlur') ?? 2;
       chatBlackoutFinal = prefs.getDouble('chatBlackout') ?? 0.2;
+
+      if (chatBlackoutFinal < 1.0) {
+        chatBlackout =
+            double.parse(chatBlackoutFinal.toString().substring(2, 3));
+      } else {
+        chatBlackout = 10;
+      }
+
       isLoading = true;
     });
   }
@@ -208,8 +216,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                     friendName, true, friendImage, height);
                               } else if (value == 1) {
                                 showCupertinoModalBottomSheet(
-                                  topRadius: const Radius.circular(26),
-                                  duration: const Duration(milliseconds: 700),
+                                  topRadius: const Radius.circular(20),
+                                  duration: const Duration(milliseconds: 800),
                                   backgroundColor: Colors.transparent,
                                   context: context,
                                   builder: (context) {

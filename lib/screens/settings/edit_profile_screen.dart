@@ -21,6 +21,7 @@ import '../../config/utils.dart';
 import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
+import '../../widget/dialog_widget.dart';
 import '../../widget/textField_widget.dart';
 import '../manager_screen.dart';
 import 'edit_image_profile_screen.dart';
@@ -51,7 +52,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _ageRangController = TextEditingController(),
       _localController = TextEditingController(),
       _supportController = TextEditingController(),
-      _notificationController = TextEditingController();
+      _notificationController = TextEditingController(),
+      _descriptionController = TextEditingController();
 
   var _selectedInterests = [];
   DateTime _dateTimeBirthday = DateTime.now();
@@ -98,6 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userPhoto &&
         userAge &&
         ageRange) {
+      showAlertDialogLoading(context);
       String? token;
       await FirebaseMessaging.instance.getToken().then((value) {
         token = value;
@@ -110,7 +113,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final json = {
         'listInterests': _selectedInterests,
         'myPol': _myPolController.text,
-        'name': _nameController.text,
+        'name': _nameController.text.trim(),
+        'description': _descriptionController.text.trim(),
         'searchPol':
             _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
         'ageTime': _dateTimeBirthday,
@@ -138,7 +142,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     } else {
       setState(() {
+        isError = false;
         isError = true;
+        if (modelUser.userImageUrl.isNotEmpty) {
+          isPhoto = true;
+        } else {
+          isPhoto = false;
+        }
       });
     }
   }
@@ -151,6 +161,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _notificationController.text = 'Включить';
     } else {
       _notificationController.text = 'Вюключить';
+    }
+
+    if (modelUser.description == '') {
+      _descriptionController.text = ' ';
+    } else {
+      _descriptionController.text = modelUser.description;
     }
 
     _ageRangController.text = modelUser.searchRangeStart == 0
@@ -200,7 +216,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ageInt: user.ageInt,
               state: user.state,
               token: user.token,
-              notification: user.notification);
+              notification: user.notification,
+              description: user.description);
           isLoading = true;
         });
       });
@@ -212,6 +229,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _launchUrl(String uri) async {
+    // lancelotsuport@gmail.com
     String? encodeQueryParameters(Map<String, String> params) {
       return params.entries
           .map((MapEntry<String, String> e) =>
@@ -324,20 +342,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Padding(
                                 padding: EdgeInsets.all(height / 66),
                                 child: animatedText(
-                                    height / 66,
-                                    'Данные введены некоректно',
+                                    height / 72,
+                                    'Данные введены некорректно',
                                     Colors.red,
-                                    600,
+                                    500,
                                     1),
                               ),
                             if (!isPhoto)
                               Padding(
                                 padding: EdgeInsets.all(height / 66),
                                 child: animatedText(
-                                    height / 66,
+                                    height / 72,
                                     'Добавьте главное фото',
                                     Colors.red,
-                                    650,
+                                    550,
                                     1),
                               ),
                             textFieldProfileSettings(_nameController, false,
@@ -438,6 +456,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     });
                                   });
                             }),
+                            textFieldProfileSettings(
+                                _descriptionController,
+                                false,
+                                'Расскажите о себе (необязательно)',
+                                context,
+                                100,
+                                height,
+                                () {},
+                                3),
                             textFieldProfileSettings(_notificationController,
                                 true, 'Уведомления', context, 10, height, () {
                               showBottomSheet(
@@ -449,9 +476,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             }),
                             textFieldProfileSettings(_supportController, true,
                                 'Техподдержка', context, 30, height, () async {
-                              String gmail = 'supportTinder@gmail.com';
+                              String gmail = 'lancelotsuport@gmail.com';
                               _launchUrl(gmail);
-                            }),
+                            }, 2),
                             Theme(
                               data: ThemeData.light(),
                               child: MediaQuery(
@@ -645,7 +672,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             if (modelUser.userImageUrl.isNotEmpty)
               customIconButton(
-                path: 'images/edit_icon.png',
+                path: 'images/ic_edit.png',
                 width: height / 36,
                 height: height / 36,
                 onTap: () async {

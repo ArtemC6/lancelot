@@ -179,13 +179,14 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                       .collection("User")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
                       .delete();
-                  FirebaseAuth.instance.currentUser!.delete();
-                  Future.delayed(const Duration(seconds: 3), () {
-                    FirebaseAuth.instance.signOut();
+                  await FirebaseAuth.instance.currentUser!.delete();
+                  Future.delayed(const Duration(seconds: 3), () async {
+                    await FirebaseAuth.instance.signOut();
                   });
                 } else {
-                  FirebaseAuth.instance.signOut();
+                      await FirebaseAuth.instance.signOut();
                 }
+
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const Manager()));
               }, 400),

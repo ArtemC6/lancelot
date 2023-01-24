@@ -209,32 +209,34 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                               ProfileScreen(
                                                                 userModelPartner: UserModel(
                                                                     name: '',
-                                                                    uid: '',
-                                                                    myCity: '',
-                                                                    ageTime:
+                                                                uid: '',
+                                                                myCity: '',
+                                                                ageTime:
                                                                     Timestamp
                                                                         .now(),
-                                                                    userPol: '',
-                                                                    searchPol: '',
-                                                                    searchRangeStart:
+                                                                userPol: '',
+                                                                searchPol: '',
+                                                                searchRangeStart:
                                                                     0,
-                                                                    userImageUrl: [],
-                                                                    userImagePath: [],
-                                                                    imageBackground:
+                                                                userImageUrl: [],
+                                                                userImagePath: [],
+                                                                imageBackground:
                                                                     '',
-                                                                    userInterests: [],
-                                                                    searchRangeEnd:
+                                                                userInterests: [],
+                                                                searchRangeEnd:
                                                                     0,
-                                                                    ageInt: 0,
-                                                                    state: '',
-                                                                    token: '',
-                                                                    notification:
-                                                                    true),
-                                                                isBack: true,
-                                                                idUser: uid,
-                                                                userModelCurrent:
+                                                                ageInt: 0,
+                                                                state: '',
+                                                                token: '',
+                                                                notification:
+                                                                    true,
+                                                                description:
+                                                                    ''),
+                                                            isBack: true,
+                                                            idUser: uid,
+                                                            userModelCurrent:
                                                                 userModelCurrent,
-                                                              )));
+                                                          )));
                                                     },
                                                     child: Container(
                                                       height: height / 4.5,
@@ -372,7 +374,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                               createSympathy(uid, userModelCurrent).then((value) async {
                                                                                 setState(() {});
                                                                                 if (token != '' && asyncSnapshotUser.data['notification']) {
-                                                                                  await sendFcmMessage('tinder', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
+                                                                                  await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
                                                                                 }
                                                                               });
                                                                             }

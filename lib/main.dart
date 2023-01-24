@@ -45,6 +45,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
+      builder: (BuildContext context, Widget child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: child,
+        );
+      },
       home: const Manager(),
     );
   }
@@ -82,7 +88,8 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
   Future userNavigator() async {
     if (isStart) {
       if (FirebaseAuth.instance.currentUser?.uid != null) {
-        if (FirebaseAuth.instance.currentUser.emailVerified) {
+        if (true) {
+          // if (FirebaseAuth.instance.currentUser.emailVerified) {
           if (isEmptyDataUser) {
             if (isEmptyImageBackground) {
               Navigator.of(context).pushReplacement(

@@ -10,6 +10,7 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
+import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../screens/chat_user_screen.dart';
 import 'animation_widget.dart';
@@ -25,25 +26,28 @@ class buttonAuth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
-        child: InkWell(
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          onTap: voidCallback,
-          child: Container(
-              height: size.width / 8,
-              width: size.width / width,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.05),
-                border: Border.all(color: Colors.white10, width: 0.5),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: animatedText(size.width / 30, name,
-                  Colors.white.withOpacity(.8), time, 1)),
+    return ZoomTapAnimation(
+      end: 0.97,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
+          child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: voidCallback,
+            child: Container(
+                height: size.width / 8,
+                width: size.width / width,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.05),
+                  border: Border.all(color: Colors.white10, width: 0.5),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: animatedText(size.width / 32, name,
+                    Colors.white.withOpacity(.8), time, 1)),
+          ),
         ),
       ),
     );
@@ -62,29 +66,32 @@ class buttonAuthAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
-        child: InkWell(
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          onTap: voidCallback,
-          child: FlutterColorsBorder(
-            animationDuration: 5,
-            colors: const [Colors.black12, Colors.white],
-            size: Size(size.width / width, size.height / 16),
-            boardRadius: 15,
-            borderWidth: 0.7,
-            child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.05),
-                  border: Border.all(color: Colors.white10, width: 0.5),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child:
-                    animatedText(size.width / 30, name, Colors.white, time, 1)),
+    return ZoomTapAnimation(
+      end: 0.97,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
+          child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: voidCallback,
+            child: FlutterColorsBorder(
+              animationDuration: 5,
+              colors: const [Colors.black12, Colors.white],
+              size: Size(size.width / width, size.height / 16),
+              boardRadius: 15,
+              borderWidth: 0.7,
+              child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.05),
+                    border: Border.all(color: Colors.white10, width: 0.5),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: animatedText(
+                      size.width / 30, name, Colors.white, time, 1)),
+            ),
           ),
         ),
       ),
@@ -175,7 +182,7 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
         borderWidth: 0.6,
         child: Container(
           alignment: Alignment.center,
-          child: animatedText(height / 3.3, name, Colors.white, time, 1),
+          child: animatedText(height / 3.6, name, Colors.white, time, 1),
         ),
       ),
     ),
@@ -242,7 +249,6 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
 
     Widget buttonLogic(
@@ -262,7 +268,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
               if (userModelFriend.token != '' && userModelFriend.notification) {
                 sendFcmMessage(
-                    'tinder',
+                    'Lancelot',
                     'У вас симпатия',
                     userModelFriend.token,
                     'sympathy',
@@ -281,7 +287,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
               if (userModelFriend.token != '' && userModelFriend.notification) {
                 sendFcmMessage(
-                    'tinder',
+                    'Lancelot',
                     'У вас взаимная симпатия',
                     userModelFriend.token,
                     'sympathy',
@@ -330,6 +336,11 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                   .snapshots(),
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 bool isMutuallyFriend = false, isMutuallyMy = false;
+                getState(50).then((value) {
+                  isMutuallyFriend = false;
+                  isMutuallyMy = false;
+                });
+
                 try {
                   for (int i = 0; i < snapshot.data.docs.length; i++) {
                     isMutuallyFriend =
@@ -381,17 +392,19 @@ class buttonLike extends StatelessWidget {
         margin: const EdgeInsets.only(right: 30),
         child: LikeButton(
           isLiked: isLike,
-          size: size.height * 0.03,
+          size: size.height * 0.04,
           circleColor:
               const CircleColor(start: Colors.pinkAccent, end: Colors.red),
           bubblesColor: const BubblesColor(
             dotPrimaryColor: Colors.pink,
             dotSecondaryColor: Colors.deepPurpleAccent,
+            dotLastColor: Colors.yellowAccent,
+            dotThirdColor: Colors.deepPurpleAccent,
           ),
           likeBuilder: (bool isLiked) {
             return SizedBox(
-              height: size.height * 0.06,
-              width: size.height * 0.06,
+              height: size.height * 0.07,
+              width: size.height * 0.07,
               child: Animator<double>(
                 duration: const Duration(milliseconds: 2000),
                 cycles: 0,
@@ -401,7 +414,7 @@ class buttonLike extends StatelessWidget {
                   isLiked
                       ? Icons.favorite_outlined
                       : Icons.favorite_border_sharp,
-                  size: animatorState.value * 1.5,
+                  size: animatorState.value * 1.6,
                   color: isLiked ? color_red : Colors.white,
                 ),
               ),

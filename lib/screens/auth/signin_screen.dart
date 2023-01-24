@@ -203,13 +203,24 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                           child: animatedText(width / 11, 'Lancelot',
                               Colors.white.withOpacity(.8), 0, 1)),
                     ),
+                    const Spacer(
+                      flex: 1,
+                    ),
                     Expanded(
                       flex: 6,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          textFieldAuth('Email...', emailController,
-                              Icons.email_outlined, size, false, 35, context),
+                          textFieldAuth(
+                              'Email...',
+                              emailController,
+                              Icons.email_outlined,
+                              size,
+                              false,
+                              35,
+                              context, (String onTap) {
+                            sigInTap(context);
+                          }),
                           textFieldAuth(
                               'Password...',
                               passwordController,
@@ -217,22 +228,18 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                               size,
                               true,
                               20,
-                              context),
+                              context, (String onTap) {
+                            sigInTap(context);
+                          }),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               signStart
                                   ? buttonAuthAnimation('Войти', 2.4, 350, () {
-                                      FirebaseAuthMethods.loginWithEmail(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          context: context);
+                                      sigInTap(context);
                                     })
                                   : buttonAuth('Войти', 2.4, 500, () {
-                                      FirebaseAuthMethods.loginWithEmail(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          context: context);
+                                      sigInTap(context);
                                     }),
                             ],
                           ),
@@ -262,6 +269,13 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void sigInTap(BuildContext context) {
+    FirebaseAuthMethods.loginWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        context: context);
   }
 }
 

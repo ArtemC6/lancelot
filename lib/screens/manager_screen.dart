@@ -169,7 +169,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
             ageInt: user.ageInt,
             state: user.state,
             token: user.token,
-            notification: user.notification);
+            notification: user.notification,
+            description: user.description);
       });
       isLoading = true;
       setStateFirebase('online');

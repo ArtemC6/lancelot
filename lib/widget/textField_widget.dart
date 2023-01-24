@@ -11,7 +11,8 @@ Widget textFieldAuth(
     Size size,
     bool isPassword,
     int length,
-    BuildContext context) {
+    BuildContext context,
+    onSubmitted) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(15),
     child: BackdropFilter(
@@ -30,6 +31,7 @@ Widget textFieldAuth(
           borderRadius: BorderRadius.circular(15),
         ),
         child: TextField(
+          onSubmitted: onSubmitted,
           obscureText: isPassword,
           inputFormatters: [
             LengthLimitingTextInputFormatter(length),
@@ -57,51 +59,60 @@ Widget textFieldAuth(
   );
 }
 
-Widget textFieldProfileSettings(TextEditingController nameController,
-    bool isLook, String hint, BuildContext context, int length, double height,  VoidCallback onTap) {
-  return MediaQuery(
-    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-    child: SizedBox(
-      height: height * .11,
-      child: Theme(
-        data: ThemeData.dark(),
-        child: Column(
-          children: [
-            TextField(
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(length),
-              ],
-              enableInteractiveSelection: isLook,
-              readOnly: isLook,
-              onTap: onTap,
-              controller: nameController,
-              style: GoogleFonts.lato(
-                  textStyle:  TextStyle(
-                      color: Colors.white, fontSize: height / 60, letterSpacing: .5)),
-              decoration: InputDecoration(
-                suffixIcon: const Icon(
-                  Icons.arrow_forward_ios_outlined,
+Widget textFieldProfileSettings(
+    TextEditingController nameController,
+    bool isLook,
+    String hint,
+    BuildContext context,
+    int length,
+    double height,
+    onTap,
+    [imaxLength = 1]) {
+  return Padding(
+    padding: EdgeInsets.only(
+        top: height / 62, bottom: imaxLength > 2 ? height / 360 : height / 62),
+    child: Theme(
+      data: ThemeData.dark(),
+      child: TextField(
+        maxLength: length,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(length),
+        ],
+        enableInteractiveSelection: isLook,
+        readOnly: isLook,
+        maxLines: imaxLength,
+        minLines: 1,
+        onTap: onTap,
+        controller: nameController,
+        style: GoogleFonts.lato(
+            textStyle: TextStyle(
+                color: Colors.white, fontSize: height / 58, letterSpacing: .5)),
+        decoration: InputDecoration(
+          helperStyle: GoogleFonts.lato(
+              textStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: height / 82,
+                  letterSpacing: .6)),
+          counterText: imaxLength > 2 ? null : '',
+          suffixIcon: const Icon(
+            Icons.arrow_forward_ios_outlined,
+            color: Colors.white,
+            size: 18,
+          ),
+          labelText: hint,
+          floatingLabelStyle: GoogleFonts.lato(
+              textStyle: TextStyle(
                   color: Colors.white,
-                  size: 18,
-                ),
-                labelText: hint,
-                floatingLabelStyle:  TextStyle(
+                  fontSize: height / 54,
+                  letterSpacing: .6)),
+          labelStyle: GoogleFonts.lato(
+              textStyle: TextStyle(
                   color: Colors.white,
                   fontSize: height / 60,
-                  fontWeight: FontWeight.bold,
-                ),
-                labelStyle: TextStyle(
-                  fontSize: height / 60,
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blueAccent),
-                ),
-              ),
-            ),
-          ],
+                  letterSpacing: .6)),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blueAccent),
+          ),
         ),
       ),
     ),
