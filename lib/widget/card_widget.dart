@@ -48,30 +48,35 @@ class photoUser extends StatelessWidget {
                     color: Colors.white24,
                   )),
               elevation: 6,
-              child: CachedNetworkImage(
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-                progressIndicatorBuilder: (context, url, progress) => Center(
-                  child: SizedBox(
-                    height: height,
-                    width: width,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 0.8,
-                      value: progress.progress,
+              child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(50)),
+                ),
+                child: CachedNetworkImage(
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  progressIndicatorBuilder: (context, url, progress) => Center(
+                    child: SizedBox(
+                      height: height,
+                      width: width,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 0.8,
+                        value: progress.progress,
+                      ),
                     ),
                   ),
-                ),
-                imageUrl: uri,
-                imageBuilder: (context, imageProvider) => Container(
-                  height: height,
-                  width: width,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: const BorderRadius.all(Radius.circular(50)),
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
+                  imageUrl: uri,
+                  imageBuilder: (context, imageProvider) => Container(
+                    height: height,
+                    width: width,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                      ),
                     ),
                   ),
                 ),
@@ -83,8 +88,8 @@ class photoUser extends StatelessWidget {
               delay: const Duration(milliseconds: 500),
               child: customIconButton(
                   padding: padding,
-                  width: heightScreen / 32,
-                  height: heightScreen / 32,
+                  width: heightScreen / 28,
+                  height: heightScreen / 28,
                   path: 'images/ic_green_dot.png',
                   onTap: () {}),
             ),
@@ -407,7 +412,7 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                                 animatedText(
                                     size.height / 54,
                                     '${userModelPartner[index].name}, '
-                                    '${userModelPartner[index].ageInt} ',
+                                    '${userModelPartner[index].ageInt}',
                                     Colors.white,
                                     600,
                                     1),

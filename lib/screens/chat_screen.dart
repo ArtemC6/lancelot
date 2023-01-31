@@ -64,12 +64,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: color_black_88,
@@ -126,21 +124,52 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                       curve: Curves.easeOut,
                                       duration:
                                           const Duration(milliseconds: 2200),
-                                      child: StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('User')
-                                            .doc(friendId)
-                                            .snapshots(),
+                                      child: FutureBuilder(
+                                        future: FirebaseFirestore.instance
+                                                .collection('User')
+                                                .doc(friendId)
+                                                .get(const GetOptions(
+                                                    source: Source.cache))
+                                                .toString()
+                                                .isEmpty
+                                            ? FirebaseFirestore.instance
+                                                .collection('User')
+                                                .doc(friendId)
+                                                .get(const GetOptions(
+                                                    source: Source.cache))
+                                            : FirebaseFirestore.instance
+                                                .collection('User')
+                                                .doc(friendId)
+                                                .get(const GetOptions(
+                                                    source: Source.server)),
                                         builder: (context,
                                             AsyncSnapshot asyncSnapshotUser) {
                                           return SizedBox(
-                                            child: StreamBuilder(
-                                              stream: FirebaseFirestore.instance
-                                                  .collection('User')
-                                                  .doc(userModelCurrent.uid)
-                                                  .collection('messages')
-                                                  .doc(friendId)
-                                                  .snapshots(),
+                                            child: FutureBuilder(
+                                              future: FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(userModelCurrent.uid)
+                                                      .collection('messages')
+                                                      .doc(friendId)
+                                                      .get(const GetOptions(
+                                                          source: Source.cache))
+                                                      .toString()
+                                                      .isEmpty
+                                                  ? FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(userModelCurrent.uid)
+                                                      .collection('messages')
+                                                      .doc(friendId)
+                                                      .get(const GetOptions(
+                                                          source: Source.cache))
+                                                  : FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(userModelCurrent.uid)
+                                                      .collection('messages')
+                                                      .doc(friendId)
+                                                      .get(const GetOptions(
+                                                          source:
+                                                              Source.server)),
                                               builder: (context,
                                                   AsyncSnapshot snapshotChat) {
                                                 if (snapshotChat.hasData &&
@@ -494,4 +523,3 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 }
-

@@ -52,7 +52,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
   int limit = 20;
-  double chatBlur = 2, chatBlackout = 2, chatBlackoutFinal = 0.2;
+  double chatBlur = 0, chatBlackout = 2, chatBlackoutFinal = 0.2;
   bool isLoading = false;
   late final AnimationController animationController;
 
@@ -104,7 +104,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
       chatBackground = prefs.getString('chatBackground') ??
           'images/animation_chat_bac_2.json';
 
-      chatBlur = prefs.getDouble('chatBlur') ?? 2;
+      chatBlur = prefs.getDouble('chatBlur') ?? 0;
       chatBlackoutFinal = prefs.getDouble('chatBlackout') ?? 0.2;
 
       if (chatBlackoutFinal < 1.0) {

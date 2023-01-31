@@ -127,6 +127,84 @@ class _HomeScreen extends State<HomeScreen>
         isLoading = true;
       });
     });
+
+    // QuerySnapshot<Map<String, dynamic>> query;
+    // try {
+    //   query = await FirebaseFirestore.instance
+    //       .collection('User')
+    //       .where('myPol', isEqualTo: userModelCurrent.searchPol)
+    //       .limit(limit)
+    //       .get(const GetOptions(source: Source.serverAndCache));
+    // } on FirebaseException {
+    //   query = await FirebaseFirestore.instance
+    //       .collection('User')
+    //       .where('myPol', isEqualTo: userModelCurrent.searchPol)
+    //       .limit(limit)
+    //       .get(const GetOptions(source: Source.serverAndCache));
+    // }
+    //
+    // for (var document in query.docs) {
+    //   Map<String, dynamic> data = document.data();
+    //   if (userModelCurrent.searchRangeStart <= ageInt(data) &&
+    //       userModelCurrent.searchRangeEnd >= ageInt(data) &&
+    //       data['uid'] != userModelCurrent.uid) {
+    //     bool isDislike = true;
+    //     await Future.forEach(listDisLike, (idUser) {
+    //       if (idUser == data['uid']) {
+    //         isDislike = false;
+    //       }
+    //     }).then((value) async {
+    //       if (isDislike) {
+    //         userModelPartner.add(UserModel(
+    //             name: data['name'],
+    //             uid: data['uid'],
+    //             ageTime: Timestamp.now(),
+    //             userPol: data['myPol'],
+    //             searchPol: data['searchPol'],
+    //             searchRangeStart: data['searchRangeStart'],
+    //             userInterests: List<String>.from(data['listInterests']),
+    //             userImagePath: List<String>.from(data['listImagePath']),
+    //             userImageUrl: List<String>.from(data['listImageUri']),
+    //             searchRangeEnd: data['searchRangeEnd'],
+    //             myCity: data['myCity'],
+    //             imageBackground: data['imageBackground'],
+    //             ageInt: ageInt(data),
+    //             state: data['state'],
+    //             token: data['token'],
+    //             notification: data['notification'],
+    //             description: data['description']));
+    //       }
+    //     });
+    //   }
+    // }
+    //
+    // userModelPartner.toSet();
+    //
+    // setState(() {
+    //   if (userModelPartner.isEmpty) {
+    //     count++;
+    //     if (count >= 6) {
+    //       listDisLike.clear();
+    //       deleteDislike(userModelCurrent.uid);
+    //       count = 0;
+    //       isEmptyUser = true;
+    //     }
+    //   } else {
+    //     isEmptyUser = false;
+    //   }
+    //
+    //   if (userModelPartner.length < 3) {
+    //     count++;
+    //     if (count >= 10) {
+    //       listDisLike.clear();
+    //       deleteDislike(userModelCurrent.uid);
+    //       count = 0;
+    //     }
+    //   }
+    //
+    //   isWrite = true;
+    //   isLoading = true;
+    // });
   }
 
   @override
@@ -134,7 +212,7 @@ class _HomeScreen extends State<HomeScreen>
     animationController = AnimationController(vsync: this);
     super.initState();
     readFirebase(
-      10,
+      3,
       true,
     );
   }
@@ -226,7 +304,7 @@ class _HomeScreen extends State<HomeScreen>
                                     } else {
                                       if (isWrite) {
                                         isWrite = false;
-                                        readFirebase(14, false);
+                                        readFirebase(6, false);
                                       }
                                       return cardLoading(size, 22);
                                     }

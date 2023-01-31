@@ -183,6 +183,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  drop_shadow:
+    dependency: "direct main"
+    description:
+      name: drop_shadow
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2+1"
   fake_async:
     dependency: transitive
     description:
@@ -385,6 +392,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  galaxeus_lib:
+    dependency: transitive
+    description:
+      name: galaxeus_lib
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.46"
   glowstone:
     dependency: "direct main"
     description:
@@ -831,6 +845,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  telegram_bot_api:
+    dependency: transitive
+    description:
+      name: telegram_bot_api
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
+  telegram_client:
+    dependency: "direct main"
+    description:
+      name: telegram_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.93"
+  telegram_mtproto:
+    dependency: transitive
+    description:
+      name: telegram_mtproto
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.0"
+  telegram_tdlib:
+    dependency: transitive
+    description:
+      name: telegram_tdlib
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.0"
   term_glyph:
     dependency: transitive
     description:
@@ -929,6 +971,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  web_ffi:
+    dependency: transitive
+    description:
+      name: web_ffi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.2"
   win32:
     dependency: transitive
     description:

@@ -39,7 +39,7 @@ Widget textFieldAuth(
           textAlignVertical: TextAlignVertical.center,
           controller: controller,
           style: TextStyle(
-              color: Colors.white.withOpacity(.8), fontSize: size.height / 64),
+              color: Colors.white.withOpacity(.8), fontSize: size.height / 61),
           cursorColor: Colors.white,
           decoration: InputDecoration(
             prefixIcon: Icon(
@@ -50,7 +50,7 @@ Widget textFieldAuth(
             hintMaxLines: 1,
             hintText: hint,
             hintStyle: TextStyle(
-                fontSize: size.height / 64,
+                fontSize: size.height / 61,
                 color: Colors.white.withOpacity(.5)),
           ),
         ),
@@ -91,7 +91,7 @@ Widget textFieldProfileSettings(
           helperStyle: GoogleFonts.lato(
               textStyle: TextStyle(
                   color: Colors.white70,
-                  fontSize: height / 82,
+                  fontSize: height / 78,
                   letterSpacing: .6)),
           counterText: imaxLength > 2 ? null : '',
           suffixIcon: const Icon(
@@ -103,12 +103,12 @@ Widget textFieldProfileSettings(
           floatingLabelStyle: GoogleFonts.lato(
               textStyle: TextStyle(
                   color: Colors.white,
-                  fontSize: height / 54,
+                  fontSize: height / 50,
                   letterSpacing: .6)),
           labelStyle: GoogleFonts.lato(
               textStyle: TextStyle(
                   color: Colors.white,
-                  fontSize: height / 60,
+                  fontSize: height / 56,
                   letterSpacing: .6)),
           focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.blueAccent),

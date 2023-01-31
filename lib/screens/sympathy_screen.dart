@@ -30,21 +30,20 @@ class SympathyScreen extends StatefulWidget {
   State<SympathyScreen> createState() => _SympathyScreenState(userModelCurrent);
 }
 
-class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStateMixin{
+class _SympathyScreenState extends State<SympathyScreen>
+    with TickerProviderStateMixin {
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
+
   int limit = 5;
   bool isLoadingUser = false;
   late final AnimationController animationController;
+  late QuerySnapshot<Map<String, dynamic>> query;
 
   _SympathyScreenState(this.userModelCurrent);
 
   @override
   void initState() {
-    // Future.delayed(const Duration(milliseconds: 1300), () {
-    //   setState(() => isLoadingUser = true);
-    // });
-
     animationController = AnimationController(vsync: this);
     scrollController.addListener(() {
       if (!isLoadingUser) {
@@ -118,13 +117,11 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                   state = '',
                                   uid = '',
                                   isMutuallyMy = false,
-                                  isStart = true,
                                   token = '';
                               try {
                                 uid = snapshot.data.docs[index]['uid'];
                                 idDoc = snapshot.data.docs[index]['id_doc'];
                               } catch (E) {}
-
                               return AnimationConfiguration.staggeredList(
                                 position: index,
                                 delay: const Duration(milliseconds: 250),
@@ -136,11 +133,26 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                     curve: Curves.easeOut,
                                     duration:
                                         const Duration(milliseconds: 3200),
-                                    child: StreamBuilder(
-                                      stream: FirebaseFirestore.instance
-                                          .collection('User')
-                                          .doc(uid)
-                                          .snapshots(),
+                                    child: FutureBuilder(
+                                      future: FirebaseFirestore.instance
+                                              .collection('User')
+                                              .doc(uid)
+                                              .get(const GetOptions(
+                                                  source: Source.cache))
+                                              .toString()
+                                              .isEmpty
+                                          ? FirebaseFirestore.instance
+                                              .collection('User')
+                                              .doc(uid)
+                                              .get(const GetOptions(
+                                                  source: Source.cache))
+                                          : FirebaseFirestore.instance
+                                              .collection('User')
+                                              .doc(uid)
+                                              .get(
+                                                const GetOptions(
+                                                    source: Source.server),
+                                              ),
                                       builder: (context,
                                           AsyncSnapshot asyncSnapshotUser) {
                                         if (asyncSnapshotUser.hasData) {
@@ -166,19 +178,46 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                           } catch (E) {}
 
                                           return SizedBox(
-                                            child: StreamBuilder(
-                                              stream: FirebaseFirestore.instance
-                                                  .collection('User')
-                                                  .doc(uid)
-                                                  .collection('sympathy')
-                                                  .where('uid',
-                                                      isEqualTo:
-                                                          userModelCurrent.uid)
-                                                  .snapshots(),
+                                            child: FutureBuilder(
+                                              future: FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(uid)
+                                                      .collection('sympathy')
+                                                      .where('uid',
+                                                          isEqualTo:
+                                                              userModelCurrent
+                                                                  .uid)
+                                                      .get(const GetOptions(
+                                                          source: Source.cache))
+                                                      .toString()
+                                                      .isEmpty
+                                                  ? FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(uid)
+                                                      .collection('sympathy')
+                                                      .where('uid',
+                                                          isEqualTo:
+                                                              userModelCurrent
+                                                                  .uid)
+                                                      .get(const GetOptions(
+                                                          source: Source.cache))
+                                                  : FirebaseFirestore.instance
+                                                      .collection('User')
+                                                      .doc(uid)
+                                                      .collection('sympathy')
+                                                      .where('uid',
+                                                          isEqualTo:
+                                                              userModelCurrent
+                                                                  .uid)
+                                                      .get(
+                                                        const GetOptions(
+                                                            source:
+                                                                Source.server),
+                                                      ),
                                               builder: (context,
                                                   AsyncSnapshot asyncSnapshot) {
                                                 if (asyncSnapshot.hasData) {
-                                                  getState(150).then((value) {
+                                                  getState(100).then((value) {
                                                     isMutuallyMy = false;
                                                   });
 
@@ -207,8 +246,8 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                           context,
                                                           FadeRouteAnimation(
                                                               ProfileScreen(
-                                                                userModelPartner: UserModel(
-                                                                    name: '',
+                                                            userModelPartner: UserModel(
+                                                                name: '',
                                                                 uid: '',
                                                                 myCity: '',
                                                                 ageTime:
@@ -249,72 +288,70 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                             .withOpacity(.10),
                                                         color: color_black_88,
                                                         shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                30),
-                                                            side:
-                                                            const BorderSide(
-                                                              width: 0.8,
-                                                              color: Colors
-                                                                  .white10,
-                                                            )),
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            30),
+                                                                side:
+                                                                    const BorderSide(
+                                                                  width: 0.8,
+                                                                  color: Colors
+                                                                      .white10,
+                                                                )),
                                                         elevation: 14,
                                                         child: Padding(
                                                           padding: EdgeInsets
                                                               .symmetric(
-                                                              horizontal:
-                                                              height /
-                                                                  58,
-                                                              vertical:
-                                                              height /
-                                                                  46),
+                                                                  horizontal:
+                                                                      height /
+                                                                          58,
+                                                                  vertical:
+                                                                      height /
+                                                                          46),
                                                           child: Row(
                                                             mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             children: [
                                                               Expanded(
                                                                 flex: 1,
-
-                                                                // width: width / 3.2,
                                                                 child:
-                                                                photoUser(
+                                                                    photoUser(
                                                                   uri: imageUri,
                                                                   width:
-                                                                  height /
-                                                                      8.2,
+                                                                      height /
+                                                                          8.2,
                                                                   height:
-                                                                  height /
-                                                                      8.2,
+                                                                      height /
+                                                                          8.2,
                                                                   state: state,
-                                                                  padding: 5,
+                                                                  padding: 4,
                                                                 ),
                                                               ),
                                                               SizedBox(
                                                                   width:
-                                                                  height /
-                                                                      77),
+                                                                      height /
+                                                                          77),
                                                               Expanded(
                                                                 flex: 2,
                                                                 child: Column(
                                                                   mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceEvenly,
+                                                                      MainAxisAlignment
+                                                                          .spaceEvenly,
                                                                   children: [
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
                                                                       children: [
                                                                         DelayedDisplay(
                                                                           delay:
-                                                                          Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
+                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
                                                                           child:
-                                                                          Column(
+                                                                              Column(
                                                                             crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
+                                                                                CrossAxisAlignment.start,
                                                                             children: [
                                                                               RichText(
                                                                                 text: TextSpan(
@@ -340,26 +377,26 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                               bottom: height / 76,
                                                                               left: 10),
                                                                           alignment:
-                                                                          Alignment.topRight,
+                                                                              Alignment.topRight,
                                                                           child:
-                                                                          IconButton(
+                                                                              IconButton(
                                                                             onPressed:
                                                                                 () async {
                                                                               deleteSympathy(idDoc, userModelCurrent.uid);
                                                                               await CachedNetworkImage.evictFromCache(imageUri);
                                                                             },
                                                                             icon:
-                                                                            Icon(Icons.close, size: height / 40),
+                                                                                Icon(Icons.close, size: height / 40),
                                                                             color:
-                                                                            Colors.white,
+                                                                                Colors.white,
                                                                           ),
                                                                         ),
                                                                       ],
                                                                     ),
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceAround,
+                                                                          MainAxisAlignment
+                                                                              .spaceAround,
                                                                       children: [
                                                                         if (!isMutuallyMy)
                                                                           buttonUniversalAnimationColors(
@@ -390,9 +427,7 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                               height / 22,
                                                                               () {
                                                                             deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
-                                                                              Future.delayed(const Duration(milliseconds: 250), () {
-                                                                                setState(() {});
-                                                                              });
+                                                                              setState(() {});
                                                                             });
                                                                           }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
                                                                         customIconButton(
@@ -406,16 +441,16 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                                                                       userModelCurrent: userModelCurrent,
                                                                                       token: token,
                                                                                       notification: asyncSnapshotUser.data['notification'],
-                                                                                        )));
+                                                                                    )));
                                                                           },
                                                                           path:
-                                                                          'images/ic_send.png',
+                                                                              'images/ic_send.png',
                                                                           height:
-                                                                          height / 28,
+                                                                              height / 28,
                                                                           width:
-                                                                          height / 28,
+                                                                              height / 28,
                                                                           padding:
-                                                                          4,
+                                                                              4,
                                                                         )
                                                                       ],
                                                                     ),
@@ -458,12 +493,8 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
                                     ),
                                   );
                                 }
-                                // else {
-                                //   return cardLoadingWidget(size, .18, .09);
-                                // }
                               }
                             }
-
                             return const SizedBox();
                           },
                         ),
@@ -480,4 +511,3 @@ class _SympathyScreenState extends State<SympathyScreen> with TickerProviderStat
     );
   }
 }
-

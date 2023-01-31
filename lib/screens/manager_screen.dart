@@ -19,11 +19,14 @@ import 'home_screen.dart';
 
 class ManagerScreen extends StatefulWidget {
   int currentIndex;
+  UserModel userModelCurrent;
 
-  ManagerScreen({super.key, required this.currentIndex});
+  ManagerScreen(
+      {super.key, required this.currentIndex, required this.userModelCurrent});
 
   @override
-  _ManagerScreen createState() => _ManagerScreen(currentIndex);
+  _ManagerScreen createState() =>
+      _ManagerScreen(currentIndex, userModelCurrent);
 }
 
 class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
@@ -34,11 +37,9 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       indexChat = 0,
       indexProfile = 0;
 
-  // late StreamSubscription streamSubscription;
+  UserModel userModelCurrent;
 
-  late UserModel userModelCurrent;
-
-  _ManagerScreen(this.currentIndex);
+  _ManagerScreen(this.currentIndex, this.userModelCurrent);
 
   void startTimer() {
     Timer.periodic(
@@ -90,7 +91,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
             );
           });
         }
-
       }
       if (payload == 'like') {
         currentIndex = 3;
@@ -151,30 +151,38 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     initSharedPref();
     WidgetsBinding.instance.addObserver(this);
     getNotificationFcm();
-    readUserFirebase().then((user) {
-      setState(() {
-        userModelCurrent = UserModel(
-            name: user.name,
-            uid: user.uid,
-            ageTime: user.ageTime,
-            userPol: user.userPol,
-            searchPol: user.searchPol,
-            searchRangeStart: user.searchRangeStart,
-            userInterests: user.userInterests,
-            userImagePath: user.userImagePath,
-            userImageUrl: user.userImageUrl,
-            searchRangeEnd: user.searchRangeEnd,
-            myCity: user.myCity,
-            imageBackground: user.imageBackground,
-            ageInt: user.ageInt,
-            state: user.state,
-            token: user.token,
-            notification: user.notification,
-            description: user.description);
+    if (userModelCurrent.uid.isEmpty) {
+      readUserFirebase().then((user) {
+        setState(() {
+          userModelCurrent = UserModel(
+              name: user.name,
+              uid: user.uid,
+              ageTime: user.ageTime,
+              userPol: user.userPol,
+              searchPol: user.searchPol,
+              searchRangeStart: user.searchRangeStart,
+              userInterests: user.userInterests,
+              userImagePath: user.userImagePath,
+              userImageUrl: user.userImageUrl,
+              searchRangeEnd: user.searchRangeEnd,
+              myCity: user.myCity,
+              imageBackground: user.imageBackground,
+              ageInt: user.ageInt,
+              state: user.state,
+              token: user.token,
+              notification: user.notification,
+              description: user.description);
+        });
+        isLoading = true;
+        setStateFirebase('online');
       });
-      isLoading = true;
-      setStateFirebase('online');
-    });
+    } else {
+      setState(() {
+        isLoading = true;
+        setStateFirebase('online');
+      });
+    }
+
     // checkStatusNetwork(streamSubscription);
     super.initState();
   }

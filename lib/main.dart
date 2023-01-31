@@ -10,7 +10,6 @@ import 'package:lancelot/screens/auth/verify_screen.dart';
 import 'package:lancelot/screens/manager_screen.dart';
 import 'package:lancelot/screens/settings/edit_image_profile_screen.dart';
 import 'package:lancelot/screens/settings/edit_profile_screen.dart';
-import 'package:lancelot/screens/settings/warning_screen.dart';
 import 'package:lancelot/widget/animation_widget.dart';
 
 import 'config/firestore_operations.dart';
@@ -68,38 +67,47 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
       isEmptyDataUser = false,
       isStart = false,
       isLoading = false;
-  AnimationController animationController;
+  UserModel userModelCurrent;
 
   @override
   void initState() {
-    animationController = AnimationController(vsync: this);
     super.initState();
-    readFirebaseIsAccountFull().then((result) {
+
+    readFirebaseIsAccountFull(context).then((userModel) {
       setState(() {
-        isEmptyImageBackground = result.isEmptyImageBackground;
-        isEmptyDataUser = result.isEmptyDataUser;
-        isStart = result.isStart;
+        if (userModel.uid.isNotEmpty) {
+          if (userModel.userInterests.isNotEmpty &&
+              userModel.myCity.isNotEmpty &&
+              userModel.searchPol.isNotEmpty) {
+            isEmptyDataUser = true;
+            if (userModel.imageBackground != '') {
+              isEmptyImageBackground = true;
+              userModelCurrent = userModel;
+            }
+          }
+        }
         isLoading = true;
+
         userNavigator();
       });
     });
   }
 
   Future userNavigator() async {
-    if (isStart) {
       if (FirebaseAuth.instance.currentUser?.uid != null) {
-        if (true) {
-          // if (FirebaseAuth.instance.currentUser.emailVerified) {
-          if (isEmptyDataUser) {
-            if (isEmptyImageBackground) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => ManagerScreen(
-                    currentIndex: 0,
-                  ),
+      // if (true) {
+      if (FirebaseAuth.instance.currentUser.emailVerified) {
+        if (isEmptyDataUser) {
+          if (isEmptyImageBackground) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => ManagerScreen(
+                  currentIndex: 0,
+                  userModelCurrent: userModelCurrent,
                 ),
-              );
-            } else {
+              ),
+            );
+          } else {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => EditImageProfileScreen(
@@ -119,18 +127,19 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
                       myCity: '',
                       ageTime: Timestamp.now(),
                       ageInt: 0,
-                      userPol: '',
-                      searchPol: '',
-                      searchRangeStart: 0,
-                      userImageUrl: [],
-                      userImagePath: [],
-                      imageBackground: '',
-                      userInterests: [],
-                      searchRangeEnd: 0,
-                      state: '',
-                      token: '',
-                      notification: true),
-                ),
+                    userPol: '',
+                    searchPol: '',
+                    searchRangeStart: 0,
+                    userImageUrl: [],
+                    userImagePath: [],
+                    imageBackground: '',
+                    userInterests: [],
+                    searchRangeEnd: 0,
+                    state: '',
+                    token: '',
+                    notification: true,
+                    description: ''),
+              ),
               ),
             );
           }
@@ -142,15 +151,10 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const SignInScreen()));
       }
-    } else {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const WarningScreen()));
-    }
   }
 
   @override
   void dispose() {
-    animationController.dispose();
     super.dispose();
   }
 

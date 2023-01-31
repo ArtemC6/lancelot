@@ -544,7 +544,6 @@ class _topPanelChatState extends State<topPanelChat> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -564,7 +563,6 @@ class _topPanelChatState extends State<topPanelChat> {
               var isWriteUser = false, isOnline = false;
               try {
                 isOnline = asyncSnapshot.data['state'] != 'offline';
-
                 if (snapshot.data['writeLastData'] != '') {
                   if (DateTime.now()
                           .difference(
@@ -646,7 +644,7 @@ class _topPanelChatState extends State<topPanelChat> {
                                     if (isOnline)
                                       DelayedDisplay(
                                         delay:
-                                            const Duration(milliseconds: 500),
+                                            const Duration(milliseconds: 450),
                                         child: customIconButton(
                                           padding: 0,
                                           width: height / 38,

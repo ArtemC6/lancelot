@@ -310,8 +310,8 @@ showAlertDialogLoading(BuildContext context) {
           filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
           child: Lottie.asset(
             'images/animation_loader.json',
-            width: MediaQuery.of(context).size.width * 0.22,
-            height: MediaQuery.of(context).size.height * 0.22,
+            width: MediaQuery.of(context).size.width * 0.58,
+            height: MediaQuery.of(context).size.height * 0.58,
             alignment: Alignment.center,
             errorBuilder: (context, error, stackTrace) {
               return LoadingAnimationWidget.dotsTriangle(

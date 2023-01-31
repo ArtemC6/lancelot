@@ -215,7 +215,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 const SizedBox()
                               ],
                             ),
-                            if (userModel.description != '')
+                            if (userModel.description.toString() != '')
                               Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(
@@ -228,7 +228,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                   child: Text(
                                     textAlign: TextAlign.start,
                                     maxLines: 2,
-                                    userModel.description,
+                                    userModel.description.toString(),
                                     style: GoogleFonts.lato(
                                       textStyle: TextStyle(
                                           color: Colors.white70,

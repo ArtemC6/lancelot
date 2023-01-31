@@ -102,35 +102,22 @@ class buttonAuthAnimation extends StatelessWidget {
 Widget buttonUniversal(String name, color, height, onTap, time) {
   return ZoomTapAnimation(
     onTap: () {},
-    child: SizedBox(
+    child: Container(
       height: height,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.white54,
-              blurRadius: 5.0,
-              spreadRadius: 0.0,
-              offset: Offset(
-                0.0,
-                1.3,
-              ),
-            )
-          ],
-          border: Border.all(width: 0.8, color: Colors.white38),
-          gradient: LinearGradient(colors: color),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: ElevatedButton(
-            onPressed: onTap,
-            style: ElevatedButton.styleFrom(
-              shadowColor: Colors.transparent,
-              backgroundColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-            ),
-            child: animatedText(height / 3.5, name, Colors.white, time, 1)),
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.8, color: Colors.white54),
+        gradient: LinearGradient(colors: color),
+        borderRadius: BorderRadius.circular(20),
       ),
+      child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            shadowColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+          child: animatedText(height / 3.5, name, Colors.white, time, 1)),
     ),
   );
 }
@@ -171,7 +158,6 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
       height: height,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: color),
-        // color: color_black_88,
         borderRadius: BorderRadius.circular(20),
       ),
       child: FlutterColorsBorder(
@@ -205,23 +191,20 @@ class customIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(padding),
-      child: ZoomTapAnimation(
-        enableLongTapRepeatEvent: false,
-        longTapRepeatDuration: const Duration(milliseconds: 200),
-        begin: 1.0,
-        end: 0.90,
-        beginDuration: const Duration(milliseconds: 20),
-        endDuration: const Duration(milliseconds: 200),
-        beginCurve: Curves.decelerate,
-        endCurve: Curves.fastOutSlowIn,
-        onTap: onTap,
-        child: Image.asset(
-          path,
-          height: height,
-          width: width,
-        ),
+    return ZoomTapAnimation(
+      enableLongTapRepeatEvent: false,
+      longTapRepeatDuration: const Duration(milliseconds: 200),
+      begin: 1.0,
+      end: 0.90,
+      beginDuration: const Duration(milliseconds: 20),
+      endDuration: const Duration(milliseconds: 200),
+      beginCurve: Curves.decelerate,
+      endCurve: Curves.fastOutSlowIn,
+      onTap: onTap,
+      child: Image.asset(
+        path,
+        height: height,
+        width: width,
       ),
     );
   }

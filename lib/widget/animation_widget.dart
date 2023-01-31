@@ -106,8 +106,8 @@ class loadingCustom extends StatelessWidget {
         body: Center(
             child: Lottie.asset(
           'images/animation_loader.json',
-          width: MediaQuery.of(context).size.width * 0.24,
-          height: MediaQuery.of(context).size.height * 0.24,
+          width: MediaQuery.of(context).size.width * 0.64,
+          height: MediaQuery.of(context).size.height * 0.64,
           alignment: Alignment.center,
           errorBuilder: (context, error, stackTrace) {
             return LoadingAnimationWidget.dotsTriangle(

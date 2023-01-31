@@ -21,7 +21,6 @@ import '../../config/utils.dart';
 import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
-import '../../widget/dialog_widget.dart';
 import '../../widget/textField_widget.dart';
 import '../manager_screen.dart';
 import 'edit_image_profile_screen.dart';
@@ -44,7 +43,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   _EditProfileScreenState(this.isFirst, this.modelUser);
 
-  bool isLoading = false, isError = false, isPhoto = false;
+  bool isLoading = false, isError = false, isPhoto = true;
   final TextEditingController _ageController = TextEditingController(),
       _myPolController = TextEditingController(),
       _nameController = TextEditingController(),
@@ -100,7 +99,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userPhoto &&
         userAge &&
         ageRange) {
-      showAlertDialogLoading(context);
+      setState(() {
+        isError = false;
+        isPhoto = true;
+      });
+
       String? token;
       await FirebaseMessaging.instance.getToken().then((value) {
         token = value;
@@ -131,7 +134,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Navigator.pushReplacement(
               context,
               FadeRouteAnimation(
-                ManagerScreen(currentIndex: 3),
+                ManagerScreen(
+                  currentIndex: 3,
+                  userModelCurrent: UserModel(
+                      name: '',
+                      uid: '',
+                      state: '',
+                      myCity: '',
+                      ageInt: 0,
+                      ageTime: Timestamp.now(),
+                      userPol: '',
+                      searchPol: '',
+                      searchRangeStart: 0,
+                      userImageUrl: [],
+                      userImagePath: [],
+                      imageBackground: '',
+                      userInterests: [],
+                      searchRangeEnd: 0,
+                      token: '',
+                      notification: true,
+                      description: ''),
+                ),
               ));
         } else {
           Navigator.pushReplacement(
@@ -142,7 +165,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     } else {
       setState(() {
-        isError = false;
         isError = true;
         if (modelUser.userImageUrl.isNotEmpty) {
           isPhoto = true;
@@ -258,6 +280,89 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+
+    SizedBox imageProfileSettings(double height, BuildContext context) {
+      return SizedBox(
+        height: height / 6.5,
+        width: height / 6.5,
+        child: Card(
+          shadowColor: Colors.white30,
+          color: color_black_88,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+              side: const BorderSide(
+                width: 0.8,
+                color: Colors.white30,
+              )),
+          elevation: 6,
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              if (modelUser.userImageUrl.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: CachedNetworkImage(
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(100)),
+                        image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter),
+                      ),
+                    ),
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        Center(
+                      child: SizedBox(
+                        height: height / 6.5,
+                        width: height / 6.5,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 0.8,
+                          value: progress.progress,
+                        ),
+                      ),
+                    ),
+                    imageUrl: modelUser.userImageUrl[0],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              if (modelUser.userImageUrl.isEmpty)
+                customIconButton(
+                  path: 'images/ic_add.png',
+                  width: height / 36,
+                  height: height / 36,
+                  onTap: () async {
+                    uploadFirstImage(context, modelUser.userImageUrl,
+                            modelUser.userImagePath)
+                        .then((uri) {
+                      if (uri != '') {
+                        setState(() {
+                          isPhoto = true;
+                          modelUser.userImageUrl.add(uri);
+                        });
+                      }
+                    });
+                  },
+                  padding: 6,
+                ),
+              if (modelUser.userImageUrl.isNotEmpty)
+                customIconButton(
+                  path: 'images/ic_edit.png',
+                  width: height / 36,
+                  height: height / 36,
+                  onTap: () async {
+                    updateFirstImage(context, modelUser, true);
+                  },
+                  padding: 3,
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (isLoading) {
       return WillPopScope(
         onWillPop: () async {
@@ -342,7 +447,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Padding(
                                 padding: EdgeInsets.all(height / 66),
                                 child: animatedText(
-                                    height / 72,
+                                    height / 68,
                                     'Данные введены некорректно',
                                     Colors.red,
                                     500,
@@ -352,7 +457,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Padding(
                                 padding: EdgeInsets.all(height / 66),
                                 child: animatedText(
-                                    height / 72,
+                                    height / 68,
                                     'Добавьте главное фото',
                                     Colors.red,
                                     550,
@@ -370,8 +475,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 () => showDatePicker()),
                             textFieldProfileSettings(_myPolController, true,
                                 'Ваш пол', context, 10, height, () {
-                              showBottomSheet(context, 'Укажите свой пол',
-                                  'Мужской', 'Женский', _myPolController);
+                                  showBottomSheet(
+                                  context,
+                                  'Укажите свой пол',
+                                  'Мужской',
+                                  'Женский',
+                                  _myPolController,
+                                  height);
                             }),
                             textFieldProfileSettings(
                                 _searchPolController,
@@ -385,16 +495,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   'Укажите с кем вы хотите познакомиться',
                                   'С парнем',
                                   'С девушкой',
-                                  _searchPolController);
+                                  _searchPolController,
+                                  height);
                             }),
                             textFieldProfileSettings(_localController, true,
                                 'Вы проживаете', context, 10, height, () {
-                              showBottomSheet(
+                                  showBottomSheet(
                                   context,
                                   'Укажите где вы проживаете',
                                   'Бишкек',
                                   'Каракол',
-                                  _localController);
+                                  _localController,
+                                  height);
                             }),
                             textFieldProfileSettings(_ageRangController, true,
                                 'Диапазон поиска', context, 14, height, () {
@@ -467,12 +579,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 3),
                             textFieldProfileSettings(_notificationController,
                                 true, 'Уведомления', context, 10, height, () {
-                              showBottomSheet(
+                                  showBottomSheet(
                                   context,
                                   'Укажите хотите получать уведомления',
                                   'Включить',
                                   'Выключить',
-                                  _notificationController);
+                                  _notificationController,
+                                  height);
                             }),
                             textFieldProfileSettings(_supportController, true,
                                 'Техподдержка', context, 30, height, () async {
@@ -605,89 +718,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: const loadingCustom());
   }
 
-  SizedBox imageProfileSettings(double height, BuildContext context) {
-    return SizedBox(
-      height: height / 6.5,
-      width: height / 6.5,
-      child: Card(
-        shadowColor: Colors.white30,
-        color: color_black_88,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-            side: const BorderSide(
-              width: 0.8,
-              color: Colors.white30,
-            )),
-        elevation: 6,
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            if (modelUser.userImageUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: CachedNetworkImage(
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(100)),
-                      image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.topCenter),
-                    ),
-                  ),
-                  progressIndicatorBuilder: (context, url, progress) => Center(
-                    child: SizedBox(
-                      height: height / 6.5,
-                      width: height / 6.5,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 0.8,
-                        value: progress.progress,
-                      ),
-                    ),
-                  ),
-                  imageUrl: modelUser.userImageUrl[0],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            if (modelUser.userImageUrl.isEmpty)
-              customIconButton(
-                path: 'images/ic_add.png',
-                width: height / 36,
-                height: height / 36,
-                onTap: () async {
-                  uploadFirstImage(context, modelUser.userImageUrl,
-                          modelUser.userImagePath)
-                      .then((uri) {
-                    setState(() {
-                      if (uri != '') {
-                        isPhoto = true;
-                        modelUser.userImageUrl.add(uri);
-                      }
-                    });
-                  });
-                },
-                padding: 6,
-              ),
-            if (modelUser.userImageUrl.isNotEmpty)
-              customIconButton(
-                path: 'images/ic_edit.png',
-                width: height / 36,
-                height: height / 36,
-                onTap: () async {
-                  updateFirstImage(context, modelUser, true);
-                },
-                padding: 3,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<dynamic> showBottomSheet(
-      context, title, select_1, select_2, TextEditingController controller) {
+  Future<dynamic> showBottomSheet(context, title, select_1, select_2,
+      TextEditingController controller, double height) {
     return showCupertinoModalBottomSheet(
         topRadius: const Radius.circular(30),
         duration: const Duration(milliseconds: 800),
@@ -696,7 +728,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         builder: (context) {
           return StatefulBuilder(builder: (context, setState) {
             return Container(
-              height: 260,
+              height: 240,
               padding: const EdgeInsets.all(28),
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -714,12 +746,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: Theme(
                       data: ThemeData.light(),
                       child: ExpansionTile(
+                        key: GlobalKey(),
                         initiallyExpanded: true,
-                        title: animatedText(12, title, Colors.white, 0, 2),
+                        maintainState: true,
+                        title: animatedText(
+                            height / 60, title, Colors.white, 0, 2),
                         children: [
                           ListTile(
                             title: animatedText(
-                                12, select_1, Colors.white, 600, 1),
+                                height / 60, select_1, Colors.white, 550, 1),
                             onTap: () {
                               setState(() {
                                 controller.text = select_1;
@@ -729,7 +764,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           ListTile(
                             title: animatedText(
-                                12, select_2, Colors.white, 600, 1),
+                                height / 60, select_2, Colors.white, 550, 1),
                             onTap: () {
                               setState(() {
                                 controller.text = select_2;

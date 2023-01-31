@@ -297,7 +297,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                   const SizedBox()
                                 ],
                               ),
-                              if (userModelPartner.description != '')
+                              if (userModelPartner.description.toString() != '')
                                 Container(
                                   alignment: Alignment.centerLeft,
                                   padding: EdgeInsets.only(
@@ -310,7 +310,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     child: Text(
                                       textAlign: TextAlign.start,
                                       maxLines: 2,
-                                      userModelPartner.description,
+                                      userModelPartner.description.toString(),
                                       style: GoogleFonts.lato(
                                         textStyle: TextStyle(
                                             color: Colors.white70,
@@ -352,7 +352,6 @@ class _ProfileScreen extends State<ProfileScreen> {
         ),
       );
     }
-
     return const loadingCustom();
   }
 }

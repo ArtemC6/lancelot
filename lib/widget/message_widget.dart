@@ -28,7 +28,6 @@ class MessagesItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
 
     Bubble formMessageMy(String isCheck) {
       return Bubble(
@@ -147,7 +146,6 @@ class MessagesItem extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
         if (asyncSnapshot.hasData) {
           var isLastMessage = 'not read';
-
           try {
             if (asyncSnapshot.data['last_date_close_chat'] == '') {
               isLastMessage = 'read';
@@ -277,9 +275,6 @@ class _MessageTextFieldState extends State<MessageTextField> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    double textFieldHeight = width / 7.5;
-    final node = FocusNode();
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 20, left: 14, right: 20),
       child: Row(
@@ -292,7 +287,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
               horizontal: 2,
             ),
             child: TextFormField(
-              focusNode: node,
+              textCapitalization: TextCapitalization.sentences,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(550),
               ],
@@ -330,128 +325,6 @@ class _MessageTextFieldState extends State<MessageTextField> {
             ),
           ),
 
-          // ZoomTapAnimation(
-          //            enableLongTapRepeatEvent: false,
-          //            longTapRepeatDuration: const Duration(milliseconds: 200),
-          //            begin: 1.0,
-          //            end: 0.9999,
-          //            beginDuration: const Duration(milliseconds: 20),
-          //            endDuration: const Duration(milliseconds: 200),
-          //            beginCurve: Curves.decelerate,
-          //            endCurve: Curves.fastOutSlowIn,
-          //            onTap: () {
-          //              // FocusScope.of(context).requestFocus(node);
-          //              setState((){
-          //                print('object');
-          //                textFieldHeight = 300;
-          //              });
-          //            },
-          //            child: Container(
-          //              alignment: Alignment.center,
-          //              padding: const EdgeInsets.symmetric(
-          //                horizontal: 2,
-          //              ),
-          //              child: FlutterColorsBorder(
-          //                animationDuration: 8,
-          //                colors: const [
-          //                  Colors.black12,
-          //                  Colors.white10,
-          //                  Colors.white54,
-          //                  Colors.white70,
-          //                ],
-          //                size: Size(width / 1.32, textFieldHeight),
-          //                boardRadius: 26,
-          //                borderWidth: 0.8,
-          //                child: TextFormField(
-          //                  onChanged: (value) {
-          //                    if(value.length > 10) {
-          //                      setState((){
-          //                        print('object');
-          //                        textFieldHeight = 590;
-          //                      });
-          //                    }
-          //                  },
-          //                  focusNode: node,
-          //                  inputFormatters: [
-          //                    LengthLimitingTextInputFormatter(550),
-          //                  ],
-          //                  controller: _controllerMessage,
-          //                  minLines: 1,
-          //                  maxLines: 2,
-          //                  decoration: InputDecoration(
-          //                      border: InputBorder.none,
-          //                      focusedBorder: InputBorder.none,
-          //                      enabledBorder: InputBorder.none,
-          //                      errorBorder: InputBorder.none,
-          //                      disabledBorder: InputBorder.none,
-          //                      contentPadding: EdgeInsets.symmetric(
-          //                          vertical: height / 80, horizontal: 16),
-          //                      counterStyle: const TextStyle(color: Colors.white),
-          //                      hintStyle:
-          //                          TextStyle(color: Colors.white.withOpacity(0.9)),
-          //                      hintText: "Сообщение..."),
-          //                  style: GoogleFonts.lato(
-          //                      textStyle: TextStyle(
-          //                          color: Colors.white,
-          //                          fontSize: height / 58,
-          //                          letterSpacing: .5)),
-          //                ),
-          //              ),
-          //            ),
-          //          ),
-
-          //   Container(
-          //   width: width / 1.35,
-          //   decoration: BoxDecoration(
-          //     gradient: const LinearGradient(colors: [
-          //       Colors.pinkAccent,
-          //       Colors.purpleAccent,
-          //       Colors.blueAccent,
-          //     ]),
-          //     borderRadius: BorderRadius.circular(26),
-          //   ),
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(
-          //       1.2,
-          //     ),
-          //     child: Container(
-          //       alignment: Alignment.center,
-          //       padding: const EdgeInsets.symmetric(
-          //         horizontal: 2,
-          //       ),
-          //       decoration: BoxDecoration(
-          //         color: color_black_88,
-          //         border: Border.all(color: color_black_88),
-          //         borderRadius: BorderRadius.circular(26),
-          //       ),
-          //       child: TextFormField(
-          //         inputFormatters: [
-          //           LengthLimitingTextInputFormatter(550),
-          //         ],
-          //         controller: _controllerMessage,
-          //         minLines: 1,
-          //         maxLines: 4,
-          //         decoration: InputDecoration(
-          //             border: InputBorder.none,
-          //             focusedBorder: InputBorder.none,
-          //             enabledBorder: InputBorder.none,
-          //             errorBorder: InputBorder.none,
-          //             disabledBorder: InputBorder.none,
-          //             contentPadding: EdgeInsets.symmetric(
-          //                 vertical: height / 52, horizontal: 15),
-          //             counterStyle: const TextStyle(color: Colors.white),
-          //             hintStyle:
-          //                 TextStyle(color: Colors.white.withOpacity(0.9)),
-          //             hintText: "Сообщение..."),
-          //         style: GoogleFonts.lato(
-          //             textStyle: TextStyle(
-          //                 color: Colors.white,
-          //                 fontSize: height / 58,
-          //                 letterSpacing: .5)),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           ZoomTapAnimation(
             onTap: () async {
               if (_controllerMessage.text.trim().isNotEmpty) {
@@ -460,7 +333,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
                 if (notification && token != '') {
                   sendFcmMessage(
                       'Lancelot',
-                      '${currentUser.name}: $messageText',
+                      '${currentUser.name}: отправил вам новое сообщение',
                       token,
                       'chat',
                       currentUser.uid);

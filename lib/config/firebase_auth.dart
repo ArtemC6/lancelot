@@ -122,7 +122,7 @@ class FirebaseAuthMethods extends ChangeNotifier {
           .then((value) {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
-        Future.delayed(const Duration(milliseconds: 1850), () {
+        Future.delayed(const Duration(milliseconds: 1900), () {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager()));
         });
@@ -135,7 +135,7 @@ class FirebaseAuthMethods extends ChangeNotifier {
             .then((value) {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
-          Future.delayed(const Duration(milliseconds: 1850), () {
+          Future.delayed(const Duration(milliseconds: 1900), () {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const Manager()));
           });
