@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:Lancelot/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lancelot/screens/auth/signup_screen.dart';
-import 'package:lancelot/widget/animation_widget.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase_auth.dart';
 import '../../main.dart';
+import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
 import '../../widget/textField_widget.dart';
 

@@ -1,3 +1,4 @@
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
@@ -29,8 +29,7 @@ class EditProfileScreen extends StatefulWidget {
   bool isFirst;
   UserModel userModel;
 
-  EditProfileScreen(
-      {super.key, required this.isFirst, required this.userModel});
+  EditProfileScreen({super.key, required this.isFirst, required this.userModel});
 
   @override
   State<EditProfileScreen> createState() =>
@@ -68,13 +67,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         showTitleActions: true,
         minTime: DateTime(1993),
         maxTime: DateTime(2007), onChanged: (date) {
-      setState(() {
-        _dateTimeBirthday = date;
-        _ageController.text =
-            (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
-                .toString();
-      });
-    },
+          setState(() {
+            _dateTimeBirthday = date;
+            _ageController.text =
+                (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
+                    .toString();
+          });
+        },
         onConfirm: (date) {},
         currentTime: getDataTime(modelUser.ageTime),
         locale: LocaleType.ru);
@@ -119,13 +118,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'name': _nameController.text.trim(),
         'description': _descriptionController.text.trim(),
         'searchPol':
-            _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
+        _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
         'ageTime': _dateTimeBirthday,
         'rangeStart': _valuesAge.start,
         'rangeEnd': _valuesAge.end,
         'myCity': _localController.text,
         'notification':
-            _notificationController.text == 'Включить' ? true : false,
+        _notificationController.text == 'Включить' ? true : false,
         'token': token,
       };
 
@@ -178,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void settingsValue() {
     _nameController.text = modelUser.name;
     _supportController.text =
-        'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
+    'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
     if (modelUser.notification) {
       _notificationController.text = 'Включить';
     } else {
@@ -196,7 +195,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         : 'От ${modelUser.searchRangeStart.toInt()} до ${modelUser.searchRangeEnd.toInt()} лет';
 
     _ageController.text =
-        modelUser.ageInt == 0 ? ' ' : modelUser.ageInt.toString();
+    modelUser.ageInt == 0 ? ' ' : modelUser.ageInt.toString();
 
     _valuesAge = SfRangeValues(
         modelUser.searchRangeStart == 0 ? 16 : modelUser.searchRangeStart,
@@ -207,7 +206,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _searchPolController.text = ' ';
     } else {
       _searchPolController.text =
-          modelUser.searchPol == 'Мужской' ? 'С парнем' : 'С девушкой';
+      modelUser.searchPol == 'Мужской' ? 'С парнем' : 'С девушкой';
     }
 
     if (modelUser.userImageUrl.isNotEmpty) {
@@ -221,27 +220,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future readFirebase() async {
     if (modelUser.uid == '') {
       await readUserFirebase().then((user) {
-        setState(() {
-          modelUser = UserModel(
-              name: user.name,
-              uid: user.uid,
-              ageTime: user.ageTime,
-              userPol: user.userPol,
-              searchPol: user.searchPol,
-              searchRangeStart: user.searchRangeStart,
-              userInterests: user.userInterests,
-              userImagePath: user.userImagePath,
-              userImageUrl: user.userImageUrl,
-              searchRangeEnd: user.searchRangeEnd,
-              myCity: user.myCity,
-              imageBackground: user.imageBackground,
-              ageInt: user.ageInt,
-              state: user.state,
-              token: user.token,
-              notification: user.notification,
-              description: user.description);
-          isLoading = true;
-        });
+        modelUser = UserModel(
+            name: user.name,
+            uid: user.uid,
+            ageTime: user.ageTime,
+            userPol: user.userPol,
+            searchPol: user.searchPol,
+            searchRangeStart: user.searchRangeStart,
+            userInterests: user.userInterests,
+            userImagePath: user.userImagePath,
+            userImageUrl: user.userImageUrl,
+            searchRangeEnd: user.searchRangeEnd,
+            myCity: user.myCity,
+            imageBackground: user.imageBackground,
+            ageInt: user.ageInt,
+            state: user.state,
+            token: user.token,
+            notification: user.notification,
+            description: user.description);
+        isLoading = true;
       });
     }
     setState(() {
@@ -251,11 +248,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _launchUrl(String uri) async {
-    // lancelotsuport@gmail.com
     String? encodeQueryParameters(Map<String, String> params) {
       return params.entries
           .map((MapEntry<String, String> e) =>
-              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
           .join('&');
     }
 
@@ -294,70 +290,92 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 width: 0.8,
                 color: Colors.white30,
               )),
-          elevation: 6,
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              if (modelUser.userImageUrl.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: CachedNetworkImage(
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(100)),
-                        image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter),
-                      ),
+          elevation: 8,
+          child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: () {
+              if (modelUser.userImageUrl.isEmpty) {
+                uploadFirstImage(context, modelUser.userImageUrl,
+                        modelUser.userImagePath)
+                    .then((uri) {
+                  if (uri != '') {
+                    setState(() {
+                      isPhoto = true;
+                      modelUser.userImageUrl.add(uri);
+                    });
+                  }
+                });
+              } else {
+                updateFirstImage(context, modelUser, true);
+              }
+            },
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                if (modelUser.userImageUrl.isNotEmpty)
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
                     ),
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Center(
-                      child: SizedBox(
-                        height: height / 6.5,
-                        width: height / 6.5,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 0.8,
-                          value: progress.progress,
+                    child: CachedNetworkImage(
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(100)),
+                          image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                              alignment: Alignment.topCenter),
                         ),
                       ),
+                      progressIndicatorBuilder: (context, url, progress) =>
+                          Center(
+                        child: SizedBox(
+                          height: height / 6.5,
+                          width: height / 6.5,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 0.8,
+                            value: progress.progress,
+                          ),
+                        ),
+                      ),
+                      imageUrl: modelUser.userImageUrl[0],
+                      fit: BoxFit.cover,
                     ),
-                    imageUrl: modelUser.userImageUrl[0],
-                    fit: BoxFit.cover,
                   ),
-                ),
-              if (modelUser.userImageUrl.isEmpty)
-                customIconButton(
-                  path: 'images/ic_add.png',
-                  width: height / 36,
-                  height: height / 36,
-                  onTap: () async {
-                    uploadFirstImage(context, modelUser.userImageUrl,
-                            modelUser.userImagePath)
-                        .then((uri) {
-                      if (uri != '') {
-                        setState(() {
-                          isPhoto = true;
-                          modelUser.userImageUrl.add(uri);
-                        });
-                      }
-                    });
-                  },
-                  padding: 6,
-                ),
-              if (modelUser.userImageUrl.isNotEmpty)
-                customIconButton(
-                  path: 'images/ic_edit.png',
-                  width: height / 36,
-                  height: height / 36,
-                  onTap: () async {
-                    updateFirstImage(context, modelUser, true);
-                  },
-                  padding: 3,
-                ),
-            ],
+                if (modelUser.userImageUrl.isEmpty)
+                  customIconButton(
+                    path: 'images/ic_add.png',
+                    width: height / 34,
+                    height: height / 34,
+                    onTap: () async {
+                      uploadFirstImage(context, modelUser.userImageUrl,
+                              modelUser.userImagePath)
+                          .then((uri) {
+                        if (uri != '') {
+                          setState(() {
+                            isPhoto = true;
+                            modelUser.userImageUrl.add(uri);
+                          });
+                        }
+                      });
+                    },
+                    padding: 6,
+                  ),
+                if (modelUser.userImageUrl.isNotEmpty)
+                  customIconButton(
+                    path: 'images/ic_edit.png',
+                    width: height / 32,
+                    height: height / 32,
+                    onTap: () async {
+                      updateFirstImage(context, modelUser, true);
+                    },
+                    padding: 5,
+                  ),
+              ],
+            ),
           ),
         ),
       );
@@ -390,10 +408,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           children: [
                             Padding(
                               padding:
-                                  const EdgeInsets.only(top: 10, bottom: 0),
+                              const EdgeInsets.only(top: 10, bottom: 0),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   if (!isFirst)
                                     IconButton(
@@ -424,7 +442,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             SlideFadeTransition(
                               animationDuration:
-                                  const Duration(milliseconds: 800),
+                              const Duration(milliseconds: 800),
                               child: Container(
                                 padding: EdgeInsets.only(
                                     bottom: height / 62,
@@ -432,7 +450,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     right: 8),
                                 alignment: Alignment.centerRight,
                                 child: buttonUniversalAnimationColors(
-                                    isFirst ? 'Завершить' : 'Сохронить',
+                                    isFirst ? 'Завершить' : 'Сохранить',
                                     [
                                       Colors.blueAccent,
                                       Colors.purpleAccent,
@@ -472,7 +490,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 context,
                                 3,
                                 height,
-                                () => showDatePicker()),
+                                    () => showDatePicker()),
                             textFieldProfileSettings(_myPolController, true,
                                 'Ваш пол', context, 10, height, () {
                                   showBottomSheet(
@@ -482,7 +500,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   'Женский',
                                   _myPolController,
                                   height);
-                            }),
+                                }),
                             textFieldProfileSettings(
                                 _searchPolController,
                                 true,
@@ -507,19 +525,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   'Каракол',
                                   _localController,
                                   height);
-                            }),
+                                }),
                             textFieldProfileSettings(_ageRangController, true,
                                 'Диапазон поиска', context, 14, height, () {
-                              showCupertinoModalBottomSheet(
-                                  topRadius: const Radius.circular(30),
+                                  showFlexibleBottomSheet(
                                   duration: const Duration(milliseconds: 700),
-                                  backgroundColor: color_black_88,
+                                  decoration: const BoxDecoration(
+                                      color: color_black_88,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(16))),
+                                  bottomSheetColor: Colors.transparent,
+                                  initHeight: 0.28,
                                   context: context,
-                                  builder: (context) {
+                                  builder: (
+                                    BuildContext context,
+                                    ScrollController scrollController,
+                                    double bottomSheetOffset,
+                                  ) {
                                     return StatefulBuilder(
                                         builder: (context, setState) {
                                       return SizedBox(
-                                        height: 200,
+                                        height: 280,
                                         width: width,
                                         child: Column(
                                           children: [
@@ -531,43 +557,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     milliseconds: 450),
                                                 child: RichText(
                                                   text: TextSpan(
-                                                    text:
-                                                        'От ${_valuesAge.start} до ${_valuesAge.end} лет',
-                                                    style: GoogleFonts.lato(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color:
+                                                            text:
+                                                            'От ${_valuesAge.start} до ${_valuesAge.end} лет',
+                                                            style: GoogleFonts.lato(
+                                                              textStyle:
+                                                              const TextStyle(
+                                                                  color:
                                                                   Colors.white,
-                                                              fontSize: 13,
-                                                              letterSpacing:
+                                                                  fontSize: 13,
+                                                                  letterSpacing:
                                                                   .9),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    SfRangeSlider(
+                                                      activeColor: Colors.blue,
+                                                      min: 16,
+                                                      max: 30,
+                                                      values: _valuesAge,
+                                                      stepSize: 1,
+                                                      enableTooltip: true,
+                                                      onChanged:
+                                                          (SfRangeValues values) {
+                                                        setState(() {
+                                                          _valuesAge = values;
+                                                          _ageRangController.text =
+                                                          'От ${_valuesAge.start} до ${_valuesAge.end} лет';
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                            ),
-                                            SfRangeSlider(
-                                              activeColor: Colors.blue,
-                                              min: 16,
-                                              max: 30,
-                                              values: _valuesAge,
-                                              stepSize: 1,
-                                              enableTooltip: true,
-                                              onChanged:
-                                                  (SfRangeValues values) {
-                                                setState(() {
-                                                  _valuesAge = values;
-                                                  _ageRangController.text =
-                                                      'От ${_valuesAge.start} до ${_valuesAge.end} лет';
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    });
-                                  });
-                            }),
+                                              );
+                                            });
+                                      });
+                                }),
                             textFieldProfileSettings(
                                 _descriptionController,
                                 false,
@@ -575,7 +601,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 context,
                                 100,
                                 height,
-                                () {},
+                                    () {},
                                 3),
                             textFieldProfileSettings(_notificationController,
                                 true, 'Уведомления', context, 10, height, () {
@@ -586,12 +612,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   'Выключить',
                                   _notificationController,
                                   height);
-                            }),
+                                }),
                             textFieldProfileSettings(_supportController, true,
                                 'Техподдержка', context, 30, height, () async {
-                              String gmail = 'lancelotsuport@gmail.com';
-                              _launchUrl(gmail);
-                            }, 2),
+                                  String gmail = 'lancelotsuport@gmail.com';
+                                  _launchUrl(gmail);
+                                }, 2),
                             Theme(
                               data: ThemeData.light(),
                               child: MediaQuery(
@@ -612,7 +638,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: MultiSelectBottomSheetField(
                                       initialValue: modelUser.userInterests,
                                       searchHintStyle:
-                                          const TextStyle(color: Colors.white),
+                                      const TextStyle(color: Colors.white),
                                       buttonText: Text(
                                         'Выбрать $interestsCount максимум (6)',
                                         style: TextStyle(
@@ -652,7 +678,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                       searchHint: 'Поиск',
                                       searchTextStyle:
-                                          const TextStyle(color: Colors.white),
+                                      const TextStyle(color: Colors.white),
                                       initialChildSize: 0.4,
                                       listType: MultiSelectListType.CHIP,
                                       searchable: true,
@@ -720,15 +746,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<dynamic> showBottomSheet(context, title, select_1, select_2,
       TextEditingController controller, double height) {
-    return showCupertinoModalBottomSheet(
-        topRadius: const Radius.circular(30),
+    return showFlexibleBottomSheet(
         duration: const Duration(milliseconds: 800),
-        backgroundColor: color_black_88,
+        decoration: const BoxDecoration(
+            color: color_black_88,
+            borderRadius: BorderRadius.all(Radius.circular(16))),
+        bottomSheetColor: Colors.transparent,
+        initHeight: 0.34,
         context: context,
-        builder: (context) {
+        builder: (
+          BuildContext context,
+          ScrollController scrollController,
+          double bottomSheetOffset,
+        ) {
           return StatefulBuilder(builder: (context, setState) {
             return Container(
-              height: 240,
+              height: 280,
               padding: const EdgeInsets.all(28),
               width: MediaQuery.of(context).size.width,
               child: Column(

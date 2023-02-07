@@ -1,13 +1,11 @@
 import 'dart:async';
 
+import 'package:Lancelot/screens/profile_screen.dart';
+import 'package:Lancelot/screens/sympathy_screen.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lancelot/screens/chat_screen.dart';
-import 'package:lancelot/screens/chat_user_screen.dart';
-import 'package:lancelot/screens/profile_screen.dart';
-import 'package:lancelot/screens/sympathy_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';
@@ -15,6 +13,8 @@ import '../config/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
+import 'chat_screen.dart';
+import 'chat_user_screen.dart';
 import 'home_screen.dart';
 
 class ManagerScreen extends StatefulWidget {
@@ -99,14 +99,13 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
   }
 
   Future<void> getNotificationFcm() async {
+    await const MethodChannel('clear_all_notifications').invokeMethod('clear');
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         setIndexPage(message.data['type'], message.data['uid']);
       }
     });
 
-    // NotificationApi.initNotification();
-    // listenNotification();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -126,14 +125,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         await setValueSharedPref('indexSympathy', indexSympathy);
         await setValueSharedPref('indexChat', indexChat);
         await setValueSharedPref('indexProfile', indexProfile);
-
-        // NotificationApi.showNotification(
-        //   id: idNotification++,
-        //   title: notification.title.toString(),
-        //   body: notification.body.toString(),
-        //   payload: '${message.data['type']},${message.data['uid']}',
-        //   uri: message.data['uri'],
-        // );
       }
     });
 
@@ -182,8 +173,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         setStateFirebase('online');
       });
     }
-
-    // checkStatusNetwork(streamSubscription);
     super.initState();
   }
 
@@ -199,7 +188,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.addObserver(this);
-    // streamSubscription.cancel();
     super.dispose();
   }
 
@@ -222,8 +210,18 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         }
         break;
       case AppLifecycleState.inactive:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          setStateFirebase('offline');
+        }
         break;
       case AppLifecycleState.detached:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          setStateFirebase('offline');
+        }
         break;
     }
   }

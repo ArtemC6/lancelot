@@ -1,16 +1,16 @@
 // @dart=2.9
+import 'package:Lancelot/screens/auth/signin_screen.dart';
+import 'package:Lancelot/screens/auth/verify_screen.dart';
+import 'package:Lancelot/screens/manager_screen.dart';
+import 'package:Lancelot/screens/settings/edit_image_profile_screen.dart';
+import 'package:Lancelot/screens/settings/edit_profile_screen.dart';
+import 'package:Lancelot/widget/animation_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lancelot/screens/auth/signin_screen.dart';
-import 'package:lancelot/screens/auth/verify_screen.dart';
-import 'package:lancelot/screens/manager_screen.dart';
-import 'package:lancelot/screens/settings/edit_image_profile_screen.dart';
-import 'package:lancelot/screens/settings/edit_profile_screen.dart';
-import 'package:lancelot/widget/animation_widget.dart';
 
 import 'config/firestore_operations.dart';
 import 'model/user_model.dart';
@@ -95,7 +95,6 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
 
   Future userNavigator() async {
       if (FirebaseAuth.instance.currentUser?.uid != null) {
-      // if (true) {
       if (FirebaseAuth.instance.currentUser.emailVerified) {
         if (isEmptyDataUser) {
           if (isEmptyImageBackground) {

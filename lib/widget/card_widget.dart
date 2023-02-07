@@ -47,7 +47,7 @@ class photoUser extends StatelessWidget {
                     width: 0.5,
                     color: Colors.white24,
                   )),
-              elevation: 6,
+              elevation: 8,
               child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(50)),

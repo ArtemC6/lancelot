@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -14,6 +15,7 @@ import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
 import '../../widget/component_widget.dart';
 import '../../widget/photo_widget.dart';
+import '../view_likes_screen.dart';
 import 'edit_image_profile_screen.dart';
 import 'edit_profile_screen.dart';
 
@@ -40,6 +42,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: color_black_88,
       body: Theme(
@@ -251,8 +255,187 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  infoPanelWidget(
-                                    userModel: userModel,
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: height / 40),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            animatedText(
+                                                height / 52,
+                                                userModel.userImageUrl.length
+                                                    .toString(),
+                                                Colors.white.withOpacity(0.9),
+                                                750,
+                                                1),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 2),
+                                              child: animatedText(
+                                                  height / 72,
+                                                  'Фото',
+                                                  Colors.white.withOpacity(0.7),
+                                                  800,
+                                                  1),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 24,
+                                          child: VerticalDivider(
+                                            endIndent: 4,
+                                            color:
+                                                Colors.white.withOpacity(0.7),
+                                            thickness: 1,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                FadeRouteAnimation(
+                                                    ViewLikesScreen(
+                                                  userModelCurrent: userModel,
+                                                )));
+                                          },
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              FutureBuilder(
+                                                future: FirebaseFirestore
+                                                        .instance
+                                                        .collection('User')
+                                                        .doc(userModel.uid)
+                                                        .collection('likes')
+                                                        .get(const GetOptions(
+                                                            source:
+                                                                Source.cache))
+                                                        .toString()
+                                                        .isEmpty
+                                                    ? FirebaseFirestore.instance
+                                                        .collection('User')
+                                                        .doc(userModel.uid)
+                                                        .collection('likes')
+                                                        .get(const GetOptions(
+                                                            source:
+                                                                Source.cache))
+                                                    : FirebaseFirestore.instance
+                                                        .collection('User')
+                                                        .doc(userModel.uid)
+                                                        .collection('likes')
+                                                        .get(
+                                                          const GetOptions(
+                                                              source: Source
+                                                                  .server),
+                                                        ),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasData) {
+                                                    return SlideFadeTransition(
+                                                        animationDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    1250),
+                                                        child: AnimatedSwitcher(
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          transitionBuilder:
+                                                              ((child,
+                                                                  animation) {
+                                                            return ScaleTransition(
+                                                                scale:
+                                                                    animation,
+                                                                child: child);
+                                                          }),
+                                                          child: RichText(
+                                                            key: ValueKey<int>(
+                                                                snapshot.data!
+                                                                    .size),
+                                                            text: TextSpan(
+                                                              text: snapshot
+                                                                  .data!.size
+                                                                  .toString(),
+                                                              style: GoogleFonts
+                                                                  .lato(
+                                                                textStyle: TextStyle(
+                                                                    color: Colors
+                                                                        .white
+                                                                        .withOpacity(
+                                                                            0.9),
+                                                                    fontSize:
+                                                                        height /
+                                                                            52,
+                                                                    letterSpacing:
+                                                                        .5),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ));
+                                                  }
+                                                  return const SizedBox();
+                                                },
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 2),
+                                                child: animatedText(
+                                                    height / 72,
+                                                    'Лайки',
+                                                    Colors.white
+                                                        .withOpacity(0.7),
+                                                    1200,
+                                                    1),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 24,
+                                          child: VerticalDivider(
+                                            endIndent: 4,
+                                            color:
+                                                Colors.white.withOpacity(0.7),
+                                            thickness: 1,
+                                          ),
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            animatedText(
+                                                height / 52,
+                                                userModel.userInterests.length
+                                                    .toString(),
+                                                Colors.white.withOpacity(0.9),
+                                                1350,
+                                                1),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 2),
+                                              child: animatedText(
+                                                  height / 72,
+                                                  'Интересы',
+                                                  Colors.white.withOpacity(0.7),
+                                                  1400,
+                                                  1),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   slideInterestsSettings(
                                       listInterests, userModel),

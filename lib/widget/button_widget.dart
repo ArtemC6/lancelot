@@ -105,6 +105,18 @@ Widget buttonUniversal(String name, color, height, onTap, time) {
     child: Container(
       height: height,
       decoration: BoxDecoration(
+        boxShadow: const [
+          BoxShadow(
+              spreadRadius: 1.5,
+              blurRadius: 4,
+              offset: Offset(-3, 0),
+              color: Colors.blueAccent),
+          BoxShadow(
+              spreadRadius: 1,
+              blurRadius: 7,
+              offset: Offset(3, 0),
+              color: Colors.purpleAccent),
+        ],
         border: Border.all(width: 0.8, color: Colors.white54),
         gradient: LinearGradient(colors: color),
         borderRadius: BorderRadius.circular(20),
@@ -157,6 +169,18 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
       width: height * 3.5,
       height: height,
       decoration: BoxDecoration(
+        boxShadow: const [
+          BoxShadow(
+              spreadRadius: 0.4,
+              blurRadius: 4,
+              offset: Offset(-3, 0),
+              color: Colors.white12),
+          BoxShadow(
+              spreadRadius: 1,
+              blurRadius: 7,
+              offset: Offset(3, 0),
+              color: Colors.white12),
+        ],
         gradient: LinearGradient(colors: color),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -201,10 +225,13 @@ class customIconButton extends StatelessWidget {
       beginCurve: Curves.decelerate,
       endCurve: Curves.fastOutSlowIn,
       onTap: onTap,
-      child: Image.asset(
-        path,
-        height: height,
-        width: width,
+      child: Padding(
+        padding: EdgeInsets.all(padding),
+        child: Image.asset(
+          path,
+          height: height,
+          width: width,
+        ),
       ),
     );
   }

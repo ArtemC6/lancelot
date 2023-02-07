@@ -13,10 +13,8 @@ import '../../model/user_model.dart';
 import '../config/utils.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings/edit_profile_screen.dart';
-import '../screens/view_likes_screen.dart';
 import 'animation_widget.dart';
 import 'button_widget.dart';
-import 'card_widget.dart';
 
 class slideInterests extends StatelessWidget {
   List<InterestsModel> listStory = [];
@@ -362,129 +360,6 @@ class chatBackgroundPanel extends StatelessWidget {
   }
 }
 
-class infoPanelWidget extends StatelessWidget {
-  UserModel userModel;
-
-  infoPanelWidget({Key? key, required this.userModel}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: height / 40),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              animatedText(
-                  height / 52,
-                  userModel.userImageUrl.length.toString(),
-                  Colors.white.withOpacity(0.9),
-                  750,
-                  1),
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: animatedText(
-                    height / 72, 'Фото', Colors.white.withOpacity(0.7), 800, 1),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 24,
-            child: VerticalDivider(
-              endIndent: 4,
-              color: Colors.white.withOpacity(0.7),
-              thickness: 1,
-            ),
-          ),
-          InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () {
-              Navigator.push(
-                  context,
-                  FadeRouteAnimation(ViewLikesScreen(
-                    userModelCurrent: userModel,
-                  )));
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(userModel.uid)
-                      .collection('likes')
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      return SlideFadeTransition(
-                          animationDuration: const Duration(milliseconds: 1250),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 500),
-                            transitionBuilder: ((child, animation) {
-                              return ScaleTransition(
-                                  scale: animation, child: child);
-                            }),
-                            child: RichText(
-                              key: ValueKey<int>(snapshot.data!.size),
-                              text: TextSpan(
-                                text: snapshot.data!.size.toString(),
-                                style: GoogleFonts.lato(
-                                  textStyle: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontSize: height / 52,
-                                      letterSpacing: .5),
-                                ),
-                              ),
-                            ),
-                          ));
-                    }
-                    return const SizedBox();
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: animatedText(height / 72, 'Лайки',
-                      Colors.white.withOpacity(0.7), 1200, 1),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 24,
-            child: VerticalDivider(
-              endIndent: 4,
-              color: Colors.white.withOpacity(0.7),
-              thickness: 1,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              animatedText(
-                  height / 52,
-                  userModel.userInterests.length.toString(),
-                  Colors.white.withOpacity(0.9),
-                  1350,
-                  1),
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: animatedText(height / 72, 'Интересы',
-                    Colors.white.withOpacity(0.7), 1400, 1),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 Padding topPanel(BuildContext context, String text, IconData icon, Color color,
     bool isBack, double height) {
   return Padding(
@@ -634,25 +509,91 @@ class _topPanelChatState extends State<topPanelChat> {
                                 child: Stack(
                                   alignment: Alignment.bottomRight,
                                   children: [
-                                    photoUser(
-                                      uri: friendImage,
-                                      width: height / 16,
-                                      height: height / 16,
-                                      state: 'offline',
-                                      padding: 0,
-                                    ),
-                                    if (isOnline)
-                                      DelayedDisplay(
-                                        delay:
-                                            const Duration(milliseconds: 450),
-                                        child: customIconButton(
-                                          padding: 0,
-                                          width: height / 38,
-                                          height: height / 38,
-                                          path: 'images/ic_green_dot.png',
-                                          onTap: () {},
-                                        ),
+                                    SizedBox(
+                                      child: Stack(
+                                        alignment: Alignment.bottomRight,
+                                        children: [
+                                          SizedBox(
+                                            height: height / 16,
+                                            width: height / 16,
+                                            child: Card(
+                                              shadowColor: Colors.white30,
+                                              color: Colors.transparent,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  side: const BorderSide(
+                                                    width: 0.5,
+                                                    color: Colors.white24,
+                                                  )),
+                                              elevation: 8,
+                                              child: Container(
+                                                decoration: const BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(50)),
+                                                ),
+                                                child: CachedNetworkImage(
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              progress) =>
+                                                          Center(
+                                                    child: SizedBox(
+                                                      height: height / 16,
+                                                      width: height / 16,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color: Colors.white,
+                                                        strokeWidth: 0.8,
+                                                        value:
+                                                            progress.progress,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  imageUrl: friendImage,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    height: height / 16,
+                                                    width: height / 16,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.transparent,
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                                  .all(
+                                                              Radius.circular(
+                                                                  50)),
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                        alignment:
+                                                            Alignment.topCenter,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          if (isOnline)
+                                            DelayedDisplay(
+                                              delay: const Duration(
+                                                  milliseconds: 450),
+                                              child: customIconButton(
+                                                padding: 0,
+                                                width: height / 38,
+                                                height: height / 38,
+                                                path: 'images/ic_green_dot.png',
+                                                onTap: () {},
+                                              ),
+                                            ),
+                                        ],
                                       ),
+                                    ),
                                   ],
                                 ),
                               ),

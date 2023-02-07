@@ -324,99 +324,9 @@ class _MessageTextFieldState extends State<MessageTextField> {
                       letterSpacing: .5)),
             ),
           ),
-
           ZoomTapAnimation(
             onTap: () async {
-              if (_controllerMessage.text.trim().isNotEmpty) {
-                String messageText = _controllerMessage.text.trim();
-                _controllerMessage.clear();
-                if (notification && token != '') {
-                  sendFcmMessage(
-                      'Lancelot',
-                      '${currentUser.name}: отправил вам новое сообщение',
-                      token,
-                      'chat',
-                      currentUser.uid);
-                }
-                final dateCurrent = DateTime.now();
-
-                final docMessage = FirebaseFirestore.instance
-                    .collection('User')
-                    .doc(widget.currentUser.uid)
-                    .collection('messages')
-                    .doc(widget.friendId)
-                    .collection('chats')
-                    .doc();
-
-                await docMessage
-                    .set(({
-                  "senderId": currentUser.uid,
-                  "idDoc": docMessage.id,
-                  "receiverId": widget.friendId,
-                  "message": messageText,
-                  "date": dateCurrent,
-                }))
-                    .then((value) {
-                  final docUser = FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(currentUser.uid)
-                      .collection('messages')
-                      .doc(widget.friendId);
-
-                  if (isFirstMessage) {
-                    docUser.update({
-                      'last_msg': messageText,
-                      'date': dateCurrent,
-                      'writeLastData': '',
-                      // 'last_date_open_chat': '',
-                    });
-                  } else {
-                    docUser.set({
-                      'last_msg': messageText,
-                      'date': dateCurrent,
-                      'writeLastData': '',
-                      'last_date_open_chat': '',
-                    });
-                  }
-                });
-
-                final docMessageFriend = FirebaseFirestore.instance
-                    .collection('User')
-                    .doc(widget.friendId)
-                    .collection('messages')
-                    .doc(currentUser.uid)
-                    .collection("chats")
-                    .doc();
-                docMessageFriend.set({
-                  "idDoc": docMessageFriend.id,
-                  "senderId": currentUser.uid,
-                  "receiverId": widget.friendId,
-                  "message": messageText,
-                  "date": dateCurrent,
-                }).then((value) {
-                  final docUser = FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(widget.friendId)
-                      .collection('messages')
-                      .doc(currentUser.uid);
-
-                  if (isFirstMessage) {
-                    docUser.update({
-                      'last_msg': messageText,
-                      'date': dateCurrent,
-                      'writeLastData': '',
-                      'last_date_open_chat': '',
-                    });
-                  } else {
-                    docUser.set({
-                      'last_msg': messageText,
-                      'date': dateCurrent,
-                      'writeLastData': '',
-                      'last_date_open_chat': '',
-                    });
-                  }
-                });
-              }
+              await sendMessage();
             },
             child: Padding(
               padding: EdgeInsets.only(left: width / 132),
@@ -430,5 +340,98 @@ class _MessageTextFieldState extends State<MessageTextField> {
         ],
       ),
     );
+  }
+
+  Future<void> sendMessage() async {
+    if (_controllerMessage.text.trim().isNotEmpty) {
+      String messageText = _controllerMessage.text.trim();
+      _controllerMessage.clear();
+      if (notification && token != '') {
+        sendFcmMessage(
+            'Lancelot',
+            '${currentUser.name}: отправил вам новое сообщение',
+            token,
+            'chat',
+            currentUser.uid);
+      }
+      final dateCurrent = DateTime.now();
+
+      final docMessage = FirebaseFirestore.instance
+          .collection('User')
+          .doc(widget.currentUser.uid)
+          .collection('messages')
+          .doc(widget.friendId)
+          .collection('chats')
+          .doc();
+
+      await docMessage
+          .set(({
+        "senderId": currentUser.uid,
+        "idDoc": docMessage.id,
+        "receiverId": widget.friendId,
+        "message": messageText,
+        "date": dateCurrent,
+      }))
+          .then((value) {
+        final docUser = FirebaseFirestore.instance
+            .collection('User')
+            .doc(currentUser.uid)
+            .collection('messages')
+            .doc(widget.friendId);
+
+        if (isFirstMessage) {
+          docUser.update({
+            'last_msg': messageText,
+            'date': dateCurrent,
+            'writeLastData': '',
+            // 'last_date_open_chat': '',
+          });
+        } else {
+          docUser.set({
+            'last_msg': messageText,
+            'date': dateCurrent,
+            'writeLastData': '',
+            'last_date_open_chat': '',
+          });
+        }
+      });
+
+      final docMessageFriend = FirebaseFirestore.instance
+          .collection('User')
+          .doc(widget.friendId)
+          .collection('messages')
+          .doc(currentUser.uid)
+          .collection("chats")
+          .doc();
+      docMessageFriend.set({
+        "idDoc": docMessageFriend.id,
+        "senderId": currentUser.uid,
+        "receiverId": widget.friendId,
+        "message": messageText,
+        "date": dateCurrent,
+      }).then((value) {
+        final docUser = FirebaseFirestore.instance
+            .collection('User')
+            .doc(widget.friendId)
+            .collection('messages')
+            .doc(currentUser.uid);
+
+        if (isFirstMessage) {
+          docUser.update({
+            'last_msg': messageText,
+            'date': dateCurrent,
+            'writeLastData': '',
+            'last_date_open_chat': '',
+          });
+        } else {
+          docUser.set({
+            'last_msg': messageText,
+            'date': dateCurrent,
+            'writeLastData': '',
+            'last_date_open_chat': '',
+          });
+        }
+      });
+    }
   }
 }

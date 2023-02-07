@@ -1,11 +1,9 @@
+import 'package:Lancelot/screens/profile_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
-import 'package:lancelot/screens/profile_screen.dart';
-
-// import 'package:flutter_colors_border/flutter_colors_border.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
@@ -462,7 +460,7 @@ class _HomeScreen extends State<HomeScreen>
                                       ],
                                       height / 21, () {
                                     readFirebase(
-                                      10,
+                                      6,
                                       true,
                                     );
                                   }, 750),

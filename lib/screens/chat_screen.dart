@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lancelot/screens/chat_user_screen.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
@@ -12,6 +11,7 @@ import '../widget/animation_widget.dart';
 import '../widget/card_widget.dart';
 import '../widget/component_widget.dart';
 import '../widget/dialog_widget.dart';
+import 'chat_user_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final UserModel userModelCurrent;
@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final scrollController = ScrollController();
   int limit = 7;
   bool isLoadingUser = false;
+
   late final AnimationController animationController;
 
   _ChatScreenState(this.userModelCurrent);

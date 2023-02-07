@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:Lancelot/screens/auth/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lancelot/screens/auth/signin_screen.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase_auth.dart';

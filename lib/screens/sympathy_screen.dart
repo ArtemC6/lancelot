@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:Lancelot/screens/profile_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lancelot/screens/chat_user_screen.dart';
-import 'package:lancelot/screens/profile_screen.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
@@ -18,6 +18,7 @@ import '../widget/animation_widget.dart';
 import '../widget/button_widget.dart';
 import '../widget/card_widget.dart';
 import '../widget/component_widget.dart';
+import 'chat_user_screen.dart';
 
 class SympathyScreen extends StatefulWidget {
   final UserModel userModelCurrent;
@@ -239,8 +240,11 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                     }
                                                   } catch (E) {}
 
-                                                  return ZoomTapAnimation(
-                                                    end: 0.999,
+                                                  return InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
                                                     onTap: () {
                                                       Navigator.push(
                                                           context,
@@ -281,7 +285,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                       height: height / 4.5,
                                                       width: size.width,
                                                       padding: EdgeInsets.all(
-                                                          height / 74),
+                                                          height / 72),
                                                       child: Card(
                                                         shadowColor: Colors
                                                             .white
@@ -301,21 +305,15 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                 )),
                                                         elevation: 14,
                                                         child: Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      height /
-                                                                          58,
-                                                                  vertical:
-                                                                      height /
-                                                                          46),
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  height / 58),
                                                           child: Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
                                                                     .spaceBetween,
                                                             children: [
-                                                              Expanded(
-                                                                flex: 1,
+                                                              Flexible(
                                                                 child:
                                                                     photoUser(
                                                                   uri: imageUri,
@@ -326,7 +324,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                       height /
                                                                           8.2,
                                                                   state: state,
-                                                                  padding: 4,
+                                                                  padding: 2.2,
                                                                 ),
                                                               ),
                                                               SizedBox(
@@ -345,37 +343,40 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                           MainAxisAlignment
                                                                               .spaceBetween,
                                                                       children: [
-                                                                        DelayedDisplay(
-                                                                          delay:
-                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
+                                                                        Padding(
+                                                                          padding:
+                                                                              EdgeInsets.only(bottom: height / 72),
                                                                           child:
-                                                                              Column(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              RichText(
-                                                                                text: TextSpan(
-                                                                                  text: '${name.trim()}, $age',
-                                                                                  style: GoogleFonts.lato(
-                                                                                    textStyle: TextStyle(color: Colors.white, fontSize: height / 52, letterSpacing: .9),
+                                                                              DelayedDisplay(
+                                                                            delay:
+                                                                                Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
+                                                                            child:
+                                                                                Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                RichText(
+                                                                                  text: TextSpan(
+                                                                                    text: '${name.trim()}, $age',
+                                                                                    style: GoogleFonts.lato(
+                                                                                      textStyle: TextStyle(color: Colors.white, fontSize: height / 52, letterSpacing: .9),
+                                                                                    ),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                              RichText(
-                                                                                text: TextSpan(
-                                                                                  text: city,
-                                                                                  style: GoogleFonts.lato(
-                                                                                    textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 70, letterSpacing: .5),
+                                                                                RichText(
+                                                                                  text: TextSpan(
+                                                                                    text: city,
+                                                                                    style: GoogleFonts.lato(
+                                                                                      textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 70, letterSpacing: .5),
+                                                                                    ),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                            ],
+                                                                              ],
+                                                                            ),
                                                                           ),
                                                                         ),
                                                                         Container(
-                                                                          margin: EdgeInsets.only(
-                                                                              bottom: height / 76,
-                                                                              left: 10),
+                                                                          margin:
+                                                                              EdgeInsets.only(bottom: height / 120),
                                                                           alignment:
                                                                               Alignment.topRight,
                                                                           child:
@@ -430,28 +431,38 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                               setState(() {});
                                                                             });
                                                                           }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
-                                                                        customIconButton(
-                                                                          onTap:
-                                                                              () {
-                                                                            Navigator.of(context).push(MaterialPageRoute(
-                                                                                builder: (context) => ChatUserScreen(
-                                                                                      friendId: uid,
-                                                                                      friendName: name,
-                                                                                      friendImage: imageUri,
-                                                                                      userModelCurrent: userModelCurrent,
-                                                                                      token: token,
-                                                                                      notification: asyncSnapshotUser.data['notification'],
-                                                                                    )));
-                                                                          },
-                                                                          path:
-                                                                              'images/ic_send.png',
-                                                                          height:
-                                                                              height / 28,
-                                                                          width:
-                                                                              height / 28,
-                                                                          padding:
-                                                                              4,
-                                                                        )
+                                                                        DropShadow(
+                                                                          blurRadius:
+                                                                              3,
+                                                                          spread:
+                                                                              0.1,
+                                                                          opacity:
+                                                                              1,
+                                                                          child:
+                                                                              ZoomTapAnimation(
+                                                                            onTap:
+                                                                                () {
+                                                                              Navigator.of(context).push(MaterialPageRoute(
+                                                                                  builder: (context) => ChatUserScreen(
+                                                                                        friendId: uid,
+                                                                                        friendName: name,
+                                                                                        friendImage: imageUri,
+                                                                                        userModelCurrent: userModelCurrent,
+                                                                                        token: token,
+                                                                                        notification: asyncSnapshotUser.data['notification'],
+                                                                                      )));
+                                                                            },
+                                                                            child:
+                                                                                Padding(
+                                                                              padding: EdgeInsets.only(bottom: height / 60, top: height / 140, left: height / 220, right: height / 220),
+                                                                              child: Image.asset(
+                                                                                'images/ic_send.png',
+                                                                                height: height / 25,
+                                                                                width: height / 25,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
                                                                       ],
                                                                     ),
                                                                   ],

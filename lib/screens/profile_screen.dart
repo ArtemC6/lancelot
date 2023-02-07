@@ -1,13 +1,18 @@
 import 'dart:ui';
 
+import 'package:Lancelot/screens/settings/edit_profile_screen.dart';
+import 'package:Lancelot/screens/settings/settiongs_profile_screen.dart';
+import 'package:Lancelot/screens/view_likes_screen.dart';
+import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lancelot/screens/settings/edit_profile_screen.dart';
-import 'package:lancelot/screens/settings/settiongs_profile_screen.dart';
+import 'package:like_button/like_button.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
 import '../config/firestore_operations.dart';
@@ -113,44 +118,46 @@ class _ProfileScreen extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    double height = MediaQuery.of(context).size.height;
+
     if (isLoading) {
       return Scaffold(
         backgroundColor: color_black_88,
         body: Theme(
           data: ThemeData.light(),
           child: SingleChildScrollView(
-              child: AnimationLimiter(
-                  child: AnimationConfiguration.staggeredList(
-            position: 1,
-            delay: const Duration(milliseconds: 250),
-            child: SlideAnimation(
-              duration: const Duration(milliseconds: 2200),
-              horizontalOffset: size.width / 2,
-              curve: Curves.ease,
-              child: FadeInAnimation(
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 3000),
-                child: Stack(
-                  alignment:
-                      isProprietor ? Alignment.topRight : Alignment.topLeft,
-                  children: [
-                    Positioned(
-                      child: SizedBox(
-                        height: size.height * .28,
-                        width: size.width,
-                        child: CachedNetworkImage(
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                          fit: BoxFit.cover,
-                          imageUrl: userModelPartner.imageBackground,
+            child: AnimationLimiter(
+              child: AnimationConfiguration.staggeredList(
+                position: 1,
+                delay: const Duration(milliseconds: 250),
+                child: SlideAnimation(
+                  duration: const Duration(milliseconds: 2200),
+                  horizontalOffset: size.width / 2,
+                  curve: Curves.ease,
+                  child: FadeInAnimation(
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 3000),
+                    child: Stack(
+                      alignment:
+                          isProprietor ? Alignment.topRight : Alignment.topLeft,
+                      children: [
+                        Positioned(
+                          child: SizedBox(
+                            height: size.height * .28,
+                            width: size.width,
+                            child: CachedNetworkImage(
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
+                              imageUrl: userModelPartner.imageBackground,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    if (isBack)
-                      Positioned(
-                        height: size.height / 10,
-                        child: Container(
-                          alignment: Alignment.bottomLeft,
+                        if (isBack)
+                          Positioned(
+                            height: size.height / 10,
+                            child: Container(
+                              alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.only(
                                 left: size.height / 50,
                               ),
@@ -236,46 +243,118 @@ class _ProfileScreen extends State<ProfileScreen> {
                       margin: EdgeInsets.only(top: size.height * .20),
                       child: Column(
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            alignment: Alignment.centerLeft,
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                photoProfile(
-                                    uri: userModelPartner.userImageUrl[0]),
-                                buttonLike(
-                                    isLike: isLike,
-                                    userModelFriend: userModelPartner,
-                                    userModelCurrent: userModelCurrent),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
                               Container(
-                                padding:
-                                     EdgeInsets.only(top: size.height / 44, left: 14),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                margin: const EdgeInsets.only(left: 20),
+                                alignment: Alignment.centerLeft,
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    animatedText(
-                                        size.height / 52,
-                                        '${userModelPartner.name}, ${userModelPartner.ageInt}',
-                                        Colors.white,
-                                        700,
-                                        1),
-                                    const SizedBox(height: 1,),
-                                    animatedText(size.height / 66, userModelPartner.myCity,
-                                        Colors.white.withOpacity(.8), 750, 1),
+                                    photoProfile(
+                                        uri: userModelPartner.userImageUrl[0]),
+                                    ZoomTapAnimation(
+                                      child: Container(
+                                        margin:
+                                            EdgeInsets.only(right: height / 38),
+                                        child: LikeButton(
+                                          animationDuration: const Duration(
+                                              milliseconds: 1300),
+                                          isLiked: isLike,
+                                          size: size.height * 0.05,
+                                          circleColor: const CircleColor(
+                                              start: Colors.pinkAccent,
+                                              end: Colors.red),
+                                          bubblesColor: const BubblesColor(
+                                            dotPrimaryColor: Colors.pink,
+                                            dotSecondaryColor:
+                                                Colors.deepPurpleAccent,
+                                            dotLastColor: Colors.yellowAccent,
+                                            dotThirdColor:
+                                                Colors.deepPurpleAccent,
+                                          ),
+                                          likeBuilder: (bool isLiked) {
+                                            return SizedBox(
+                                              height: size.height * 0.07,
+                                              width: size.height * 0.07,
+                                              child: Animator<double>(
+                                                duration: const Duration(
+                                                    milliseconds: 1600),
+                                                cycles: 0,
+                                                curve: Curves.elasticIn,
+                                                tween: Tween<double>(
+                                                    begin: 20.0, end: 25.0),
+                                                builder: (context,
+                                                        animatorState, child) =>
+                                                    Icon(
+                                                  isLiked
+                                                      ? Icons.favorite_outlined
+                                                      : Icons
+                                                          .favorite_border_sharp,
+                                                  size:
+                                                      animatorState.value * 1.6,
+                                                  color: isLiked
+                                                      ? color_red
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          onTap: (isLiked) {
+                                            Future.delayed(
+                                                isLike
+                                                    ? const Duration(
+                                                        milliseconds: 0)
+                                                    : const Duration(
+                                                        milliseconds: 350), () {
+                                              setState(() {
+                                                isLike = !isLike;
+                                              });
+                                            });
+                                            return putLike(
+                                              userModelCurrent,
+                                              userModelPartner,
+                                              true,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              if (isProprietor)
-                                buttonUniversalAnimationColors(
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.only(
+                                        top: size.height / 44, left: 14),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        animatedText(
+                                            size.height / 52,
+                                            '${userModelPartner.name}, ${userModelPartner.ageInt}',
+                                            Colors.white,
+                                            700,
+                                            1),
+                                        const SizedBox(
+                                          height: 1,
+                                        ),
+                                        animatedText(
+                                            size.height / 66,
+                                            userModelPartner.myCity,
+                                            Colors.white.withOpacity(.8),
+                                            750,
+                                            1),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isProprietor)
+                                    buttonUniversalAnimationColors(
                                         'Редактировать',
                                         [
                                           Colors.blueAccent,
@@ -330,9 +409,205 @@ class _ProfileScreen extends State<ProfileScreen> {
                                         topRight: Radius.circular(22))),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    infoPanelWidget(
-                                        userModel: userModelPartner),
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: height / 40),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              animatedText(
+                                                  height / 52,
+                                                  userModelPartner
+                                                      .userImageUrl.length
+                                                      .toString(),
+                                                  Colors.white.withOpacity(0.9),
+                                                  750,
+                                                  1),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 2),
+                                                child: animatedText(
+                                                    height / 72,
+                                                    'Фото',
+                                                    Colors.white
+                                                        .withOpacity(0.7),
+                                                    800,
+                                                    1),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 24,
+                                            child: VerticalDivider(
+                                              endIndent: 4,
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
+                                              thickness: 1,
+                                            ),
+                                          ),
+                                          InkWell(
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  FadeRouteAnimation(
+                                                      ViewLikesScreen(
+                                                    userModelCurrent:
+                                                        userModelPartner,
+                                                  )));
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                FutureBuilder(
+                                                  future: FirebaseFirestore
+                                                          .instance
+                                                          .collection('User')
+                                                          .doc(userModelPartner
+                                                              .uid)
+                                                          .collection('likes')
+                                                          .get(const GetOptions(
+                                                              source:
+                                                                  Source.cache))
+                                                          .toString()
+                                                          .isEmpty
+                                                      ? FirebaseFirestore
+                                                          .instance
+                                                          .collection('User')
+                                                          .doc(userModelPartner
+                                                              .uid)
+                                                          .collection('likes')
+                                                          .get(const GetOptions(
+                                                              source:
+                                                                  Source.cache))
+                                                      : FirebaseFirestore
+                                                          .instance
+                                                          .collection('User')
+                                                          .doc(userModelPartner
+                                                              .uid)
+                                                          .collection('likes')
+                                                          .get(
+                                                            const GetOptions(
+                                                                source: Source
+                                                                    .server),
+                                                          ),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return SlideFadeTransition(
+                                                          animationDuration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      1250),
+                                                          child:
+                                                              AnimatedSwitcher(
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        500),
+                                                            transitionBuilder:
+                                                                ((child,
+                                                                    animation) {
+                                                              return ScaleTransition(
+                                                                  scale:
+                                                                      animation,
+                                                                  child: child);
+                                                            }),
+                                                            child: RichText(
+                                                              key: ValueKey<
+                                                                      int>(
+                                                                  snapshot.data!
+                                                                      .size),
+                                                              text: TextSpan(
+                                                                text: snapshot
+                                                                    .data!.size
+                                                                    .toString(),
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .lato(
+                                                                  textStyle: TextStyle(
+                                                                      color: Colors
+                                                                          .white
+                                                                          .withOpacity(
+                                                                              0.9),
+                                                                      fontSize:
+                                                                          height /
+                                                                              52,
+                                                                      letterSpacing:
+                                                                          .5),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ));
+                                                    }
+                                                    return const SizedBox();
+                                                  },
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 2),
+                                                  child: animatedText(
+                                                      height / 72,
+                                                      'Лайки',
+                                                      Colors.white
+                                                          .withOpacity(0.7),
+                                                      1200,
+                                                      1),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 24,
+                                            child: VerticalDivider(
+                                              endIndent: 4,
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
+                                              thickness: 1,
+                                            ),
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              animatedText(
+                                                  height / 52,
+                                                  userModelPartner
+                                                      .userInterests.length
+                                                      .toString(),
+                                                  Colors.white.withOpacity(0.9),
+                                                  1350,
+                                                  1),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 2),
+                                                child: animatedText(
+                                                    height / 72,
+                                                    'Интересы',
+                                                    Colors.white
+                                                        .withOpacity(0.7),
+                                                    1400,
+                                                    1),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     slideInterests(listStory),
                                     photoProfileGallery(
                                         userModelPartner.userImageUrl),

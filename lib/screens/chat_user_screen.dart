@@ -1,13 +1,13 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -41,7 +41,7 @@ class ChatUserScreen extends StatefulWidget {
 }
 
 class _ChatUserScreenState extends State<ChatUserScreen>
-    with TickerProviderStateMixin {
+    with WidgetsBindingObserver {
   String friendId,
       friendName,
       friendImage,
@@ -53,14 +53,15 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   final scrollController = ScrollController();
   int limit = 20;
   double chatBlur = 0, chatBlackout = 2, chatBlackoutFinal = 0.2;
-  bool isLoading = false;
-  late final AnimationController animationController;
+  bool isLoading = false, isWrite = true;
 
   _ChatUserScreenState(this.friendId, this.friendName, this.friendImage,
       this.userModelCurrent, this.token, this.notification);
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     readUser();
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent ==
@@ -81,13 +82,64 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     });
     createLastOpenChat(widget.friendId, userModelCurrent.uid);
     createLastCloseChat(userModelCurrent.uid, widget.friendId, '');
-    super.initState();
+  }
+
+  void startTimer() {
+    Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) {
+        setState(() {
+          isWrite = true;
+        });
+        timer.cancel();
+      },
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.paused:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          createLastOpenChat(widget.friendId, userModelCurrent.uid);
+          createLastCloseChat(
+              userModelCurrent.uid, widget.friendId, DateTime.now());
+        }
+        break;
+      case AppLifecycleState.resumed:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          createLastOpenChat(widget.friendId, userModelCurrent.uid);
+          createLastCloseChat(userModelCurrent.uid, widget.friendId, '');
+        }
+        break;
+      case AppLifecycleState.inactive:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          createLastOpenChat(widget.friendId, userModelCurrent.uid);
+          createLastCloseChat(
+              userModelCurrent.uid, widget.friendId, DateTime.now());
+        }
+        break;
+      case AppLifecycleState.detached:
+        if (isWrite) {
+          startTimer();
+          isWrite = false;
+          createLastOpenChat(widget.friendId, userModelCurrent.uid);
+          createLastCloseChat(
+              userModelCurrent.uid, widget.friendId, DateTime.now());
+        }
+        break;
+    }
   }
 
   Future readUser() async {
-    animationController = AnimationController(vsync: this);
     final prefs = await SharedPreferences.getInstance();
-
     if (friendName.isEmpty && friendImage.isEmpty && token.isEmpty) {
       await readUserFirebase(friendId).then((user) {
         setState(() {
@@ -153,7 +205,6 @@ class _ChatUserScreenState extends State<ChatUserScreen>
 
   @override
   void dispose() {
-    animationController.dispose();
     createLastOpenChat(widget.friendId, userModelCurrent.uid);
     createLastCloseChat(userModelCurrent.uid, widget.friendId, DateTime.now());
     super.dispose();
@@ -215,21 +266,21 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                 showAlertDialogDeleteChat(context, friendId,
                                     friendName, true, friendImage, height);
                               } else if (value == 1) {
-                                showCupertinoModalBottomSheet(
-                                  topRadius: const Radius.circular(20),
+                                showFlexibleBottomSheet(
+                                  bottomSheetColor: Colors.transparent,
                                   duration: const Duration(milliseconds: 800),
-                                  backgroundColor: Colors.transparent,
                                   context: context,
-                                  builder: (context) {
+                                  builder: (
+                                    BuildContext context,
+                                    ScrollController scrollController,
+                                    double bottomSheetOffset,
+                                  ) {
                                     return StatefulBuilder(
                                         builder: (context, setState) {
                                       return Container(
                                         height: height / 2.6,
                                         padding: const EdgeInsets.only(
-                                            top: 10,
-                                            left: 10,
-                                            right: 10,
-                                            bottom: 20),
+                                            top: 10, left: 10, right: 10),
                                         child: Column(
                                           children: [
                                             Container(
@@ -480,9 +531,9 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                             message = snapshotMy
                                                 .data.docs[index]['message'];
                                             date = snapshotMy.data.docs[index]
-                                            ['date'];
+                                                ['date'];
                                             isMe = snapshotMy.data.docs[index]
-                                            ['senderId'] ==
+                                                    ['senderId'] ==
                                                 userModelCurrent.uid;
                                           } catch (E) {}
                                           return AnimationConfiguration
@@ -516,25 +567,24 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                         .doc(friendId)
                                                         .collection('messages')
                                                         .doc(userModelCurrent
-                                                        .uid)
+                                                            .uid)
                                                         .collection('chats')
                                                         .where('message',
-                                                        isEqualTo: message)
+                                                            isEqualTo: message)
                                                         .where('date',
-                                                        isEqualTo: date)
+                                                            isEqualTo: date)
                                                         .get()
                                                         .then(
-                                                          (QuerySnapshot
-                                                      querySnapshot) async {
+                                                      (QuerySnapshot
+                                                          querySnapshot) async {
                                                         for (var document
-                                                        in querySnapshot
-                                                            .docs) {
+                                                            in querySnapshot
+                                                                .docs) {
                                                           Map<String, dynamic>
-                                                          data =
-                                                          document.data()
-                                                          as Map<String,
-                                                              dynamic>;
-
+                                                              data =
+                                                              document.data()
+                                                                  as Map<String,
+                                                                      dynamic>;
                                                           showAlertDialogDeleteMessage(
                                                               context,
                                                               friendId,
@@ -575,7 +625,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                   height: 24,
                                                   width: 24,
                                                   child:
-                                                  CircularProgressIndicator(
+                                                      CircularProgressIndicator(
                                                     color: Colors.white,
                                                     strokeWidth: 0.8,
                                                   ),
