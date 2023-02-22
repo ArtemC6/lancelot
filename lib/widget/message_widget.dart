@@ -14,14 +14,12 @@ import '../model/user_model.dart';
 import 'animation_widget.dart';
 
 class MessagesItem extends StatelessWidget {
-  final String message_text, friendImage, friendId;
+  final String messageText, friendImage, friendId;
   final bool isMyMassage;
   final Timestamp dataMessage;
   final UserModel userModelCurrent;
 
-  late StreamSubscription streamSubscription;
-
-  MessagesItem(this.message_text, this.isMyMassage, this.dataMessage,
+  MessagesItem(this.messageText, this.isMyMassage, this.dataMessage,
       this.friendImage, this.friendId, this.userModelCurrent,
       {super.key});
 
@@ -43,9 +41,9 @@ class MessagesItem extends StatelessWidget {
           children: <Widget>[
             RichText(
               text: TextSpan(
-                text: message_text.length < 12
-                    ? '$message_text                      '
-                    : message_text,
+                text: messageText.length < 12
+                    ? '$messageText                      '
+                    : messageText,
                 style: GoogleFonts.lato(
                   textStyle: TextStyle(
                       color: Colors.white.withOpacity(.9),
@@ -109,9 +107,9 @@ class MessagesItem extends StatelessWidget {
           children: <Widget>[
             RichText(
               text: TextSpan(
-                text: message_text.length < 12
-                    ? '$message_text               '
-                    : message_text,
+                text: messageText.length < 12
+                    ? '$messageText               '
+                    : messageText,
                 style: GoogleFonts.lato(
                   textStyle: TextStyle(
                       color: Colors.white.withOpacity(.9),

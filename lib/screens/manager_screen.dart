@@ -99,7 +99,10 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
   }
 
   Future<void> getNotificationFcm() async {
-    await const MethodChannel('clear_all_notifications').invokeMethod('clear');
+    try {
+      await const MethodChannel('clear_all_notifications')
+          .invokeMethod('clear');
+    } catch (e) {}
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         setIndexPage(message.data['type'], message.data['uid']);

@@ -72,6 +72,12 @@ const List<Color> listColorsAnimation = [
   Colors.white70,
 ];
 
+const List<Color> listColorMulticoloured = [
+  Colors.blueAccent,
+  Colors.purpleAccent,
+  Colors.orangeAccent
+];
+
 const List<String> listAnimationChatBac = [
   'images/animation_chat_bac_1.json',
   'images/animation_chat_bac_2.json',

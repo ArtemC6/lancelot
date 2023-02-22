@@ -360,7 +360,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           Colors.blueAccent,
                                           Colors.purpleAccent
                                         ],
-                                        size.height / 21, () {
+                                        size.height / 20, () {
                                       Navigator.push(
                                           context,
                                           FadeRouteAnimation(EditProfileScreen(

@@ -12,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'config/const.dart';
 import 'config/firestore_operations.dart';
 import 'model/user_model.dart';
 
@@ -63,69 +64,68 @@ class Manager extends StatefulWidget {
 }
 
 class _Manager extends State<Manager> with TickerProviderStateMixin {
-  bool isEmptyImageBackground = false,
-      isEmptyDataUser = false,
-      isStart = false,
-      isLoading = false;
   UserModel userModelCurrent;
 
   @override
   void initState() {
-    super.initState();
-
     readFirebaseIsAccountFull(context).then((userModel) {
-      setState(() {
-        if (userModel.uid.isNotEmpty) {
-          if (userModel.userInterests.isNotEmpty &&
-              userModel.myCity.isNotEmpty &&
-              userModel.searchPol.isNotEmpty) {
-            isEmptyDataUser = true;
-            if (userModel.imageBackground != '') {
-              isEmptyImageBackground = true;
-              userModelCurrent = userModel;
-            }
+      bool isEmptyImageBackground = false, isEmptyDataUser = false;
+
+      if (userModel.uid.isNotEmpty) {
+        if (userModel.userInterests.isNotEmpty &&
+            userModel.myCity.isNotEmpty &&
+            userModel.searchPol.isNotEmpty) {
+          isEmptyDataUser = true;
+          if (userModel.imageBackground != '') {
+            isEmptyImageBackground = true;
+            userModelCurrent = userModel;
           }
         }
-        isLoading = true;
-
-        userNavigator();
-      });
+      }
+      userNavigator(isEmptyDataUser, isEmptyImageBackground);
     });
+    super.initState();
   }
 
-  Future userNavigator() async {
-      if (FirebaseAuth.instance.currentUser?.uid != null) {
+  Future userNavigator(
+    bool isEmptyDataUser,
+    bool isEmptyImageBackground,
+  ) async {
+    if (FirebaseAuth.instance.currentUser?.uid != null) {
       if (FirebaseAuth.instance.currentUser.emailVerified) {
         if (isEmptyDataUser) {
           if (isEmptyImageBackground) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => ManagerScreen(
+            Navigator.pushReplacement(
+              context,
+              FadeRouteAnimation(
+                ManagerScreen(
                   currentIndex: 0,
                   userModelCurrent: userModelCurrent,
                 ),
               ),
             );
           } else {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => EditImageProfileScreen(
-                    bacImage: '',
-                  ),
+            Navigator.pushReplacement(
+              context,
+              FadeRouteAnimation(
+                EditImageProfileScreen(
+                  bacImage: '',
                 ),
-              );
-            }
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => EditProfileScreen(
-                  isFirst: true,
-                  userModel: UserModel(
-                      name: '',
-                      uid: '',
-                      myCity: '',
-                      ageTime: Timestamp.now(),
-                      ageInt: 0,
+              ),
+            );
+          }
+        } else {
+          Navigator.pushReplacement(
+            context,
+            FadeRouteAnimation(
+              EditProfileScreen(
+                isFirst: true,
+                userModel: UserModel(
+                    name: '',
+                    uid: '',
+                    myCity: '',
+                    ageTime: Timestamp.now(),
+                    ageInt: 0,
                     userPol: '',
                     searchPol: '',
                     searchRangeStart: 0,
@@ -139,22 +139,17 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
                     notification: true,
                     description: ''),
               ),
-              ),
-            );
-          }
-        } else {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const VerifyScreen()));
+            ),
+          );
         }
       } else {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const SignInScreen()));
+        Navigator.pushReplacement(
+            context, FadeRouteAnimation(const VerifyScreen()));
       }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    } else {
+      Navigator.pushReplacement(
+          context, FadeRouteAnimation(const SignInScreen()));
+    }
   }
 
   @override

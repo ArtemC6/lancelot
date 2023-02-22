@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:card_loading/card_loading.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
@@ -105,9 +106,9 @@ class loadingCustom extends StatelessWidget {
         backgroundColor: color_black_88,
         body: Center(
             child: Lottie.asset(
-          'images/animation_loader.json',
-          width: MediaQuery.of(context).size.width * 0.64,
-          height: MediaQuery.of(context).size.height * 0.64,
+              'images/animation_loader.json',
+          width: MediaQuery.of(context).size.width * 0.66,
+          height: MediaQuery.of(context).size.height * 0.66,
           alignment: Alignment.center,
           errorBuilder: (context, error, stackTrace) {
             return LoadingAnimationWidget.dotsTriangle(
@@ -164,7 +165,9 @@ DelayedDisplay animatedText(double size, String text, color, time, int line) {
   return DelayedDisplay(
     fadeIn: true,
     delay: Duration(milliseconds: time),
-    child: Text(
+    child: AutoSizeText(
+      minFontSize: 8,
+      // overflow: TextOverflow.ellipsis,
       maxLines: line,
       text,
       style: GoogleFonts.lato(
@@ -189,9 +192,8 @@ SizedBox showIfNoData(
       children: [
         Lottie.asset(alignment: Alignment.center,
             errorBuilder: (context, error, stackTrace) {
-              return const SizedBox();
-
-            }, onLoaded: (composition) {
+          return const SizedBox();
+        }, onLoaded: (composition) {
           animationController
             ..duration = composition.duration
             ..repeat();

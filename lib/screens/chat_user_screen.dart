@@ -233,7 +233,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                   children: [
                     Padding(
                       padding: EdgeInsets.only(
-                        top: height / 26,
+                        top: height / 24,
                         left: 14,
                         right: 14,
                       ),
@@ -469,7 +469,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                   value: 0,
                                   child: Container(
                                     child: animatedText(height / 58,
-                                        'Удалить чат', Colors.white, 450, 1),
+                                        'Удалить чат', Colors.white, 400, 1),
                                   ),
                                 ),
                                 PopupMenuItem(
@@ -478,7 +478,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                         height / 58,
                                         'Изменить фон чата',
                                         Colors.white,
-                                        500,
+                                        450,
                                         1)),
                               ];
                             },
@@ -560,7 +560,6 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                         lengthDoc) {
                                                       isLastMessage = true;
                                                     }
-
                                                     await FirebaseFirestore
                                                         .instance
                                                         .collection("User")

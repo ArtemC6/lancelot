@@ -58,7 +58,6 @@ class _HomeScreen extends State<HomeScreen>
     await FirebaseFirestore.instance
         .collection('User')
         .where('myPol', isEqualTo: userModelCurrent.searchPol)
-        // .where('myCity', isEqualTo: userModelCurrent.myCity)
         .limit(limit)
         .get()
         .then((QuerySnapshot querySnapshot) async {
@@ -98,11 +97,10 @@ class _HomeScreen extends State<HomeScreen>
       }
     }).then((value) async {
       userModelPartner.toSet();
-
       setState(() {
         if (userModelPartner.isEmpty) {
           count++;
-          if (count >= 6) {
+          if (count >= 8) {
             listDisLike.clear();
             deleteDislike(userModelCurrent.uid);
             count = 0;
@@ -126,83 +124,6 @@ class _HomeScreen extends State<HomeScreen>
       });
     });
 
-    // QuerySnapshot<Map<String, dynamic>> query;
-    // try {
-    //   query = await FirebaseFirestore.instance
-    //       .collection('User')
-    //       .where('myPol', isEqualTo: userModelCurrent.searchPol)
-    //       .limit(limit)
-    //       .get(const GetOptions(source: Source.serverAndCache));
-    // } on FirebaseException {
-    //   query = await FirebaseFirestore.instance
-    //       .collection('User')
-    //       .where('myPol', isEqualTo: userModelCurrent.searchPol)
-    //       .limit(limit)
-    //       .get(const GetOptions(source: Source.serverAndCache));
-    // }
-    //
-    // for (var document in query.docs) {
-    //   Map<String, dynamic> data = document.data();
-    //   if (userModelCurrent.searchRangeStart <= ageInt(data) &&
-    //       userModelCurrent.searchRangeEnd >= ageInt(data) &&
-    //       data['uid'] != userModelCurrent.uid) {
-    //     bool isDislike = true;
-    //     await Future.forEach(listDisLike, (idUser) {
-    //       if (idUser == data['uid']) {
-    //         isDislike = false;
-    //       }
-    //     }).then((value) async {
-    //       if (isDislike) {
-    //         userModelPartner.add(UserModel(
-    //             name: data['name'],
-    //             uid: data['uid'],
-    //             ageTime: Timestamp.now(),
-    //             userPol: data['myPol'],
-    //             searchPol: data['searchPol'],
-    //             searchRangeStart: data['searchRangeStart'],
-    //             userInterests: List<String>.from(data['listInterests']),
-    //             userImagePath: List<String>.from(data['listImagePath']),
-    //             userImageUrl: List<String>.from(data['listImageUri']),
-    //             searchRangeEnd: data['searchRangeEnd'],
-    //             myCity: data['myCity'],
-    //             imageBackground: data['imageBackground'],
-    //             ageInt: ageInt(data),
-    //             state: data['state'],
-    //             token: data['token'],
-    //             notification: data['notification'],
-    //             description: data['description']));
-    //       }
-    //     });
-    //   }
-    // }
-    //
-    // userModelPartner.toSet();
-    //
-    // setState(() {
-    //   if (userModelPartner.isEmpty) {
-    //     count++;
-    //     if (count >= 6) {
-    //       listDisLike.clear();
-    //       deleteDislike(userModelCurrent.uid);
-    //       count = 0;
-    //       isEmptyUser = true;
-    //     }
-    //   } else {
-    //     isEmptyUser = false;
-    //   }
-    //
-    //   if (userModelPartner.length < 3) {
-    //     count++;
-    //     if (count >= 10) {
-    //       listDisLike.clear();
-    //       deleteDislike(userModelCurrent.uid);
-    //       count = 0;
-    //     }
-    //   }
-    //
-    //   isWrite = true;
-    //   isLoading = true;
-    // });
   }
 
   @override
@@ -429,14 +350,15 @@ class _HomeScreen extends State<HomeScreen>
                                     width: width,
                                     height: height / 2.9,
                                     decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: const AssetImage(
-                                                'images/ic_remove.png'),
-                                            colorFilter: ColorFilter.mode(
-                                              Colors.white
-                                                  .withOpacity(colorIndex),
-                                              BlendMode.modulate,
-                                            ))),
+                                      image: DecorationImage(
+                                        image: const AssetImage(
+                                            'images/ic_remove.png'),
+                                        colorFilter: ColorFilter.mode(
+                                          Colors.white.withOpacity(colorIndex),
+                                          BlendMode.modulate,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                             ],
@@ -451,14 +373,10 @@ class _HomeScreen extends State<HomeScreen>
                                     const Duration(milliseconds: 700),
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 60),
-                                  child: buttonUniversalAnimationColors(
-                                      'Обновить',
-                                      [
-                                        Colors.blueAccent,
-                                        Colors.purpleAccent,
-                                        Colors.orangeAccent
-                                      ],
-                                      height / 21, () {
+                                  child: buttonUniversal(
+                                      '     Обновить     ',
+                                      listColorMulticoloured,
+                                      height / 18.5, () {
                                     readFirebase(
                                       6,
                                       true,

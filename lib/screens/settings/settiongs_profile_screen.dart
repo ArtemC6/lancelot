@@ -205,7 +205,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 buttonUniversalAnimationColors(
                                   'Редактировать',
                                   [Colors.blueAccent, Colors.purpleAccent],
-                                  size.height / 21,
+                                  size.height / 20,
                                   () {
                                     Navigator.push(
                                         context,

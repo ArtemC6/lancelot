@@ -16,7 +16,6 @@ import 'package:path/path.dart' as path;
 import '../model/user_model.dart';
 import '../screens/manager_screen.dart';
 import '../screens/settings/edit_profile_screen.dart';
-import '../screens/settings/warning_screen.dart';
 import '../widget/dialog_widget.dart';
 import 'const.dart';
 
@@ -62,8 +61,8 @@ Future<CroppedFile?> _cropImage(
   return _croppedFile;
 }
 
-Future<String> uploadFirstImage(BuildContext context, List<String> userImageUrl,
-    List<String> userImagePath) async {
+Future<String> uploadFirstImage(
+    BuildContext context, UserModel modelUser) async {
   String uri = '';
   FirebaseStorage storage = FirebaseStorage.instance;
   try {
@@ -83,16 +82,16 @@ Future<String> uploadFirstImage(BuildContext context, List<String> userImageUrl,
           final snapshot = await task.whenComplete(() {});
           final urlDownload = await snapshot.ref.getDownloadURL();
 
-          userImagePath.add(fileName);
-          userImageUrl.add(urlDownload);
+          modelUser.userImagePath.add(fileName);
+          modelUser.userImageUrl.add(urlDownload);
 
           final docUser = FirebaseFirestore.instance
               .collection('User')
               .doc(FirebaseAuth.instance.currentUser?.uid);
 
           final json = {
-            'listImageUri': userImageUrl,
-            'listImagePath': userImagePath
+            'listImageUri': modelUser.userImageUrl,
+            'listImagePath': modelUser.userImagePath
           };
 
           await docUser.update(json).then((value) {
@@ -108,11 +107,8 @@ Future<String> uploadFirstImage(BuildContext context, List<String> userImageUrl,
 
 Future<void> uploadImageAdd(
     BuildContext context, UserModel userModelCurrent) async {
-  FirebaseStorage storage = FirebaseStorage.instance;
-  final picker = ImagePicker();
-
   try {
-    final pickedImage = await picker.pickImage(
+    final pickedImage = await ImagePicker().pickImage(
         source: ImageSource.gallery, imageQuality: 28, maxWidth: 1920);
     if (pickedImage != null) {
       await _cropImage(context, pickedImage, 28).then((croppedFile) async {
@@ -120,7 +116,8 @@ Future<void> uploadImageAdd(
           final String fileName = path.basename(croppedFile.path);
           File imageFile = File(croppedFile.path);
           try {
-            var task = storage.ref(fileName).putFile(imageFile);
+            var task =
+                FirebaseStorage.instance.ref(fileName).putFile(imageFile);
 
             if (task == null) return;
             showAlertDialogLoading(context);
@@ -133,37 +130,37 @@ Future<void> uploadImageAdd(
 
             final docUser = FirebaseFirestore.instance
                 .collection('User')
-                .doc(FirebaseAuth.instance.currentUser?.uid);
+                .doc(userModelCurrent.uid);
 
             final json = {
               'listImageUri': userModelCurrent.userImageUrl,
               'listImagePath': userModelCurrent.userImagePath
             };
 
-            docUser.update(json).then((value) {
-              Navigator.pushReplacement(
-                  context,
-                  FadeRouteAnimation(ManagerScreen(
-                      currentIndex: 3,
-                      userModelCurrent: UserModel(
-                          name: '',
-                          uid: '',
-                          state: '',
-                          myCity: '',
-                          ageInt: 0,
-                          ageTime: Timestamp.now(),
-                          userPol: '',
-                          searchPol: '',
-                          searchRangeStart: 0,
-                          userImageUrl: [],
-                          userImagePath: [],
-                          imageBackground: '',
-                          userInterests: [],
-                          searchRangeEnd: 0,
-                          token: '',
-                          notification: true,
-                          description: ''))));
-            });
+            docUser.update(json);
+
+            Navigator.pushReplacement(
+                context,
+                FadeRouteAnimation(ManagerScreen(
+                    currentIndex: 3,
+                    userModelCurrent: UserModel(
+                        name: '',
+                        uid: '',
+                        state: '',
+                        myCity: '',
+                        ageInt: 0,
+                        ageTime: Timestamp.now(),
+                        userPol: '',
+                        searchPol: '',
+                        searchRangeStart: 0,
+                        userImageUrl: [],
+                        userImagePath: [],
+                        imageBackground: '',
+                        userInterests: [],
+                        searchRangeEnd: 0,
+                        token: '',
+                        notification: true,
+                        description: ''))));
           } on FirebaseException {
             Navigator.pop(context);
           }
@@ -199,7 +196,7 @@ Future<String> updateFirstImage(
 
             CachedNetworkImage.evictFromCache(userModelCurrent.userImageUrl[0]);
 
-            await storage.ref(userModelCurrent.userImagePath[0]).delete();
+            storage.ref(userModelCurrent.userImagePath[0]).delete();
 
             userModelCurrent.userImageUrl.removeAt(0);
             userModelCurrent.userImagePath.removeAt(0);
@@ -219,58 +216,57 @@ Future<String> updateFirstImage(
               'listImagePath': listImagePath
             };
 
-            docUser.update(json).then((value) {
-              Navigator.pop(context);
-              if (isScreen) {
-                Navigator.pushReplacement(
-                    context,
-                    FadeRouteAnimation(EditProfileScreen(
-                      isFirst: false,
-                      userModel: UserModel(
-                          name: '',
-                          uid: '',
-                          myCity: '',
-                          ageTime: Timestamp.now(),
-                          userPol: '',
-                          searchPol: '',
-                          searchRangeStart: 0,
-                          userImageUrl: [],
-                          userImagePath: [],
-                          imageBackground: '',
-                          userInterests: [],
-                          searchRangeEnd: 0,
-                          ageInt: 0,
-                          state: '',
-                          token: '',
-                          notification: true,
-                          description: ''),
-                    )));
-              } else {
-                Navigator.pushReplacement(
-                    context,
-                    FadeRouteAnimation(ManagerScreen(
-                      currentIndex: 3,
-                      userModelCurrent: UserModel(
-                          name: '',
-                          uid: '',
-                          state: '',
-                          myCity: '',
-                          ageInt: 0,
-                          ageTime: Timestamp.now(),
-                          userPol: '',
-                          searchPol: '',
-                          searchRangeStart: 0,
-                          userImageUrl: [],
-                          userImagePath: [],
-                          imageBackground: '',
-                          userInterests: [],
-                          searchRangeEnd: 0,
-                          token: '',
-                          notification: true,
-                          description: ''),
-                    )));
-              }
-            });
+            docUser.update(json);
+            Navigator.pop(context);
+            if (isScreen) {
+              Navigator.pushReplacement(
+                  context,
+                  FadeRouteAnimation(EditProfileScreen(
+                    isFirst: false,
+                    userModel: UserModel(
+                        name: '',
+                        uid: '',
+                        myCity: '',
+                        ageTime: Timestamp.now(),
+                        userPol: '',
+                        searchPol: '',
+                        searchRangeStart: 0,
+                        userImageUrl: [],
+                        userImagePath: [],
+                        imageBackground: '',
+                        userInterests: [],
+                        searchRangeEnd: 0,
+                        ageInt: 0,
+                        state: '',
+                        token: '',
+                        notification: true,
+                        description: ''),
+                  )));
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  FadeRouteAnimation(ManagerScreen(
+                    currentIndex: 3,
+                    userModelCurrent: UserModel(
+                        name: '',
+                        uid: '',
+                        state: '',
+                        myCity: '',
+                        ageInt: 0,
+                        ageTime: Timestamp.now(),
+                        userPol: '',
+                        searchPol: '',
+                        searchRangeStart: 0,
+                        userImageUrl: [],
+                        userImagePath: [],
+                        imageBackground: '',
+                        userInterests: [],
+                        searchRangeEnd: 0,
+                        token: '',
+                        notification: true,
+                        description: ''),
+                  )));
+            }
           } on FirebaseException {
             Navigator.pop(context);
           }
@@ -307,120 +303,111 @@ Future<void> createSympathy(
 
 Future<void> deleteSympathy(String idDoc, idUser) async {
   try {
-    final docUser = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection("User")
         .doc(idUser)
-        .collection('sympathy');
-    docUser.doc(idDoc).delete().then((value) {});
+        .collection('sympathy')
+        .doc(idDoc)
+        .delete()
+        .then((value) {});
   } on FirebaseException {}
 }
 
 Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
-  FirebaseFirestore.instance
+  await FirebaseFirestore.instance
       .collection('User')
       .doc(idPartner)
       .collection('sympathy')
       .where('uid', isEqualTo: idUser)
       .get()
-      .then((querySnapshot) {
+      .then((querySnapshot) async {
     for (var result in querySnapshot.docs) {
       Map<String, dynamic> data = result.data();
-      final docUser = FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection("User")
           .doc(idPartner)
-          .collection('sympathy');
-      docUser.doc(data['id_doc']).delete().then((value) {});
+          .collection('sympathy')
+          .doc(data['id_doc'])
+          .delete()
+          .then((value) {});
     }
   });
 }
 
 Future<void> imageRemove(
     int index, BuildContext context, UserModel userModelCurrent) async {
-  FirebaseStorage storage = FirebaseStorage.instance;
   try {
-    try {
-      showAlertDialogLoading(context);
-      await storage.ref(userModelCurrent.userImagePath[index]).delete();
+    FirebaseStorage.instance
+        .ref(userModelCurrent.userImagePath[index])
+        .delete();
+    CachedNetworkImage.evictFromCache(userModelCurrent.userImageUrl[index]);
+    userModelCurrent.userImageUrl.removeAt(index);
+    userModelCurrent.userImagePath.removeAt(index);
 
-      CachedNetworkImage.evictFromCache(userModelCurrent.userImageUrl[index]);
-
-      userModelCurrent.userImageUrl.removeAt(index);
-      userModelCurrent.userImagePath.removeAt(index);
-
-      final docUser = FirebaseFirestore.instance
-          .collection('User')
-          .doc(userModelCurrent.uid);
-
-      final json = {
-        'listImageUri': userModelCurrent.userImageUrl,
-        'listImagePath': userModelCurrent.userImagePath
-      };
-
-      docUser.update(json).then((value) {
-        Navigator.pushReplacement(
-            context,
-            FadeRouteAnimation(ManagerScreen(
-              currentIndex: 3,
-              userModelCurrent: UserModel(
-                  name: '',
-                  uid: '',
-                  state: '',
-                  myCity: '',
-                  ageInt: 0,
-                  ageTime: Timestamp.now(),
-                  userPol: '',
-                  searchPol: '',
-                  searchRangeStart: 0,
-                  userImageUrl: [],
-                  userImagePath: [],
-                  imageBackground: '',
-                  userInterests: [],
-                  searchRangeEnd: 0,
-                  token: '',
-                  notification: true,
-                  description: ''),
-            )));
-      });
-    } on FirebaseException {
-      Navigator.pop(context);
-    }
-  } catch (err) {}
+    FirebaseFirestore.instance
+        .collection('User')
+        .doc(userModelCurrent.uid)
+        .update({
+      'listImageUri': userModelCurrent.userImageUrl,
+      'listImagePath': userModelCurrent.userImagePath
+    });
+    Navigator.pushReplacement(
+        context,
+        FadeRouteAnimation(ManagerScreen(
+          currentIndex: 3,
+          userModelCurrent: UserModel(
+              name: '',
+              uid: '',
+              state: '',
+              myCity: '',
+              ageInt: 0,
+              ageTime: Timestamp.now(),
+              userPol: '',
+              searchPol: '',
+              searchRangeStart: 0,
+              userImageUrl: [],
+              userImagePath: [],
+              imageBackground: '',
+              userInterests: [],
+              searchRangeEnd: 0,
+              token: '',
+              notification: true,
+              description: ''),
+        )));
+  } on FirebaseException {
+    Navigator.pop(context);
+  }
 }
 
 Future<void> setStateFirebase(String state, [String? uid]) async {
   try {
-    final docUser = FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('User')
-        .doc(uid ?? FirebaseAuth.instance.currentUser?.uid);
-
-    final json = {
+        .doc(uid ?? FirebaseAuth.instance.currentUser?.uid)
+        .update({
       'state': state,
       if (state == 'offline') 'lastDateOnline': DateTime.now(),
-    };
-    await docUser.update(json);
+    });
   } on FirebaseException {}
 }
 
 Future<void> deleteUserTokenFirebase(String uid) async {
   try {
-    final docUser = FirebaseFirestore.instance.collection('User').doc(uid);
-    final json = {
+    await FirebaseFirestore.instance.collection('User').doc(uid).update({
       'token': '',
-    };
-    await docUser.update(json);
+    });
   } on FirebaseException {}
 }
 
 Future<void> setTokenUserFirebase() async {
   try {
     await FirebaseMessaging.instance.getToken().then((token) async {
-      final docUser = FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('User')
-          .doc(FirebaseAuth.instance.currentUser?.uid);
-      final json = {
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .update({
         'token': token,
-      };
-      await docUser.update(json);
+      });
     });
   } on FirebaseException {}
 }
@@ -488,7 +475,6 @@ Future deleteChatFirebase(bool isDeletePartner, String friendId, bool isBack,
         .collection('chats');
 
     var snapshotsFriend = await collectionFriend.get();
-
     for (var doc in snapshotsFriend.docs) {
       await doc.reference.delete();
     }
@@ -542,15 +528,12 @@ Future deleteChatFirebase(bool isDeletePartner, String friendId, bool isBack,
 
 Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
   try {
-    final docUser = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('User')
-        .doc(FirebaseAuth.instance.currentUser?.uid);
-
-    final json = {
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .update({
       'imageBackground': uri,
-    };
-
-    docUser.update(json).then((value) {
+    }).then((value) {
       Navigator.pushReplacement(
           context,
           FadeRouteAnimation(
@@ -714,23 +697,6 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
     listDislike.add(result.id);
   }
 
-  return listDislike;
-}
-
-Future<List<String>> readLikeFirebase(String idUser) async {
-  List<String> listDislike = [];
-  try {
-    await FirebaseFirestore.instance
-        .collection('User')
-        .doc(idUser)
-        .collection('likes')
-        .get()
-        .then((querySnapshot) {
-      for (var result in querySnapshot.docs) {
-        listDislike.add(result.id);
-      }
-    });
-  } on FirebaseException {}
   return listDislike;
 }
 
@@ -1013,8 +979,7 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
       }
     }
   } on FirebaseException {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WarningScreen()));
+    FirebaseAuth.instance.signOut();
   }
 
   return userModelCurrent;
@@ -1145,4 +1110,12 @@ Future<bool> sendFcmMessage(
   } catch (e) {
     return false;
   }
+}
+
+Future<String> getTokenUser() async {
+  String token = '';
+  try {
+    token = await FirebaseMessaging.instance.getToken() ?? '';
+  } on FirebaseException {}
+  return token;
 }

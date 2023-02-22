@@ -28,10 +28,12 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     if (FirebaseAuth.instance.currentUser?.uid != null) {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const Manager()));
     }
+
     controller1 = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -106,7 +108,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
     bool passwordValid = false;
     emailController.addListener(() {
       final bool emailValid = RegExp(
-              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
           .hasMatch(emailController.text);
 
       passwordController.addListener(() {
@@ -117,24 +119,16 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
         }
 
         if (emailValid && passwordValid) {
-          setState(() {
-            signStart = true;
-          });
+          setState(() => signStart = true);
         } else {
-          setState(() {
-            signStart = false;
-          });
+          setState(() => signStart = false);
         }
       });
 
       if (emailValid && passwordValid) {
-        setState(() {
-          signStart = true;
-        });
+        setState(() => signStart = true);
       } else {
-        setState(() {
-          signStart = false;
-        });
+        setState(() => signStart = false);
       }
     });
   }
@@ -306,7 +300,6 @@ class MyPainter extends CustomPainter {
 }
 
 class MyBehavior extends ScrollBehavior {
-  @override
   Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }

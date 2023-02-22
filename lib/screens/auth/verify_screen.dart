@@ -104,9 +104,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
             if (!isDescriptionEmail && isDescriptionEmailTime)
               ZoomTapAnimation(
                 onTap: () {
-                  setState(() {
-                    isDescriptionEmail = true;
-                  });
+                  setState(() => isDescriptionEmail = true);
                 },
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -153,40 +151,35 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
             Padding(
               padding: EdgeInsets.only(bottom: size.height / 32),
               child: isEmail
-                  ? buttonUniversalAnimationColors(
-                      'Отправить повторно',
-                      [
-                        Colors.blueAccent,
-                        Colors.purpleAccent,
-                        Colors.orangeAccent
-                      ],
-                      size.height / 20, () {
+                  ? buttonUniversal('Отправить повторно',
+                      listColorMulticoloured, size.height / 15, () {
                       sendEmail();
                     }, 400)
                   : buttonUniversalAnimationColors(
                       'Отправить повторно',
                       [color_black_88, color_black_88],
-                      size.height / 20,
+                      size.height / 17,
                       () {},
                       400),
             ),
             Padding(
               padding: EdgeInsets.only(bottom: size.height / 14),
               child: buttonUniversalAnimationColors('Другая почта',
-                  [color_black_88, color_black_88], size.height / 20, () async {
-                    if (FirebaseAuth.instance.currentUser?.uid != null) {
-                  await FirebaseFirestore.instance
-                      .collection("User")
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .delete();
-                  await FirebaseAuth.instance.currentUser!.delete();
-                  Future.delayed(const Duration(seconds: 3), () async {
+                  [color_black_88, color_black_88], size.height / 16, () async {
+                try {
+                  if (FirebaseAuth.instance.currentUser?.uid != null) {
+                    await FirebaseFirestore.instance
+                        .collection("User")
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .delete();
+                    await FirebaseAuth.instance.currentUser!.delete();
                     await FirebaseAuth.instance.signOut();
-                  });
-                } else {
-                      await FirebaseAuth.instance.signOut();
+                  } else {
+                    await FirebaseAuth.instance.signOut();
+                  }
+                } catch (e) {
+                  await FirebaseAuth.instance.signOut();
                 }
-
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const Manager()));
               }, 400),

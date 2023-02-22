@@ -27,7 +27,6 @@ class SympathyScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  // ignore: no_logic_in_create_state
   State<SympathyScreen> createState() => _SympathyScreenState(userModelCurrent);
 }
 
@@ -75,8 +74,8 @@ class _SympathyScreenState extends State<SympathyScreen>
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: color_black_88,
       body: SafeArea(
@@ -87,14 +86,32 @@ class _SympathyScreenState extends State<SympathyScreen>
             children: [
               topPanel(context, 'Симпатии', Icons.favorite, color_red, false,
                   height),
-              StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('User')
-                    .doc(userModelCurrent.uid)
-                    .collection('sympathy')
-                    .orderBy("time", descending: true)
-                    .limit(limit)
-                    .snapshots(),
+              FutureBuilder(
+                future: FirebaseFirestore.instance
+                        .collection('User')
+                        .doc(userModelCurrent.uid)
+                        .collection('sympathy')
+                        .orderBy("time", descending: true)
+                        .limit(limit)
+                        .get(const GetOptions(source: Source.cache))
+                        .toString()
+                        .isEmpty
+                    ? FirebaseFirestore.instance
+                        .collection('User')
+                        .doc(userModelCurrent.uid)
+                        .collection('sympathy')
+                        .orderBy("time", descending: true)
+                        .limit(limit)
+                        .get(const GetOptions(source: Source.cache))
+                    : FirebaseFirestore.instance
+                        .collection('User')
+                        .doc(userModelCurrent.uid)
+                        .collection('sympathy')
+                        .orderBy("time", descending: true)
+                        .limit(limit)
+                        .get(
+                          const GetOptions(source: Source.server),
+                        ),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
@@ -283,7 +300,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                     },
                                                     child: Container(
                                                       height: height / 4.5,
-                                                      width: size.width,
+                                                      width: width,
                                                       padding: EdgeInsets.all(
                                                           height / 72),
                                                       child: Card(
@@ -376,20 +393,27 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                         ),
                                                                         Container(
                                                                           margin:
-                                                                              EdgeInsets.only(bottom: height / 120),
+                                                                              EdgeInsets.only(
+                                                                            bottom:
+                                                                                height / 120,
+                                                                            right:
+                                                                                height / 120,
+                                                                          ),
                                                                           alignment:
                                                                               Alignment.topRight,
                                                                           child:
-                                                                              IconButton(
-                                                                            onPressed:
+                                                                              GestureDetector(
+                                                                            onTap:
                                                                                 () async {
                                                                               deleteSympathy(idDoc, userModelCurrent.uid);
+                                                                              setState(() {});
                                                                               await CachedNetworkImage.evictFromCache(imageUri);
                                                                             },
-                                                                            icon:
-                                                                                Icon(Icons.close, size: height / 40),
-                                                                            color:
-                                                                                Colors.white,
+                                                                            child:
+                                                                                Icon(
+                                                                              Icons.close,
+                                                                              size: width / 18,
+                                                                            ),
                                                                           ),
                                                                         ),
                                                                       ],
@@ -406,7 +430,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                                 color_black_88,
                                                                                 color_black_88
                                                                               ],
-                                                                              height / 22,
+                                                                              width / 10.5,
                                                                               () {
                                                                             if (!isMutuallyMy) {
                                                                               createSympathy(uid, userModelCurrent).then((value) async {
@@ -420,12 +444,8 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                         if (isMutuallyMy)
                                                                           buttonUniversal(
                                                                               'У вас взаимно',
-                                                                              [
-                                                                                Colors.blueAccent,
-                                                                                Colors.purpleAccent,
-                                                                                Colors.orangeAccent
-                                                                              ],
-                                                                              height / 22,
+                                                                              listColorMulticoloured,
+                                                                              width / 10.5,
                                                                               () {
                                                                             deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
                                                                               setState(() {});
@@ -433,7 +453,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                           }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
                                                                         DropShadow(
                                                                           blurRadius:
-                                                                              3,
+                                                                              2.5,
                                                                           spread:
                                                                               0.1,
                                                                           opacity:
@@ -442,23 +462,26 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                               ZoomTapAnimation(
                                                                             onTap:
                                                                                 () {
-                                                                              Navigator.of(context).push(MaterialPageRoute(
+                                                                              Navigator.of(context).push(
+                                                                                MaterialPageRoute(
                                                                                   builder: (context) => ChatUserScreen(
-                                                                                        friendId: uid,
-                                                                                        friendName: name,
-                                                                                        friendImage: imageUri,
-                                                                                        userModelCurrent: userModelCurrent,
-                                                                                        token: token,
-                                                                                        notification: asyncSnapshotUser.data['notification'],
-                                                                                      )));
+                                                                                    friendId: uid,
+                                                                                    friendName: name,
+                                                                                    friendImage: imageUri,
+                                                                                    userModelCurrent: userModelCurrent,
+                                                                                    token: token,
+                                                                                    notification: asyncSnapshotUser.data['notification'],
+                                                                                  ),
+                                                                                ),
+                                                                              );
                                                                             },
                                                                             child:
                                                                                 Padding(
-                                                                              padding: EdgeInsets.only(bottom: height / 60, top: height / 140, left: height / 220, right: height / 220),
+                                                                                  padding: EdgeInsets.only(bottom: height / 74, top: height / 140, left: height / 100, right: height / 120),
                                                                               child: Image.asset(
                                                                                 'images/ic_send.png',
-                                                                                height: height / 25,
-                                                                                width: height / 25,
+                                                                                height: height / 21.5,
+                                                                                width: height / 21.5,
                                                                               ),
                                                                             ),
                                                                           ),

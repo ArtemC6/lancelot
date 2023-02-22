@@ -1,28 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'const.dart';
 
-class Utils {
-  static Future<String> downloadFile(String uri, String fileName) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/$fileName';
-    final response = await http.get(Uri.parse(uri));
-    final file = File(filePath);
-    await file.writeAsBytes(response.bodyBytes);
-    return filePath;
-  }
-}
-
-DateTime getDataTime(Timestamp startDate) {
-  DateTime dateTimeStart = startDate.toDate();
-  return dateTimeStart;
-}
+DateTime getDataTime(Timestamp startDate) => startDate.toDate();
 
 String filterDate(lastDateOnline) {
   String time = '';
@@ -32,41 +16,36 @@ String filterDate(lastDateOnline) {
           '${months[getDataTime(lastDateOnline).month - 1]} ${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
     } else {
       time =
-      '${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
+          '${getDataTime(lastDateOnline).hour}: ${getDataTime(lastDateOnline).minute}';
     }
   } catch (error) {}
   return time;
 }
 
-Future<bool> getState(time) async {
-  bool isWriteUser = true;
-  await Future.delayed(Duration(milliseconds: time), () {
-    isWriteUser = false;
-  });
-  return isWriteUser;
-}
+Future<bool> getState(time) async =>
+    await Future.delayed(Duration(milliseconds: time));
 
-Future<void> setValueSharedPref(String key, int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setInt(key, value);
-}
+Future<void> setValueSharedPref(String key, int value) async =>
+    await SharedPreferences.getInstance().then((i) => i.setInt(key, value));
 
 int ageInt(Map<String, dynamic> data) =>
     DateTime.now().difference(getDataTime(data['ageTime'])).inDays ~/ 365;
 
-// Future checkStatusNetwork(StreamSubscription streamSubscription) async {
-//   bool isFiresState = false;
-//   streamSubscription =
-//       Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-//     if (isFiresState) {
-//       if (result.name == 'wifi') {
-//         setStateFirebase('online');
-//       } else if (result.name == 'mobile') {
-//         setStateFirebase('online');
-//       } else {
-//         setStateFirebase('offline');
-//       }
-//     }
-//     isFiresState = true;
-//   });
-// }
+Future<void> launchUrlEmail(String uri) async {
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: uri,
+    query: encodeQueryParameters(<String, String>{
+      'subject': '',
+    }),
+  );
+
+  launchUrl(emailLaunchUri);
+}

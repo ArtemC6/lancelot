@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -131,86 +129,6 @@ showAlertDialogDeleteMessage(
                         children: [
                           Expanded(child: cancelButton),
                           Expanded(child: continueButton),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      });
-}
-
-showAlertDialogWarning(BuildContext context) async {
-  String title = '';
-  String message = '';
-
-  await FirebaseFirestore.instance
-      .collection('StartApp')
-      .doc('IsStart')
-      .get()
-      .then((DocumentSnapshot documentSnapshot) {
-    if (documentSnapshot.exists) {
-      title = documentSnapshot['text_title'];
-      message = documentSnapshot['text_message'];
-    }
-  });
-
-  Widget cancelButton = TextButton(
-    child: const Text("Выйти"),
-    onPressed: () {
-      exit(0);
-    },
-  );
-
-  showDialog(
-    barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                backgroundColor: color_black_88,
-                actions: <Widget>[
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: title,
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  letterSpacing: .4),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: message,
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  letterSpacing: .4),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: cancelButton),
                         ],
                       )
                     ],

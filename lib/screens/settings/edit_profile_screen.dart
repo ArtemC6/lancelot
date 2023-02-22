@@ -2,8 +2,6 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -12,7 +10,6 @@ import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_fiel
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase_auth.dart';
@@ -103,32 +100,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         isPhoto = true;
       });
 
-      String? token;
-      await FirebaseMessaging.instance.getToken().then((value) {
-        token = value;
-      });
-
-      final docUser = FirebaseFirestore.instance
-          .collection('User')
-          .doc(FirebaseAuth.instance.currentUser?.uid);
-
       final json = {
         'listInterests': _selectedInterests,
         'myPol': _myPolController.text,
         'name': _nameController.text.trim(),
         'description': _descriptionController.text.trim(),
         'searchPol':
-        _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
+            _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
         'ageTime': _dateTimeBirthday,
         'rangeStart': _valuesAge.start,
         'rangeEnd': _valuesAge.end,
         'myCity': _localController.text,
         'notification':
-        _notificationController.text == 'Включить' ? true : false,
-        'token': token,
+            _notificationController.text == 'Включить' ? true : false,
+        'token': await getTokenUser(),
       };
 
-      docUser.update(json).then((value) {
+      FirebaseFirestore.instance
+          .collection('User')
+          .doc(modelUser.uid)
+          .update(json)
+          .then((value) {
         if (modelUser.imageBackground != '') {
           Navigator.pushReplacement(
               context,
@@ -163,14 +155,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       });
     } else {
-      setState(() {
-        isError = true;
-        if (modelUser.userImageUrl.isNotEmpty) {
-          isPhoto = true;
-        } else {
-          isPhoto = false;
-        }
-      });
+      isError = true;
+      if (modelUser.userImageUrl.isNotEmpty) {
+        isPhoto = true;
+      } else {
+        isPhoto = false;
+      }
+      setState(() {});
     }
   }
 
@@ -238,7 +229,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             token: user.token,
             notification: user.notification,
             description: user.description);
-        isLoading = true;
       });
     }
     setState(() {
@@ -247,24 +237,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  Future<void> _launchUrl(String uri) async {
-    String? encodeQueryParameters(Map<String, String> params) {
-      return params.entries
-          .map((MapEntry<String, String> e) =>
-      '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-          .join('&');
-    }
-
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: uri,
-      query: encodeQueryParameters(<String, String>{
-        'subject': '',
-      }),
-    );
-
-    launchUrl(emailLaunchUri);
-  }
 
   @override
   void initState() {
@@ -296,9 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             splashColor: Colors.transparent,
             onTap: () {
               if (modelUser.userImageUrl.isEmpty) {
-                uploadFirstImage(context, modelUser.userImageUrl,
-                        modelUser.userImagePath)
-                    .then((uri) {
+                uploadFirstImage(context, modelUser).then((uri) {
                   if (uri != '') {
                     setState(() {
                       isPhoto = true;
@@ -351,9 +321,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     width: height / 34,
                     height: height / 34,
                     onTap: () async {
-                      uploadFirstImage(context, modelUser.userImageUrl,
-                              modelUser.userImagePath)
-                          .then((uri) {
+                      uploadFirstImage(context, modelUser).then((uri) {
                         if (uri != '') {
                           setState(() {
                             isPhoto = true;
@@ -392,49 +360,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Container(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: EdgeInsets.symmetric(horizontal: height / 66),
                 child: AnimationLimiter(
                   child: AnimationConfiguration.staggeredList(
                     position: 1,
-                    delay: const Duration(milliseconds: 100),
                     child: SlideAnimation(
-                      duration: const Duration(milliseconds: 2000),
+                      duration: const Duration(milliseconds: 1800),
                       verticalOffset: height * .40,
                       curve: Curves.ease,
                       child: FadeInAnimation(
                         curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 4000),
+                        duration: const Duration(milliseconds: 3800),
                         child: Column(
                           children: [
-                            Padding(
-                              padding:
-                              const EdgeInsets.only(top: 10, bottom: 0),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  if (!isFirst)
-                                    IconButton(
-                                      color: Colors.white,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      icon: Icon(
-                                          Icons.arrow_back_ios_new_rounded,
-                                          size: height / 38),
-                                    ),
-                                  customIconButton(
-                                    path: 'images/ic_log_out.png',
-                                    width: height / 26,
-                                    height: height / 26,
-                                    onTap: () async {
-                                      FirebaseAuthMethods.signOut(
-                                          context, modelUser.uid);
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                if (!isFirst)
+                                  IconButton(
+                                    color: Colors.white,
+                                    onPressed: () {
+                                      Navigator.pop(context);
                                     },
-                                    padding: 0,
+                                    icon: Icon(Icons.arrow_back_ios_new_rounded,
+                                        size: height / 38),
                                   ),
-                                ],
-                              ),
+                                customIconButton(
+                                  path: 'images/ic_log_out.png',
+                                  width: height / 26,
+                                  height: height / 26,
+                                  onTap: () async {
+                                    FirebaseAuthMethods.signOut(
+                                        context, modelUser.uid);
+                                  },
+                                  padding: 0,
+                                ),
+                              ],
                             ),
                             imageProfileSettings(
                               height,
@@ -442,21 +403,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             SlideFadeTransition(
                               animationDuration:
-                              const Duration(milliseconds: 800),
+                                  const Duration(milliseconds: 800),
                               child: Container(
                                 padding: EdgeInsets.only(
                                     bottom: height / 62,
-                                    top: height / 62,
-                                    right: 8),
+                                    top: height / 52,
+                                    right: height / 64),
                                 alignment: Alignment.centerRight,
-                                child: buttonUniversalAnimationColors(
+                                child: buttonUniversal(
                                     isFirst ? 'Завершить' : 'Сохранить',
-                                    [
-                                      Colors.blueAccent,
-                                      Colors.purpleAccent,
-                                      Colors.orangeAccent
-                                    ],
-                                    height / 22, () {
+                                    listColorMulticoloured,
+                                    width / 10, () {
                                   _uploadData();
                                 }, 900),
                               ),
@@ -605,19 +562,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 3),
                             textFieldProfileSettings(_notificationController,
                                 true, 'Уведомления', context, 10, height, () {
-                                  showBottomSheet(
+                              showBottomSheet(
                                   context,
                                   'Укажите хотите получать уведомления',
                                   'Включить',
                                   'Выключить',
                                   _notificationController,
                                   height);
-                                }),
+                            }),
                             textFieldProfileSettings(_supportController, true,
                                 'Техподдержка', context, 30, height, () async {
-                                  String gmail = 'lancelotsuport@gmail.com';
-                                  _launchUrl(gmail);
-                                }, 2),
+                              launchUrlEmail('lancelotsuport@gmail.com');
+                            }, 2),
                             Theme(
                               data: ThemeData.light(),
                               child: MediaQuery(

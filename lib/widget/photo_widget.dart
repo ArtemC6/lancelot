@@ -13,7 +13,6 @@ import 'dialog_widget.dart';
 
 class photoProfile extends StatelessWidget {
   String uri;
-
   photoProfile({Key? key, required this.uri}) : super(key: key);
 
   @override
@@ -151,13 +150,25 @@ class photoProfileGallery extends StatelessWidget {
   }
 }
 
-class photoProfileSettingsGallery extends StatelessWidget {
+class photoProfileSettingsGallery extends StatefulWidget {
   UserModel userModel;
 
   photoProfileSettingsGallery(this.userModel, {super.key});
 
+  @override
+  State<photoProfileSettingsGallery> createState() =>
+      _photoProfileSettingsGalleryState(userModel);
+}
+
+class _photoProfileSettingsGalleryState
+    extends State<photoProfileSettingsGallery> {
   List<String> listImageUri = [], listImagePath = [];
+  UserModel userModel;
+
   FirebaseStorage storage = FirebaseStorage.instance;
+  bool isVisibl = false;
+
+  _photoProfileSettingsGalleryState(this.userModel);
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +190,7 @@ class photoProfileSettingsGallery extends StatelessWidget {
               crossAxisCount: 3,
               children: List.generate(
                 9,
-                (int index) {
+                    (int index) {
                   return AnimationConfiguration.staggeredGrid(
                     position: index,
                     duration: const Duration(milliseconds: 2200),
@@ -190,9 +201,9 @@ class photoProfileSettingsGallery extends StatelessWidget {
                       child: FadeInAnimation(
                         child: ZoomTapAnimation(
                           onTap: () {
-                            if (userModel.userImageUrl.length > index) {
+                            if (widget.userModel.userImageUrl.length > index) {
                               showDialogZoom(
-                                uri: userModel.userImageUrl[index],
+                                uri: widget.userModel.userImageUrl[index],
                                 context: context,
                               );
                             }
@@ -212,7 +223,8 @@ class photoProfileSettingsGallery extends StatelessWidget {
                               child: Stack(
                                 alignment: Alignment.bottomRight,
                                 children: [
-                                  if (userModel.userImageUrl.length > index)
+                                  if (widget.userModel.userImageUrl.length >
+                                      index)
                                     CachedNetworkImage(
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -231,7 +243,8 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                       progressIndicatorBuilder:
                                           (context, url, progress) =>
                                               loadingPhotoAnimation(height),
-                                      imageUrl: userModel.userImageUrl[index],
+                                      imageUrl:
+                                          widget.userModel.userImageUrl[index],
                                     ),
                                   if (0 == index)
                                     InkWell(
@@ -239,18 +252,19 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                       highlightColor: Colors.transparent,
                                       onTap: () {
                                         updateFirstImage(
-                                            context, userModel, false);
+                                            context, widget.userModel, false);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(4),
                                         child: Image.asset(
                                           'images/ic_edit.png',
-                                          height: height / 36,
-                                          width: height / 36,
+                                          height: height / 35,
+                                          width: height / 35,
                                         ),
                                       ),
                                     ),
-                                  if (userModel.userImageUrl.length > index &&
+                                  if (widget.userModel.userImageUrl.length >
+                                          index &&
                                       index != 0)
                                     customIconButton(
                                         padding: 2,
@@ -261,15 +275,17 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                           imageRemove(
                                               index, context, userModel);
                                         }),
-                                  if (userModel.userImageUrl.length <= index &&
-                                      userModel.userImageUrl.isNotEmpty)
+                                  if (widget.userModel.userImageUrl.length <=
+                                          index &&
+                                      widget.userModel.userImageUrl.isNotEmpty)
                                     customIconButton(
                                         padding: 6,
                                         width: height / 36,
                                         height: height / 36,
                                         path: 'images/ic_add.png',
                                         onTap: () {
-                                          uploadImageAdd(context, userModel);
+                                          uploadImageAdd(
+                                              context, widget.userModel);
                                         }),
                                 ],
                               ),

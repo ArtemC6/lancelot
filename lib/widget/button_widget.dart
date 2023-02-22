@@ -101,7 +101,7 @@ class buttonAuthAnimation extends StatelessWidget {
 
 Widget buttonUniversal(String name, color, height, onTap, time) {
   return ZoomTapAnimation(
-    onTap: () {},
+    onTap: onTap,
     child: Container(
       height: height,
       decoration: BoxDecoration(
@@ -121,15 +121,28 @@ Widget buttonUniversal(String name, color, height, onTap, time) {
         gradient: LinearGradient(colors: color),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: ElevatedButton(
-          onPressed: onTap,
-          style: ElevatedButton.styleFrom(
-            shadowColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          ),
-          child: animatedText(height / 3.5, name, Colors.white, time, 1)),
+      child: FlutterColorsBorder(
+        animationDuration: 4,
+        colors: const [
+          Colors.white10,
+          Colors.white70,
+        ],
+        size: Size(height * 3.1, height),
+        boardRadius: 20,
+        borderWidth: 0.6,
+        child: Align(
+          alignment: Alignment.center,
+          child: ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                shadowColor: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+              ),
+              child: animatedText(height / 3.2, name, Colors.white, time, 1)),
+        ),
+      ),
     ),
   );
 }
@@ -219,8 +232,8 @@ class customIconButton extends StatelessWidget {
       enableLongTapRepeatEvent: false,
       longTapRepeatDuration: const Duration(milliseconds: 200),
       begin: 1.0,
-      end: 0.90,
-      beginDuration: const Duration(milliseconds: 20),
+      end: 0.94,
+      beginDuration: const Duration(milliseconds: 30),
       endDuration: const Duration(milliseconds: 200),
       beginCurve: Curves.decelerate,
       endCurve: Curves.fastOutSlowIn,
@@ -265,14 +278,14 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
         bool isMutuallyMy, bool isMutuallyFriend, BuildContext context) {
       if (!isMutuallyMy && isMutuallyFriend) {
         return buttonUniversalAnimationColors('Ожидайте ответа',
-            [Colors.blueAccent, Colors.purpleAccent], height / 21, () {
+            [Colors.blueAccent, Colors.purpleAccent], height / 20, () {
           if (!isMutuallyMy && isMutuallyFriend) {
             deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid);
           }
         }, 400);
       } else if (!isMutuallyMy && !isMutuallyFriend) {
         return buttonUniversalAnimationColors(
-            'Оставить симпатию', [color_black_88, color_black_88], height / 21,
+            'Оставить симпатию', [color_black_88, color_black_88], height / 20,
             () {
           if (!isMutuallyMy && !isMutuallyFriend) {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
@@ -292,7 +305,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
         }, 400);
       } else if (isMutuallyMy && !isMutuallyFriend) {
         return buttonUniversalAnimationColors('Принять симпатию',
-            [Colors.blueAccent, Colors.purpleAccent], height / 21, () {
+            [Colors.blueAccent, Colors.purpleAccent], height / 20, () {
           if (isMutuallyMy && !isMutuallyFriend) {
             createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
               if (userModelFriend.token != '' && userModelFriend.notification) {
@@ -313,7 +326,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
         return buttonUniversalAnimationColors(
             'Написать',
             [Colors.blueAccent, Colors.purpleAccent, Colors.orangeAccent],
-            height / 21, () {
+            height / 20, () {
           Navigator.push(
               context,
               FadeRouteAnimation(ChatUserScreen(

@@ -127,35 +127,23 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
           }
 
           if (emailValid && passwordValid && nameValid) {
-            setState(() {
-              signStart = true;
-            });
+            setState(() => signStart = true);
           } else {
-            setState(() {
-              signStart = false;
-            });
+            setState(() => signStart = false);
           }
         });
 
         if (emailValid && passwordValid && nameValid) {
-          setState(() {
-            signStart = true;
-          });
+          setState(() => signStart = true);
         } else {
-          setState(() {
-            signStart = false;
-          });
+          setState(() => signStart = false);
         }
       });
 
       if (emailValid && passwordValid && nameValid) {
-        setState(() {
-          signStart = true;
-        });
+        setState(() => signStart = true);
       } else {
-        setState(() {
-          signStart = false;
-        });
+        setState(() => signStart = false);
       }
     });
   }
@@ -348,7 +336,6 @@ class MyPainter extends CustomPainter {
 }
 
 class MyBehavior extends ScrollBehavior {
-  @override
   Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
