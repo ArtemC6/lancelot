@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';
-import '../config/firestore_operations.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';

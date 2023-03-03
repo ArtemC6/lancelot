@@ -8,7 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../config/const.dart';
-import '../../config/firestore_operations.dart';
+import '../../config/firebase/firestore_operations.dart';
 import '../../model/interests_model.dart';
 import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
@@ -185,7 +185,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       animatedText(
-                                          size.height / 52,
+                                          size.height / 50,
                                           '${userModel.name}, ${userModel.ageInt}',
                                           Colors.white,
                                           700,
@@ -194,7 +194,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                         height: 1,
                                       ),
                                       animatedText(
-                                          size.height / 66,
+                                          size.height / 64,
                                           userModel.myCity,
                                           Colors.white.withOpacity(.8),
                                           750,
@@ -236,7 +236,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                     style: GoogleFonts.lato(
                                       textStyle: TextStyle(
                                           color: Colors.white70,
-                                          fontSize: size.height / 68,
+                                          fontSize: size.height / 66,
                                           letterSpacing: .15),
                                     ),
                                   ),
@@ -269,7 +269,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             animatedText(
-                                                height / 52,
+                                                height / 50,
                                                 userModel.userImageUrl.length
                                                     .toString(),
                                                 Colors.white.withOpacity(0.9),
@@ -279,7 +279,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                               padding:
                                                   const EdgeInsets.only(top: 2),
                                               child: animatedText(
-                                                  height / 72,
+                                                  height / 70,
                                                   'Фото',
                                                   Colors.white.withOpacity(0.7),
                                                   800,
@@ -377,7 +377,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                                             0.9),
                                                                     fontSize:
                                                                         height /
-                                                                            52,
+                                                                            50,
                                                                     letterSpacing:
                                                                         .5),
                                                               ),
@@ -392,7 +392,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                 padding: const EdgeInsets.only(
                                                     top: 2),
                                                 child: animatedText(
-                                                    height / 72,
+                                                    height / 70,
                                                     'Лайки',
                                                     Colors.white
                                                         .withOpacity(0.7),
@@ -416,7 +416,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             animatedText(
-                                                height / 52,
+                                                height / 50,
                                                 userModel.userInterests.length
                                                     .toString(),
                                                 Colors.white.withOpacity(0.9),
@@ -426,7 +426,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                               padding:
                                                   const EdgeInsets.only(top: 2),
                                               child: animatedText(
-                                                  height / 72,
+                                                  height / 70,
                                                   'Интересы',
                                                   Colors.white.withOpacity(0.7),
                                                   1400,

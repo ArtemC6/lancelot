@@ -206,33 +206,35 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           textFieldAuth(
-                              'Email...',
-                              emailController,
-                              Icons.email_outlined,
-                              size,
-                              false,
-                              35,
-                              context, (String onTap) {
-                            sigInTap(context);
-                          }),
+                            size: size,
+                            controller: emailController,
+                            hint: 'Email...',
+                            icon: Icons.email_outlined,
+                            isPassword: false,
+                            length: 35,
+                            onSubmitted: (String onTap) {
+                              sigInTap(context);
+                            },
+                          ),
                           textFieldAuth(
-                              'Password...',
-                              passwordController,
-                              Icons.lock_open_outlined,
-                              size,
-                              true,
-                              20,
-                              context, (String onTap) {
-                            sigInTap(context);
-                          }),
+                            size: size,
+                            controller: passwordController,
+                            hint: 'Password...',
+                            icon: Icons.lock_open_outlined,
+                            isPassword: true,
+                            length: 20,
+                            onSubmitted: (String onTap) {
+                              sigInTap(context);
+                            },
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               signStart
-                                  ? buttonAuthAnimation('Войти', 2.4, 350, () {
+                                  ? buttonAuthAnimation('Войти', 2.2, 350, () {
                                       sigInTap(context);
                                     })
-                                  : buttonAuth('Войти', 2.4, 500, () {
+                                  : buttonAuth('Войти', 2.2, 500, () {
                                       sigInTap(context);
                                     }),
                             ],
@@ -245,7 +247,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          buttonAuth('Зарегистрировать аккаунт', 1.8, 0, () {
+                          buttonAuth('Зарегистрировать аккаунт', 1.5, 0, () {
                             Navigator.push(
                               context,
                               FadeRouteAnimation(const SignUpScreen()),

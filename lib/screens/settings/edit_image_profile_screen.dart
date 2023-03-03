@@ -5,12 +5,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../../config/const.dart';
-import '../../config/firestore_operations.dart';
+import '../../config/firebase/firestore_operations.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
 
 class EditImageProfileScreen extends StatefulWidget {
- final String bacImage;
+  final String bacImage;
 
   EditImageProfileScreen({Key? key, required this.bacImage}) : super(key: key);
 
@@ -46,16 +46,16 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
     Size size = MediaQuery.of(context).size;
     AnimationLimiter listImageProfile(BuildContext context) {
       return AnimationLimiter(
-          child: AnimationConfiguration.staggeredList(
-        position: 1,
-        delay: const Duration(milliseconds: 250),
-        child: SlideAnimation(
-          duration: const Duration(milliseconds: 2200),
-          horizontalOffset: 250,
-          curve: Curves.ease,
-          child: FadeInAnimation(
+        child: AnimationConfiguration.staggeredList(
+          position: 1,
+          delay: const Duration(milliseconds: 250),
+          child: SlideAnimation(
+            duration: const Duration(milliseconds: 2200),
+            horizontalOffset: 250,
+            curve: Curves.ease,
+            child: FadeInAnimation(
               curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 3000),
+              duration: const Duration(milliseconds: 3000),
               child: GridView.custom(
                   shrinkWrap: true,
                   gridDelegate: SliverQuiltedGridDelegate(
@@ -116,7 +116,9 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                 ),
                                 progressIndicatorBuilder:
                                     (context, url, progress) =>
-                                        loadingPhotoAnimation(size.height),
+                                        loadingPhotoAnimation(
+                                  height: size.height,
+                                ),
                                 imageUrl: listImageUri[index],
                               ),
                             ),

@@ -15,7 +15,7 @@ import 'package:like_button/like_button.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
-import '../config/firestore_operations.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../model/interests_model.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -336,7 +336,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         animatedText(
-                                            size.height / 52,
+                                            size.height / 50,
                                             '${userModelPartner.name}, ${userModelPartner.ageInt}',
                                             Colors.white,
                                             700,
@@ -345,7 +345,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           height: 1,
                                         ),
                                         animatedText(
-                                            size.height / 66,
+                                            size.height / 64,
                                             userModelPartner.myCity,
                                             Colors.white.withOpacity(.8),
                                             750,
@@ -393,7 +393,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       style: GoogleFonts.lato(
                                         textStyle: TextStyle(
                                             color: Colors.white70,
-                                            fontSize: size.height / 68,
+                                            fontSize: size.height / 66,
                                             letterSpacing: .15),
                                       ),
                                     ),
@@ -414,17 +414,13 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: height / 40),
                                       child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
                                             children: [
                                               animatedText(
-                                                  height / 52,
+                                                  height / 50,
                                                   userModelPartner
                                                       .userImageUrl.length
                                                       .toString(),
@@ -435,7 +431,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                 padding: const EdgeInsets.only(
                                                     top: 2),
                                                 child: animatedText(
-                                                    height / 72,
+                                                    height / 70,
                                                     'Фото',
                                                     Colors.white
                                                         .withOpacity(0.7),
@@ -453,9 +449,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                               thickness: 1,
                                             ),
                                           ),
-                                          InkWell(
-                                            splashColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
+                                          GestureDetector(
                                             onTap: () {
                                               Navigator.push(
                                                   context,
@@ -545,7 +539,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                                               0.9),
                                                                       fontSize:
                                                                           height /
-                                                                              52,
+                                                                              50,
                                                                       letterSpacing:
                                                                           .5),
                                                                 ),
@@ -561,7 +555,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                       const EdgeInsets.only(
                                                           top: 2),
                                                   child: animatedText(
-                                                      height / 72,
+                                                      height / 70,
                                                       'Лайки',
                                                       Colors.white
                                                           .withOpacity(0.7),
@@ -585,7 +579,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                 CrossAxisAlignment.center,
                                             children: [
                                               animatedText(
-                                                  height / 52,
+                                                  height / 50,
                                                   userModelPartner
                                                       .userInterests.length
                                                       .toString(),
@@ -596,7 +590,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                 padding: const EdgeInsets.only(
                                                     top: 2),
                                                 child: animatedText(
-                                                    height / 72,
+                                                    height / 70,
                                                     'Интересы',
                                                     Colors.white
                                                         .withOpacity(0.7),

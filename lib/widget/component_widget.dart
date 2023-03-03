@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -11,6 +12,7 @@ import '../../config/const.dart';
 import '../../model/interests_model.dart';
 import '../../model/user_model.dart';
 import '../config/utils.dart';
+import '../getx/chat_data_controller.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings/edit_profile_screen.dart';
 import 'animation_widget.dart';
@@ -30,7 +32,7 @@ class slideInterests extends StatelessWidget {
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.all(20),
           child: animatedText(
-              height / 64, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
+              height / 62, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
         ),
         SizedBox(
           height: height / 8,
@@ -113,9 +115,15 @@ class slideInterests extends StatelessWidget {
                                   ),
                                 if (listStory.length > index)
                                   Padding(
-                                    padding:  EdgeInsets.only(
+                                    padding: EdgeInsets.only(
                                         left: 0, right: 4, top: height / 160),
-                                    child: animatedText(height / 78, listStory[index].name, Colors.white.withOpacity(0.8), animation * 600, 1),)
+                                    child: animatedText(
+                                        height / 76,
+                                        listStory[index].name,
+                                        Colors.white.withOpacity(0.8),
+                                        animation * 600,
+                                        1),
+                                  )
                               ],
                             ),
                           ),
@@ -148,7 +156,7 @@ class slideInterestsSettings extends StatelessWidget {
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.all(20),
           child: animatedText(
-              height / 64, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
+              height / 62, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
         ),
         SizedBox(
           height: height / 8.0,
@@ -197,31 +205,35 @@ class slideInterestsSettings extends StatelessWidget {
                                     children: [
                                       if (listStory.length > index)
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(100),
+                                          borderRadius:
+                                              BorderRadius.circular(100),
                                           child: CachedNetworkImage(
-                                            errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
                                             imageBuilder:
                                                 (context, imageProvider) =>
-                                                Container(
-                                                  height: height / 12,
-                                                  width: height / 12,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
+                                                    Container(
+                                              height: height / 12,
+                                              width: height / 12,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
                                                     const BorderRadius.all(
                                                         Radius.circular(100)),
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
                                                 ),
+                                              ),
+                                            ),
                                             progressIndicatorBuilder:
-                                                (context, url, progress) => Center(
+                                                (context, url, progress) =>
+                                                    Center(
                                               child: SizedBox(
                                                 height: height / 12,
                                                 width: height / 12,
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   color: Colors.white,
                                                   strokeWidth: 1,
                                                   value: progress.progress,
@@ -291,9 +303,15 @@ class slideInterestsSettings extends StatelessWidget {
                                 ),
                                 if (listStory.length > index)
                                   Padding(
-                                    padding:  EdgeInsets.only(
+                                    padding: EdgeInsets.only(
                                         left: 0, right: 4, top: height / 160),
-                                    child: animatedText(height / 78, listStory[index].name, Colors.white.withOpacity(0.8), animation * 600, 1),)
+                                    child: animatedText(
+                                        height / 76,
+                                        listStory[index].name,
+                                        Colors.white.withOpacity(0.8),
+                                        animation * 600,
+                                        1),
+                                  )
                               ],
                             ),
                           ),
@@ -360,36 +378,53 @@ class chatBackgroundPanel extends StatelessWidget {
   }
 }
 
-Padding topPanel(BuildContext context, String text, IconData icon, Color color,
-    bool isBack, double height) {
-  return Padding(
-    padding: const EdgeInsets.all(20),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (isBack)
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back_ios_new_rounded,
-                color: Colors.white, size: height / 38),
+class topPanel extends StatelessWidget {
+  const topPanel({
+    super.key,
+    required this.height,
+    required this.text,
+    required this.isBack,
+    required this.color,
+    required this.icon,
+  });
+
+  final double height;
+  final bool isBack;
+  final String text;
+  final Color color;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (isBack)
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white, size: height / 38),
+            ),
+          animatedText(height / 48, text, Colors.white, 540, 1),
+          Container(
+            height: height / 34,
+            width: height / 34,
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(99)),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: height / 50,
+            ),
           ),
-        animatedText(height / 52, text, Colors.white, 540, 1),
-        Container(
-          height: height / 34,
-          width: height / 34,
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(99)),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: height / 50,
-          ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 class topPanelChat extends StatefulWidget {
@@ -419,40 +454,30 @@ class _topPanelChatState extends State<topPanelChat> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('User')
-          .doc(friendId)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+    return GetBuilder<GetChatDataController>(
+      builder: (GetChatDataController controller) {
         return StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('User')
-              .doc(userModelCurrent.uid)
-              .collection('messages')
               .doc(friendId)
               .snapshots(),
-          builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData && asyncSnapshot.hasData) {
+          builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
+            if (asyncSnapshot.hasData) {
               var isWriteUser = false, isOnline = false;
+              isOnline = asyncSnapshot.data['state'] != 'offline';
               try {
-                isOnline = asyncSnapshot.data['state'] != 'offline';
-                if (snapshot.data['writeLastData'] != '') {
+                if (controller.writeLastData != '') {
                   if (DateTime.now()
-                          .difference(
-                              getDataTime(snapshot.data['writeLastData']))
+                          .difference(getDataTime(controller.writeLastData))
                           .inSeconds <
                       3) {
                     getState(3500).then((value) {
-                      setState(() {
-                        isWriteUser = value;
-                      });
+                      setState(() => isWriteUser = value);
                     });
                     isWriteUser = true;
                   }
                 }
-              } catch (error) {}
+              } catch (e) {}
 
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -632,7 +657,7 @@ class _topPanelChatState extends State<topPanelChat> {
                                           animatedText(height / 68, 'в сети',
                                               Colors.green, 500, 1),
                                         if (isWriteUser)
-                                          showProgressWrite(height)
+                                          showProgressWrite(height: height)
                                       ],
                                     ),
                                   ],

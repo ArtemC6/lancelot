@@ -83,7 +83,8 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 animationController),
             Padding(
               padding: EdgeInsets.only(
-                  bottom: size.height / 22,
+                  top: size.height / 32,
+                  bottom: size.height / 18,
                   left: size.height / 48,
                   right: size.height / 48),
               child: SlideFadeTransition(
@@ -95,7 +96,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: size.height / 60,
+                        fontSize: size.height / 52,
                         letterSpacing: .6),
                   ),
                 ),
@@ -108,7 +109,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 },
                 child: Padding(
                   padding: EdgeInsets.only(
-                      bottom: size.height / 22,
+                      bottom: size.height / 16,
                       left: size.height / 48,
                       right: size.height / 48),
                   child: SlideFadeTransition(
@@ -120,7 +121,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height / 60,
+                            fontSize: size.height / 54,
                             letterSpacing: .6),
                       ),
                     ),
@@ -130,7 +131,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
             if (isDescriptionEmail)
               Padding(
                 padding: EdgeInsets.only(
-                    bottom: size.height / 22,
+                    bottom: size.height / 16,
                     left: size.height / 48,
                     right: size.height / 48),
                 child: SlideFadeTransition(
@@ -142,7 +143,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                     style: GoogleFonts.lato(
                       textStyle: TextStyle(
                           color: Colors.white,
-                          fontSize: size.height / 60,
+                          fontSize: size.height / 54,
                           letterSpacing: .6),
                     ),
                   ),
@@ -152,20 +153,20 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
               padding: EdgeInsets.only(bottom: size.height / 32),
               child: isEmail
                   ? buttonUniversal('Отправить повторно',
-                      listColorMulticoloured, size.height / 15, () {
+                      listColorMulticoloured, size.height / 17, () {
                       sendEmail();
                     }, 400)
                   : buttonUniversalAnimationColors(
-                      'Отправить повторно',
+                  'Отправить повторно',
                       [color_black_88, color_black_88],
-                      size.height / 17,
+                      size.height / 18,
                       () {},
                       400),
             ),
             Padding(
               padding: EdgeInsets.only(bottom: size.height / 14),
               child: buttonUniversalAnimationColors('Другая почта',
-                  [color_black_88, color_black_88], size.height / 16, () async {
+                  [color_black_88, color_black_88], size.height / 18, () async {
                 try {
                   if (FirebaseAuth.instance.currentUser?.uid != null) {
                     await FirebaseFirestore.instance

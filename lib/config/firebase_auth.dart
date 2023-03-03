@@ -6,7 +6,7 @@ import '../main.dart';
 import '../screens/auth/signin_screen.dart';
 import '../widget/dialog_widget.dart';
 import 'const.dart';
-import 'firestore_operations.dart';
+import 'firebase/firestore_operations.dart';
 
 class FirebaseAuthMethods {
   static Future<void> signUpWithEmail({

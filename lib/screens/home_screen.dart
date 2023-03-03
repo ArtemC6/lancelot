@@ -6,7 +6,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 
 import '../config/const.dart';
-import '../config/firestore_operations.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -123,17 +123,16 @@ class _HomeScreen extends State<HomeScreen>
         isLoading = true;
       });
     });
-
   }
 
   @override
   void initState() {
     animationController = AnimationController(vsync: this);
-    super.initState();
     readFirebase(
       3,
       true,
     );
+    super.initState();
   }
 
   @override
@@ -162,21 +161,16 @@ class _HomeScreen extends State<HomeScreen>
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: SizedBox(
-            width: MediaQuery.of(context).size.width,
+            width: width,
             child: AnimationLimiter(
               child: AnimationConfiguration.staggeredList(
                 position: 1,
-                delay: const Duration(milliseconds: 200),
                 child: SlideAnimation(
                   duration: const Duration(milliseconds: 2000),
                   verticalOffset: 250,
-                  curve: Curves.ease,
                   child: FadeInAnimation(
-                    curve: Curves.easeOut,
-                    duration: const Duration(milliseconds: 3700),
+                    duration: const Duration(seconds: 4),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         if (!isEmptyUser)
                           Stack(
@@ -185,47 +179,44 @@ class _HomeScreen extends State<HomeScreen>
                               SizedBox(
                                 height: height * 0.68,
                                 child: TinderSwapCard(
-                                  animDuration: 850,
-                                  swipeUp: false,
-                                  swipeDown: false,
                                   orientation: AmassOrientation.BOTTOM,
-                                  allowVerticalMovement: true,
                                   totalNum: userModelPartner.length + 1,
-                                  stackNum: 3,
-                                  swipeEdge: 3.0,
                                   maxWidth: width * 0.98,
                                   maxHeight: height * 0.52,
                                   minWidth: width * 0.96,
                                   minHeight: height * 0.44,
                                   cardBuilder: (context, index) {
                                     if (index < userModelPartner.length) {
-                                      return SizedBox(
-                                        child: InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
+                                      return GestureDetector(
                                           onTap: () {
                                             Navigator.push(
-                                                context,
-                                                FadeRouteAnimation(
-                                                    ProfileScreen(
+                                              context,
+                                              FadeRouteAnimation(
+                                                ProfileScreen(
                                                   userModelPartner:
                                                       userModelPartner[index],
                                                   isBack: true,
                                                   idUser: '',
                                                   userModelCurrent:
                                                       userModelCurrent,
-                                                )));
+                                                ),
+                                              ),
+                                            );
                                           },
-                                          child: cardPartner(index,
-                                              userModelPartner, size, context),
-                                        ),
-                                      );
+                                          child: cardPartner(
+                                              size: size,
+                                              userModelPartner:
+                                                  userModelPartner[index]));
                                     } else {
                                       if (isWrite) {
                                         isWrite = false;
                                         readFirebase(6, false);
                                       }
-                                      return cardLoading(size, 22);
+
+                                      return cardLoading(
+                                        size: size,
+                                        radius: 22,
+                                      );
                                     }
                                   },
                                   cardController: controllerCard =
@@ -233,130 +224,106 @@ class _HomeScreen extends State<HomeScreen>
                                   swipeUpdateCallback:
                                       (DragUpdateDetails details,
                                           Alignment align) {
-                                    setState(() {
-                                      if (align.x < 0) {
-                                        int incline = int.parse(align.x
-                                            .toStringAsFixed(1)
-                                            .substring(1, 2));
+                                    if (align.x < 0) {
+                                      int incline = int.parse(align.x
+                                          .toStringAsFixed(1)
+                                          .substring(1, 2));
 
-                                        if (incline <= 10 && incline > 3) {
-                                          colorIndex =
-                                              double.parse('0.$incline');
-                                          isLike = true;
-                                          isLook = true;
-                                        } else {
-                                          isLook = false;
-                                        }
-                                      } else if (align.x > 0) {
-                                        if (align.y.toDouble() < 1 &&
-                                            align.y.toDouble() > 0.3) {
-                                          colorIndex = double.parse(
-                                              '0.${align.x.toInt()}');
-                                          isLook = true;
-                                          isLike = false;
-                                        } else {
-                                          isLook = false;
-                                        }
+                                      if (incline <= 10 && incline > 3) {
+                                        colorIndex = double.parse('0.$incline');
+                                        isLike = true;
+                                        isLook = true;
+                                        setState(() {});
+                                      } else {
+                                        setState(() {});
+                                        isLook = false;
                                       }
-                                    });
+                                    } else if (align.x > 0) {
+                                      if (align.y.toDouble() < 1 &&
+                                          align.y.toDouble() > 0.3) {
+                                        colorIndex = double.parse(
+                                            '0.${align.x.toInt()}');
+                                        isLook = true;
+                                        isLike = false;
+                                        setState(() {});
+                                      } else {
+                                        setState(() {});
+                                        isLook = false;
+                                      }
+                                    }
                                   },
                                   swipeCompleteCallback:
                                       (CardSwipeOrientation orientation,
                                           int index) async {
-                                    setState(() {
-                                      if (orientation.toString() ==
-                                          'CardSwipeOrientation.LEFT') {
-                                        isLook = false;
-                                        listDisLike
-                                            .add(userModelPartner[index].uid);
+                                    if (orientation.toString() ==
+                                        'CardSwipeOrientation.LEFT') {
+                                      setState(() {});
 
-                                        createDisLike(userModelCurrent,
-                                                userModelPartner[index])
-                                            .then((value) {
-                                          CachedNetworkImage.evictFromCache(
-                                              userModelPartner[index]
-                                                  .userImageUrl[0]);
-                                        });
+                                      isLook = false;
+                                      listDisLike
+                                          .add(userModelPartner[index].uid);
+                                      createDisLike(userModelCurrent,
+                                          userModelPartner[index]);
+                                      CachedNetworkImage.evictFromCache(
+                                          userModelPartner[index]
+                                              .userImageUrl[0]);
+                                    }
+
+                                    if (orientation.toString() ==
+                                        'CardSwipeOrientation.RIGHT') {
+                                      setState(() => isLook = false);
+
+                                      listDisLike
+                                          .add(userModelPartner[index].uid);
+
+                                      createDisLike(userModelCurrent,
+                                          userModelPartner[index]);
+
+                                      createSympathy(
+                                          userModelPartner[index].uid,
+                                          userModelCurrent);
+                                      if (userModelPartner[index].token != '' &&
+                                          userModelPartner[index]
+                                              .notification) {
+                                        sendFcmMessage(
+                                            'Lancelot',
+                                            'У вас симпатия',
+                                            userModelPartner[index].token,
+                                            'sympathy',
+                                            userModelCurrent.uid,
+                                            userModelCurrent.userImageUrl[0]);
                                       }
-
-                                      if (orientation.toString() ==
-                                          'CardSwipeOrientation.RIGHT') {
-                                        isLook = false;
-
-                                        listDisLike
-                                            .add(userModelPartner[index].uid);
-
-                                        createDisLike(userModelCurrent,
-                                            userModelPartner[index]);
-
-                                        createSympathy(
-                                                userModelPartner[index].uid,
-                                                userModelCurrent)
-                                            .then((value) async {
-                                          if (userModelPartner[index].token !=
-                                                  '' &&
-                                              userModelPartner[index]
-                                                  .notification) {
-                                            await sendFcmMessage(
-                                                'Lancelot',
-                                                'У вас симпатия',
-                                                userModelPartner[index].token,
-                                                'sympathy',
-                                                userModelCurrent.uid,
-                                                userModelCurrent
-                                                    .userImageUrl[0]);
-                                          }
-                                          CachedNetworkImage.evictFromCache(
-                                              userModelPartner[index]
-                                                  .userImageUrl[0]);
-                                        });
-                                      }
-                                    });
+                                      CachedNetworkImage.evictFromCache(
+                                          userModelPartner[index]
+                                              .userImageUrl[0]);
+                                    }
                                   },
                                 ),
                               ),
                               if (isLook && !isLike)
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isLook = false;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    width: width,
-                                    height: height / 2.9,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: const AssetImage(
-                                            'images/ic_heart.png'),
-                                        colorFilter: ColorFilter.mode(
-                                          Colors.white.withOpacity(colorIndex),
-                                          BlendMode.modulate,
-                                        ),
+                                Container(
+                                  height: height / 2.9,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: const AssetImage(
+                                          'images/ic_heart.png'),
+                                      colorFilter: ColorFilter.mode(
+                                        Colors.white.withOpacity(colorIndex),
+                                        BlendMode.modulate,
                                       ),
                                     ),
                                   ),
                                 ),
                               if (isLook && isLike)
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isLook = false;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    width: width,
-                                    height: height / 2.9,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: const AssetImage(
-                                            'images/ic_remove.png'),
-                                        colorFilter: ColorFilter.mode(
-                                          Colors.white.withOpacity(colorIndex),
-                                          BlendMode.modulate,
-                                        ),
+                                Container(
+                                  height: height / 2.9,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: const AssetImage(
+                                          'images/ic_remove.png'),
+                                      colorFilter: ColorFilter.mode(
+                                        Colors.white.withOpacity(colorIndex),
+                                        BlendMode.modulate,
                                       ),
                                     ),
                                   ),
@@ -372,13 +339,13 @@ class _HomeScreen extends State<HomeScreen>
                                 animationDuration:
                                     const Duration(milliseconds: 700),
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 60),
+                                  padding: EdgeInsets.only(top: height / 14),
                                   child: buttonUniversal(
                                       '     Обновить     ',
                                       listColorMulticoloured,
                                       height / 18.5, () {
                                     readFirebase(
-                                      6,
+                                      3,
                                       true,
                                     );
                                   }, 750),
@@ -388,14 +355,13 @@ class _HomeScreen extends State<HomeScreen>
                           ),
                         if (!isEmptyUser)
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
                               homeAnimationButton(height, width, () {
                                 controllerCard.triggerLeft();
-                              }, Colors.white, Icons.close, 1800),
+                              }, Colors.white, Icons.close, 2000),
                               homeAnimationButton(height, width, () {
                                 controllerCard.triggerRight();
-                              }, color_red, Icons.favorite, 2400),
+                              }, color_red, Icons.favorite, 2700),
                             ],
                           ),
                       ],

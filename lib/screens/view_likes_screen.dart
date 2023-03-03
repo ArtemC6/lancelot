@@ -75,12 +75,11 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
           child: Column(
             children: [
               topPanel(
-                context,
-                'Отметки \'Нравится\'',
-                Icons.favorite_outlined,
-                Colors.red,
-                true,
-                height,
+                height: height,
+                text: 'Отметки \'Нравится\'',
+                isBack: true,
+                color: Colors.red,
+                icon: Icons.favorite_outlined,
               ),
               FutureBuilder(
                 future: FirebaseFirestore.instance

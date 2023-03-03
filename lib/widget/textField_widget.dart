@@ -4,60 +4,130 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Widget textFieldAuth(
-    String hint,
-    TextEditingController controller,
-    IconData icon,
-    Size size,
-    bool isPassword,
-    int length,
-    BuildContext context,
-    onSubmitted) {
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(15),
-    child: BackdropFilter(
-      filter: ImageFilter.blur(
-        sigmaY: 15,
-        sigmaX: 15,
-      ),
-      child: Container(
-        height: size.width / 8,
-        width: size.width / 1.2,
-        alignment: Alignment.center,
-        padding: EdgeInsets.only(right: size.width / 30),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white10, width: 0.5),
-          color: Colors.white.withOpacity(.05),
-          borderRadius: BorderRadius.circular(15),
+class textFieldAuth extends StatelessWidget {
+  const textFieldAuth({
+    super.key,
+    required this.size,
+    required this.hint,
+    required this.controller,
+    required this.icon,
+    required this.isPassword,
+    required this.length,
+    required this.onSubmitted,
+  });
+
+  final Size size;
+  final String hint;
+  final TextEditingController controller;
+  final IconData icon;
+  final bool isPassword;
+  final int length;
+  final onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaY: 15,
+          sigmaX: 15,
         ),
-        child: TextField(
-          onSubmitted: onSubmitted,
-          obscureText: isPassword,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(length),
-          ],
-          textAlignVertical: TextAlignVertical.center,
-          controller: controller,
-          style: TextStyle(
-              color: Colors.white.withOpacity(.8), fontSize: size.height / 61),
-          cursorColor: Colors.white,
-          decoration: InputDecoration(
-            prefixIcon: Icon(
-              icon,
-              color: Colors.white.withOpacity(.7),
+        child: Container(
+          height: size.width / 7.7,
+          width: size.width / 1.2,
+          alignment: Alignment.center,
+          padding: EdgeInsets.only(right: size.width / 30),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white10, width: 0.5),
+            color: Colors.white.withOpacity(.05),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: TextField(
+            onSubmitted: onSubmitted,
+            obscureText: isPassword,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(length),
+            ],
+            textAlignVertical: TextAlignVertical.center,
+            controller: controller,
+            style: TextStyle(
+                color: Colors.white.withOpacity(.8),
+                fontSize: size.height / 58),
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                icon,
+                color: Colors.white.withOpacity(.7),
+              ),
+              border: InputBorder.none,
+              hintMaxLines: 1,
+              hintText: hint,
+              hintStyle: TextStyle(
+                  fontSize: size.height / 58,
+                  color: Colors.white.withOpacity(.5)),
             ),
-            border: InputBorder.none,
-            hintMaxLines: 1,
-            hintText: hint,
-            hintStyle: TextStyle(
-                fontSize: size.height / 61,
-                color: Colors.white.withOpacity(.5)),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
+
+// Widget textFieldAuth(
+//     String hint,
+//     TextEditingController controller,
+//     IconData icon,
+//     Size size,
+//     bool isPassword,
+//     int length,
+//     BuildContext context,
+//     onSubmitted) {
+//   return ClipRRect(
+//     borderRadius: BorderRadius.circular(15),
+//     child: BackdropFilter(
+//       filter: ImageFilter.blur(
+//         sigmaY: 15,
+//         sigmaX: 15,
+//       ),
+//       child: Container(
+//         height: size.width / 7.7,
+//         width: size.width / 1.2,
+//         alignment: Alignment.center,
+//         padding: EdgeInsets.only(right: size.width / 30),
+//         decoration: BoxDecoration(
+//           border: Border.all(color: Colors.white10, width: 0.5),
+//           color: Colors.white.withOpacity(.05),
+//           borderRadius: BorderRadius.circular(15),
+//         ),
+//         child: TextField(
+//           onSubmitted: onSubmitted,
+//           obscureText: isPassword,
+//           inputFormatters: [
+//             LengthLimitingTextInputFormatter(length),
+//           ],
+//           textAlignVertical: TextAlignVertical.center,
+//           controller: controller,
+//           style: TextStyle(
+//               color: Colors.white.withOpacity(.8), fontSize: size.height / 58),
+//           cursorColor: Colors.white,
+//           decoration: InputDecoration(
+//             prefixIcon: Icon(
+//               icon,
+//               color: Colors.white.withOpacity(.7),
+//             ),
+//             border: InputBorder.none,
+//             hintMaxLines: 1,
+//             hintText: hint,
+//             hintStyle: TextStyle(
+//                 fontSize: size.height / 58,
+//                 color: Colors.white.withOpacity(.5)),
+//           ),
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
 Widget textFieldProfileSettings(
     TextEditingController nameController,

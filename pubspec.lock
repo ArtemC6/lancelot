@@ -477,6 +477,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      sha256: "2ba20a47c8f1f233bed775ba2dd0d3ac97b4cf32fc17731b3dfc672b06b0e92a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.5"
+  get_storage:
+    dependency: "direct main"
+    description:
+      name: get_storage
+      sha256: "39db1fffe779d0c22b3a744376e86febe4ade43bf65e06eab5af707dc84185a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   glowstone:
     dependency: "direct main"
     description:
@@ -685,14 +701,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -805,14 +813,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.5"
   rxdart:
     dependency: transitive
     description:
@@ -877,6 +877,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  shimmer_animation:
+    dependency: "direct main"
+    description:
+      name: shimmer_animation
+      sha256: "1f12d0f3fc20acbf2dcf8438b79f4268c523d55b2f3de55cf49e5bd3acbc5719"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0+1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -950,18 +958,18 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: b3e500b1896d40c8961ab430a94fc22eff8fa1b33af03584e2f0b89371c3fa6a
+      sha256: "4319454a92fe5aea1e90ff68c17703a39517ab05dd3074c34c9553e5f7cbf414"
       url: "https://pub.dev"
     source: hosted
-    version: "20.4.48"
+    version: "20.4.52"
   syncfusion_flutter_sliders:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_sliders
-      sha256: c746a38f258a341b7ba375e58195050a5fae5dbfe1a7e261ae96a3282d54ba4b
+      sha256: "7f1bb58290e9fc19a564af069296f0308c36ebc963e0d3578e350ca80ae13e33"
       url: "https://pub.dev"
     source: hosted
-    version: "20.4.48"
+    version: "20.4.52"
   synchronized:
     dependency: transitive
     description:

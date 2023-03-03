@@ -218,41 +218,44 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           textFieldAuth(
-                              'Name...',
-                              nameController,
-                              Icons.account_circle_sharp,
-                              size,
-                              false,
-                              10,
-                              context, (String onTap) {
-                            sigUpTap(context);
-                          }),
+                            size: size,
+                            controller: nameController,
+                            hint: 'Name...',
+                            icon: Icons.account_circle_sharp,
+                            isPassword: false,
+                            length: 10,
+                            onSubmitted: (String onTap) {
+                              sigUpTap(context);
+                            },
+                          ),
                           textFieldAuth(
-                              'Email...',
-                              emailController,
-                              Icons.email_outlined,
-                              size,
-                              false,
-                              35,
-                              context, (String onTap) {
-                            sigUpTap(context);
-                          }),
+                            size: size,
+                            controller: emailController,
+                            hint: 'Email...',
+                            icon: Icons.email_outlined,
+                            isPassword: false,
+                            length: 35,
+                            onSubmitted: (String onTap) {
+                              sigUpTap(context);
+                            },
+                          ),
                           textFieldAuth(
-                              'Password...',
-                              passwordController,
-                              Icons.lock_open_outlined,
-                              size,
-                              true,
-                              20,
-                              context, (String onTap) {
-                            sigUpTap(context);
-                          }),
+                            size: size,
+                            controller: passwordController,
+                            hint: 'Password...',
+                            icon: Icons.lock_open_outlined,
+                            isPassword: true,
+                            length: 20,
+                            onSubmitted: (String onTap) {
+                              sigUpTap(context);
+                            },
+                          ),
                           Container(
                               padding: EdgeInsets.only(
                                   right: size.height / 22, top: 4, bottom: 4),
                               alignment: Alignment.centerRight,
                               child: animatedText(
-                                  size.height / 72,
+                                  size.height / 66,
                                   'Введите реальную почту',
                                   Colors.white,
                                   500,
@@ -262,12 +265,12 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             children: [
                               signStart
                                   ? buttonAuthAnimation(
-                                      'Зарегистрироваться', 2, 350, () {
-                                sigUpTap(context);
+                                      'Зарегистрироваться', 1.7, 350, () {
+                                      sigUpTap(context);
                                     })
-                                  : buttonAuth('Зарегистрироваться', 2, 500,
+                                  : buttonAuth('Зарегистрироваться', 1.7, 500,
                                       () {
-                                    sigUpTap(context);
+                                      sigUpTap(context);
                                     }),
                             ],
                           ),

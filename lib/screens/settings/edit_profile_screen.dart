@@ -1,7 +1,6 @@
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -12,8 +11,8 @@ import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../../config/const.dart';
+import '../../config/firebase/firestore_operations.dart';
 import '../../config/firebase_auth.dart';
-import '../../config/firestore_operations.dart';
 import '../../config/utils.dart';
 import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
@@ -251,8 +250,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     SizedBox imageProfileSettings(double height, BuildContext context) {
       return SizedBox(
-        height: height / 6.5,
-        width: height / 6.5,
+        height: width / 2.8,
+        width: width / 2.8,
         child: Card(
           shadowColor: Colors.white30,
           color: color_black_88,
@@ -302,8 +301,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       progressIndicatorBuilder: (context, url, progress) =>
                           Center(
                         child: SizedBox(
-                          height: height / 6.5,
-                          width: height / 6.5,
+                          height: width / 2.8,
+                          width: width / 2.8,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 0.8,
@@ -447,17 +446,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 context,
                                 3,
                                 height,
-                                    () => showDatePicker()),
+                                () => showDatePicker()),
                             textFieldProfileSettings(_myPolController, true,
-                                'Ваш пол', context, 10, height, () {
-                                  showBottomSheet(
+                                'Ваш пол', context, 10, height, () async {
+                              if (MediaQuery.of(context).viewInsets.bottom >
+                                  10) {
+                                Navigator.pop(context);
+                                await Future.delayed(
+                                    Duration(microseconds: 1000));
+                              }
+                              showBottomSheet(
                                   context,
                                   'Укажите свой пол',
                                   'Мужской',
                                   'Женский',
                                   _myPolController,
                                   height);
-                                }),
+                            }),
                             textFieldProfileSettings(
                                 _searchPolController,
                                 true,
@@ -502,52 +507,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     return StatefulBuilder(
                                         builder: (context, setState) {
                                       return SizedBox(
-                                        height: 280,
+                                        height: 300,
                                         width: width,
                                         child: Column(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 20, bottom: 60),
-                                              child: DelayedDisplay(
-                                                delay: const Duration(
-                                                    milliseconds: 450),
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                            text:
-                                                            'От ${_valuesAge.start} до ${_valuesAge.end} лет',
-                                                            style: GoogleFonts.lato(
-                                                              textStyle:
-                                                              const TextStyle(
-                                                                  color:
-                                                                  Colors.white,
-                                                                  fontSize: 13,
-                                                                  letterSpacing:
-                                                                  .9),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SfRangeSlider(
-                                                      activeColor: Colors.blue,
-                                                      min: 16,
-                                                      max: 30,
-                                                      values: _valuesAge,
-                                                      stepSize: 1,
-                                                      enableTooltip: true,
-                                                      onChanged:
-                                                          (SfRangeValues values) {
-                                                        setState(() {
-                                                          _valuesAge = values;
-                                                          _ageRangController.text =
-                                                          'От ${_valuesAge.start} до ${_valuesAge.end} лет';
-                                                        });
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
+                                                padding: EdgeInsets.only(
+                                                    top: 20,
+                                                    bottom: height / 18),
+                                                child: animatedText(
+                                                    height / 57,
+                                                    'От ${_valuesAge.start} до ${_valuesAge.end} лет',
+                                                    Colors.white,
+                                                    450,
+                                                    1)),
+                                            SfRangeSlider(
+                                              activeColor: Colors.blue,
+                                              min: 16,
+                                              max: 30,
+                                              values: _valuesAge,
+                                              stepSize: 1,
+                                              enableTooltip: true,
+                                              onChanged:
+                                                  (SfRangeValues values) {
+                                                setState(() {
+                                                  _valuesAge = values;
+                                                  _ageRangController.text =
+                                                      'От ${_valuesAge.start} до ${_valuesAge.end} лет';
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                             });
                                       });
                                 }),
@@ -707,8 +699,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: const BoxDecoration(
             color: color_black_88,
             borderRadius: BorderRadius.all(Radius.circular(16))),
-        bottomSheetColor: Colors.transparent,
-        initHeight: 0.34,
+        bottomSheetColor: color_black_88,
+        initHeight: 0.345,
         context: context,
         builder: (
           BuildContext context,
@@ -717,55 +709,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ) {
           return StatefulBuilder(builder: (context, setState) {
             return Container(
-              height: 280,
-              padding: const EdgeInsets.all(28),
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Card(
-                    shadowColor: Colors.white30,
-                    color: color_black_88,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        side: const BorderSide(
-                          width: 0.8,
-                          color: Colors.white38,
-                        )),
-                    elevation: 16,
-                    child: Theme(
-                      data: ThemeData.light(),
-                      child: ExpansionTile(
-                        key: GlobalKey(),
-                        initiallyExpanded: true,
-                        maintainState: true,
+              padding: const EdgeInsets.all(20),
+              child: Card(
+                shadowColor: Colors.white30,
+                color: color_black_88,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    side: const BorderSide(
+                      width: 0.8,
+                      color: Colors.white38,
+                    )),
+                elevation: 16,
+                child: Theme(
+                  data: ThemeData.light(),
+                  child: ExpansionTile(
+                    key: GlobalKey(),
+                    initiallyExpanded: true,
+                    maintainState: true,
+                    title: animatedText(height / 56, title, Colors.white, 0, 2),
+                    children: [
+                      ListTile(
                         title: animatedText(
-                            height / 60, title, Colors.white, 0, 2),
-                        children: [
-                          ListTile(
-                            title: animatedText(
-                                height / 60, select_1, Colors.white, 550, 1),
-                            onTap: () {
-                              setState(() {
-                                controller.text = select_1;
-                                Navigator.pop(context);
-                              });
-                            },
-                          ),
-                          ListTile(
-                            title: animatedText(
-                                height / 60, select_2, Colors.white, 550, 1),
-                            onTap: () {
-                              setState(() {
-                                controller.text = select_2;
-                                Navigator.pop(context);
-                              });
-                            },
-                          ),
-                        ],
+                            height / 57, select_1, Colors.white, 550, 1),
+                        onTap: () {
+                          setState(() {
+                            controller.text = select_1;
+                            Navigator.pop(context);
+                          });
+                        },
                       ),
-                    ),
+                      ListTile(
+                        title: animatedText(
+                            height / 57, select_2, Colors.white, 550, 1),
+                        onTap: () {
+                          setState(() {
+                            controller.text = select_2;
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             );
           });

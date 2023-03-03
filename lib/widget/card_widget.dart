@@ -135,13 +135,16 @@ class itemUserLike extends StatelessWidget {
               splashColor: Colors.transparent,
               onTap: () {
                 Navigator.push(
-                    context,
-                    FadeRouteAnimation(ProfileScreen(
+                  context,
+                  FadeRouteAnimation(
+                    ProfileScreen(
                       userModelPartner: userModelLike,
                       isBack: true,
                       idUser: '',
                       userModelCurrent: userModelCurrent,
-                    )));
+                    ),
+                  ),
+                );
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -232,210 +235,165 @@ class itemUserLike extends StatelessWidget {
   }
 }
 
-SizedBox cardLoadingWidget(Size size, double heightCard, double heightAvatar) {
-  return SizedBox(
-    height: size.height,
-    child: ListView.builder(
-      itemCount: 10,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+class cardLoading extends StatelessWidget {
+  const cardLoading({
+    super.key,
+    required this.size,
+    required this.radius,
+  });
+
+  final Size size;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return CardLoading(
+      cardLoadingTheme: CardLoadingTheme(
+          colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
+      height: size.height,
+      width: size.width,
+      borderRadius: BorderRadius.circular(radius),
+    );
+  }
+}
+
+class cardPartner extends StatelessWidget {
+  const cardPartner({
+    super.key,
+    required this.size,
+    required this.userModelPartner,
+  });
+
+  final Size size;
+  final UserModel userModelPartner;
+
+  @override
+  Widget build(BuildContext context) {
+    return ZoomTapAnimation(
+      end: 0.995,
+      child: Card(
+        color: color_black_88,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+        ),
+        elevation: 2,
+        child: FlutterColorsBorder(
+          animationDuration: 7,
+          colors: const [
+            Colors.white10,
+            Colors.white70,
+          ],
+          size: Size(size.height, size.height),
+          boardRadius: 22,
+          borderWidth: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.bottomLeft,
             children: [
-              Stack(alignment: Alignment.centerLeft, children: [
-                CardLoading(
-                  cardLoadingTheme: CardLoadingTheme(
-                      colorTwo: color_black_88,
-                      colorOne: Colors.white.withOpacity(0.10)),
-                  height: size.height * heightCard,
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                  margin: const EdgeInsets.only(bottom: 10),
-                ),
-                Positioned(
-                  left: 22,
-                  child: CardLoading(
-                    cardLoadingTheme: CardLoadingTheme(
-                        colorTwo: color_black_88,
-                        colorOne: Colors.white.withOpacity(0.14)),
-                    height: size.height * heightAvatar,
-                    width: size.height * heightAvatar,
-                    borderRadius: const BorderRadius.all(Radius.circular(50)),
-                    margin: const EdgeInsets.only(bottom: 10),
-                  ),
-                ),
-              ]),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: CardLoading(
-                      cardLoadingTheme: CardLoadingTheme(
-                          colorTwo: color_black_88,
-                          colorOne: Colors.white.withOpacity(0.10)),
-                      height: 30,
-                      width: 200,
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      margin: const EdgeInsets.only(bottom: 10),
-                    ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                  Expanded(
-                    flex: 1,
-                    child: CardLoading(
-                      cardLoadingTheme: CardLoadingTheme(
-                          colorTwo: color_black_88,
-                          colorOne: Colors.white.withOpacity(0.10)),
-                      height: 30,
-                      width: 200,
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      margin: const EdgeInsets.only(bottom: 10),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    ),
-  );
-}
-
-Widget cardLoading(Size size, double radius) {
-  return CardLoading(
-    cardLoadingTheme: CardLoadingTheme(
-        colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
-    height: size.height,
-    width: size.width,
-    borderRadius: BorderRadius.circular(radius),
-  );
-}
-
-Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
-    BuildContext context) {
-  return ZoomTapAnimation(
-    enableLongTapRepeatEvent: false,
-    longTapRepeatDuration: const Duration(milliseconds: 200),
-    begin: 1.0,
-    end: 0.995,
-    beginDuration: const Duration(milliseconds: 20),
-    endDuration: const Duration(milliseconds: 200),
-    beginCurve: Curves.decelerate,
-    endCurve: Curves.fastOutSlowIn,
-    child: Card(
-      shadowColor: Colors.white30,
-      color: color_black_88,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-      ),
-      elevation: 10,
-      child: FlutterColorsBorder(
-        animationDuration: 7,
-        colors: const [
-          Colors.white10,
-          Colors.white70,
-        ],
-        size: Size(size.height, size.height),
-        boardRadius: 22,
-        borderWidth: 1,
-        child: Stack(
-          fit: StackFit.expand,
-          alignment: Alignment.bottomLeft,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: CachedNetworkImage(
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  useOldImageOnUrlChange: false,
-                  progressIndicatorBuilder: (context, url, progress) =>
-                      loadingPhotoAnimation(size.height),
-                  imageUrl: userModelPartner[index].userImageUrl[0],
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  width: MediaQuery.of(context).size.width),
-            ),
-            Positioned(
-              height: size.height / 12.5,
-              child: Container(
-                alignment: Alignment.bottomLeft,
-                padding: EdgeInsets.only(
-                  left: size.height / 72,
-                  bottom: size.height / 82,
-                ),
-                child: FlutterColorsBorder(
-                  animationDuration: 5,
-                  colors: listColorsAnimation,
-                  size: Size(
-                      size.height / 9.0 +
-                          userModelPartner[index].name.length * 4,
-                      size.height / 12),
-                  boardRadius: 14,
-                  borderWidth: 0.8,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: Colors.white60,
-                          width: 1,
+              CachedNetworkImage(
+                  imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                          ),
                         ),
                       ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaX: 12,
-                          sigmaY: 12,
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      loadingPhotoAnimation(
+                        height: size.height,
+                      ),
+                  imageUrl: userModelPartner.userImageUrl[0],
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  width: size.width),
+              Positioned(
+                height: size.height / 12.5,
+                child: Container(
+                  alignment: Alignment.bottomLeft,
+                  padding: EdgeInsets.only(
+                    left: size.height / 72,
+                    bottom: size.height / 82,
+                  ),
+                  child: FlutterColorsBorder(
+                    animationDuration: 5,
+                    colors: listColorsAnimation,
+                    size: Size(
+                        size.height / 9.0 + userModelPartner.name.length * 4,
+                        size.height / 12),
+                    boardRadius: 14,
+                    borderWidth: 0.8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: Colors.white60,
+                            width: 1,
+                          ),
                         ),
-                        child: AnimateGradient(
-                          primaryBegin: Alignment.topLeft,
-                          primaryEnd: Alignment.bottomLeft,
-                          secondaryBegin: Alignment.bottomLeft,
-                          secondaryEnd: Alignment.topRight,
-                          primaryColors: [
-                            Colors.white.withOpacity(0.01),
-                            Colors.black12
-                          ],
-                          secondaryColors: [
-                            Colors.white.withOpacity(0.01),
-                            Colors.black26
-                          ],
-                          child: Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.all(
-                              size.height / 120,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                animatedText(
-                                    size.height / 54,
-                                    '${userModelPartner[index].name}, '
-                                    '${userModelPartner[index].ageInt}',
-                                    Colors.white,
-                                    600,
-                                    1),
-                                Row(
-                                  children: [
-                                    animatedText(
-                                        size.height / 66,
-                                        userModelPartner[index].myCity,
-                                        Colors.white,
-                                        550,
-                                        1),
-                                    if (userModelPartner[index].state ==
-                                        'online')
-                                      SizedBox(
-                                        height: size.height / 41,
-                                        width: size.height / 41,
-                                        child: Image.asset(
-                                          'images/ic_green_dot.png',
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 12,
+                            sigmaY: 12,
+                          ),
+                          child: AnimateGradient(
+                            primaryBegin: Alignment.topLeft,
+                            primaryEnd: Alignment.bottomLeft,
+                            secondaryBegin: Alignment.bottomLeft,
+                            secondaryEnd: Alignment.topRight,
+                            primaryColors: [
+                              Colors.white.withOpacity(0.01),
+                              Colors.black12
+                            ],
+                            secondaryColors: [
+                              Colors.white.withOpacity(0.01),
+                              Colors.black26
+                            ],
+                            child: Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: EdgeInsets.all(
+                                size.height / 120,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  animatedText(
+                                      size.height / 54,
+                                      '${userModelPartner.name}, '
+                                      '${userModelPartner.ageInt}',
+                                      Colors.white,
+                                      600,
+                                      1),
+                                  Row(
+                                    children: [
+                                      animatedText(
+                                          size.height / 66,
+                                          userModelPartner.myCity,
+                                          Colors.white,
+                                          550,
+                                          1),
+                                      if (userModelPartner.state == 'online')
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: size.height / 160,
+                                          ),
+                                          child: Container(
+                                            height: size.height / 86,
+                                            width: size.height / 86,
+                                            decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(100)),
+                                                color: Color(0xff00DC35)),
+                                          ),
                                         ),
-                                      ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -444,10 +402,10 @@ Widget cardPartner(int index, List<UserModel> userModelPartner, Size size,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

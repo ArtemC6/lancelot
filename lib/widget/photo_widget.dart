@@ -5,7 +5,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
-import '../config/firestore_operations.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../model/user_model.dart';
 import 'animation_widget.dart';
 import 'button_widget.dart';
@@ -38,7 +38,9 @@ class photoProfile extends StatelessWidget {
           child: CachedNetworkImage(
             errorWidget: (context, url, error) => const Icon(Icons.error),
             progressIndicatorBuilder: (context, url, progress) =>
-                loadingPhotoAnimation(height),
+                loadingPhotoAnimation(
+              height: height,
+            ),
             imageUrl: uri,
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
@@ -73,7 +75,7 @@ class photoProfileGallery extends StatelessWidget {
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.all(20),
           child: animatedText(
-              height / 64, 'Фото', Colors.white.withOpacity(0.8), 950, 1),
+              height / 62, 'Фото', Colors.white.withOpacity(0.8), 950, 1),
         ),
         SizedBox(
           height: height / 2,
@@ -101,8 +103,7 @@ class photoProfileGallery extends StatelessWidget {
                             );
                           },
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 5, left: 5, right: 5, top: 5),
+                            padding: const EdgeInsets.all(5),
                             child: Card(
                               shadowColor: Colors.white30,
                               color: color_black_88,
@@ -131,7 +132,9 @@ class photoProfileGallery extends StatelessWidget {
                                 ),
                                 progressIndicatorBuilder:
                                     (context, url, progress) =>
-                                        loadingPhotoAnimation(height),
+                                        loadingPhotoAnimation(height: height),
+
+                                // loadingPhotoAnimation(height),
                                 imageUrl: listPhoto[index],
                               ),
                             ),
@@ -179,7 +182,7 @@ class _photoProfileSettingsGalleryState
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.all(20),
           child: animatedText(
-              height / 64, 'Фото', Colors.white.withOpacity(0.8), 950, 1),
+              height / 62, 'Фото', Colors.white.withOpacity(0.8), 950, 1),
         ),
         SizedBox(
           height: height / 2,
@@ -242,7 +245,9 @@ class _photoProfileSettingsGalleryState
                                       ),
                                       progressIndicatorBuilder:
                                           (context, url, progress) =>
-                                              loadingPhotoAnimation(height),
+                                              loadingPhotoAnimation(
+                                        height: height,
+                                      ),
                                       imageUrl:
                                           widget.userModel.userImageUrl[index],
                                     ),

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:card_loading/card_loading.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
@@ -103,10 +102,10 @@ class loadingCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: color_black_88,
-        body: Center(
-            child: Lottie.asset(
-              'images/animation_loader.json',
+      backgroundColor: color_black_88,
+      body: Center(
+        child: Lottie.asset(
+          'images/animation_loader.json',
           width: MediaQuery.of(context).size.width * 0.66,
           height: MediaQuery.of(context).size.height * 0.66,
           alignment: Alignment.center,
@@ -116,38 +115,49 @@ class loadingCustom extends StatelessWidget {
               color: Colors.blueAccent,
             );
           },
-        )));
+        ),
+      ),
+    );
   }
 }
 
-DelayedDisplay showProgressWrite(double height) {
-  return DelayedDisplay(
-    delay: const Duration(milliseconds: 440),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        LoadingAnimationWidget.horizontalRotatingDots(
-          size: height / 40,
-          color: Colors.blueAccent,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 5, bottom: 2),
-          child: RichText(
-            text: TextSpan(
-              text: 'печатает...',
-              style: GoogleFonts.lato(
-                textStyle: TextStyle(
-                    color: Colors.blueAccent,
-                    fontSize: height / 72,
-                    letterSpacing: .7),
+class showProgressWrite extends StatelessWidget {
+  const showProgressWrite({
+    super.key,
+    required this.height,
+  });
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return DelayedDisplay(
+      delay: const Duration(milliseconds: 440),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          LoadingAnimationWidget.horizontalRotatingDots(
+            size: height / 40,
+            color: Colors.blueAccent,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5, bottom: 2),
+            child: RichText(
+              text: TextSpan(
+                text: 'печатает...',
+                style: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: height / 70,
+                      letterSpacing: .7),
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 Padding showCheckMessageAnimation(double height, IconData icon, Color white) {
@@ -165,9 +175,8 @@ DelayedDisplay animatedText(double size, String text, color, time, int line) {
   return DelayedDisplay(
     fadeIn: true,
     delay: Duration(milliseconds: time),
-    child: AutoSizeText(
-      minFontSize: 8,
-      // overflow: TextOverflow.ellipsis,
+    child: Text(
+      overflow: TextOverflow.ellipsis,
       maxLines: line,
       text,
       style: GoogleFonts.lato(
@@ -202,10 +211,9 @@ SizedBox showIfNoData(
             height: height / 2.2,
             fit: BoxFit.contain,
             imagePath),
-
         Padding(
           padding: const EdgeInsets.only(top: 40),
-          child: animatedText( height / 48, text, Colors.white, 400, 2),
+          child: animatedText(height / 48, text, Colors.white, 400, 2),
         ),
         SizedBox(
           height: height / 3.5,
@@ -243,7 +251,6 @@ Column showAnimationNoMessage(
 Column showAnimationVerify(
     double height, String path, AnimationController animationController) {
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Lottie.asset(alignment: Alignment.center,
@@ -265,7 +272,7 @@ Column showAnimationVerify(
 Padding showAnimationNoUser(
     double height, double width, AnimationController animationController) {
   return Padding(
-    padding: const EdgeInsets.only(left: 14, right: 14, top: 100),
+    padding: EdgeInsets.only(left: 10, right: 10, top: height / 8),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -280,7 +287,6 @@ Padding showAnimationNoUser(
         },
             controller: animationController,
             height: height * 0.50,
-            width: height * 0.50,
             'images/animation_empty.json'),
         DelayedDisplay(
           delay: const Duration(milliseconds: 600),
@@ -304,23 +310,33 @@ Padding showAnimationNoUser(
   );
 }
 
-FlutterColorsBorder loadingPhotoAnimation(double height) {
-  return FlutterColorsBorder(
-    animationDuration: 1,
-    colors: const [
-      Colors.black12,
-      Colors.white10,
-      Colors.white54,
-      Colors.white70,
-    ],
-    size: Size(height, height),
-    boardRadius: 12,
-    borderWidth: 0.4,
-    child: CardLoading(
-      cardLoadingTheme: CardLoadingTheme(
-          colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
-      height: height,
-      borderRadius: BorderRadius.circular(12),
-    ),
-  );
+class loadingPhotoAnimation extends StatelessWidget {
+  const loadingPhotoAnimation({
+    super.key,
+    required this.height,
+  });
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlutterColorsBorder(
+      animationDuration: 1,
+      colors: const [
+        Colors.black12,
+        Colors.white10,
+        Colors.white54,
+        Colors.white70,
+      ],
+      size: Size(height, height),
+      boardRadius: 12,
+      borderWidth: 0.4,
+      child: CardLoading(
+        cardLoadingTheme: CardLoadingTheme(
+            colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
+        height: height,
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
 }

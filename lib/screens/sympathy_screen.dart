@@ -11,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
-import '../config/firestore_operations.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -84,8 +84,13 @@ class _SympathyScreenState extends State<SympathyScreen>
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              topPanel(context, 'Симпатии', Icons.favorite, color_red, false,
-                  height),
+              topPanel(
+                height: height,
+                text: 'Симпатии',
+                isBack: false,
+                color: color_red,
+                icon: Icons.favorite,
+              ),
               FutureBuilder(
                 future: FirebaseFirestore.instance
                         .collection('User')
@@ -142,11 +147,10 @@ class _SympathyScreenState extends State<SympathyScreen>
                               } catch (E) {}
                               return AnimationConfiguration.staggeredList(
                                 position: index,
-                                delay: const Duration(milliseconds: 250),
+                                delay: const Duration(milliseconds: 200),
                                 child: SlideAnimation(
                                   duration: const Duration(milliseconds: 1500),
                                   verticalOffset: 220,
-                                  curve: Curves.ease,
                                   child: FadeInAnimation(
                                     curve: Curves.easeOut,
                                     duration:
@@ -195,312 +199,308 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                 asyncSnapshotUser.data['token'];
                                           } catch (E) {}
 
-                                          return SizedBox(
-                                            child: FutureBuilder(
-                                              future: FirebaseFirestore.instance
-                                                      .collection('User')
-                                                      .doc(uid)
-                                                      .collection('sympathy')
-                                                      .where('uid',
-                                                          isEqualTo:
-                                                              userModelCurrent
-                                                                  .uid)
-                                                      .get(const GetOptions(
-                                                          source: Source.cache))
-                                                      .toString()
-                                                      .isEmpty
-                                                  ? FirebaseFirestore.instance
-                                                      .collection('User')
-                                                      .doc(uid)
-                                                      .collection('sympathy')
-                                                      .where('uid',
-                                                          isEqualTo:
-                                                              userModelCurrent
-                                                                  .uid)
-                                                      .get(const GetOptions(
-                                                          source: Source.cache))
-                                                  : FirebaseFirestore.instance
-                                                      .collection('User')
-                                                      .doc(uid)
-                                                      .collection('sympathy')
-                                                      .where('uid',
-                                                          isEqualTo:
-                                                              userModelCurrent
-                                                                  .uid)
-                                                      .get(
-                                                        const GetOptions(
-                                                            source:
-                                                                Source.server),
+                                          return FutureBuilder(
+                                            future: FirebaseFirestore.instance
+                                                    .collection('User')
+                                                    .doc(uid)
+                                                    .collection('sympathy')
+                                                    .where('uid',
+                                                        isEqualTo:
+                                                            userModelCurrent
+                                                                .uid)
+                                                    .get(const GetOptions(
+                                                        source: Source.cache))
+                                                    .toString()
+                                                    .isEmpty
+                                                ? FirebaseFirestore.instance
+                                                    .collection('User')
+                                                    .doc(uid)
+                                                    .collection('sympathy')
+                                                    .where('uid',
+                                                        isEqualTo:
+                                                            userModelCurrent
+                                                                .uid)
+                                                    .get(const GetOptions(
+                                                        source: Source.cache))
+                                                : FirebaseFirestore.instance
+                                                    .collection('User')
+                                                    .doc(uid)
+                                                    .collection('sympathy')
+                                                    .where('uid',
+                                                        isEqualTo:
+                                                            userModelCurrent
+                                                                .uid)
+                                                    .get(
+                                                      const GetOptions(
+                                                          source:
+                                                              Source.server),
+                                                    ),
+                                            builder: (context,
+                                                AsyncSnapshot asyncSnapshot) {
+                                              if (asyncSnapshot.hasData) {
+                                                getState(100).then((value) =>
+                                                    isMutuallyMy = false);
+
+                                                try {
+                                                  for (int i = 0;
+                                                      i <
+                                                          asyncSnapshot
+                                                              .data.docs.length;
+                                                      i++) {
+                                                    isMutuallyMy = asyncSnapshot
+                                                            .data
+                                                            .docs[i]['uid'] ==
+                                                        userModelCurrent.uid;
+                                                    if (isMutuallyMy) break;
+                                                  }
+                                                } catch (E) {}
+
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      FadeRouteAnimation(
+                                                        ProfileScreen(
+                                                          userModelPartner: UserModel(
+                                                              name: '',
+                                                              uid: '',
+                                                              myCity: '',
+                                                              ageTime: Timestamp
+                                                                  .now(),
+                                                              userPol: '',
+                                                              searchPol: '',
+                                                              searchRangeStart:
+                                                                  0,
+                                                              userImageUrl: [],
+                                                              userImagePath: [],
+                                                              imageBackground:
+                                                                  '',
+                                                              userInterests: [],
+                                                              searchRangeEnd: 0,
+                                                              ageInt: 0,
+                                                              state: '',
+                                                              token: '',
+                                                              notification:
+                                                                  true,
+                                                              description: ''),
+                                                          isBack: true,
+                                                          idUser: uid,
+                                                          userModelCurrent:
+                                                              userModelCurrent,
+                                                        ),
                                                       ),
-                                              builder: (context,
-                                                  AsyncSnapshot asyncSnapshot) {
-                                                if (asyncSnapshot.hasData) {
-                                                  getState(100).then((value) {
-                                                    isMutuallyMy = false;
-                                                  });
-
-                                                  try {
-                                                    for (int i = 0;
-                                                        i <
-                                                            asyncSnapshot.data
-                                                                .docs.length;
-                                                        i++) {
-                                                      isMutuallyMy =
-                                                          asyncSnapshot.data
-                                                                      .docs[i]
-                                                                  ['uid'] ==
-                                                              userModelCurrent
-                                                                  .uid;
-                                                      if (isMutuallyMy) {
-                                                        break;
-                                                      }
-                                                    }
-                                                  } catch (E) {}
-
-                                                  return InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          FadeRouteAnimation(
-                                                              ProfileScreen(
-                                                            userModelPartner: UserModel(
-                                                                name: '',
-                                                                uid: '',
-                                                                myCity: '',
-                                                                ageTime:
-                                                                    Timestamp
-                                                                        .now(),
-                                                                userPol: '',
-                                                                searchPol: '',
-                                                                searchRangeStart:
-                                                                    0,
-                                                                userImageUrl: [],
-                                                                userImagePath: [],
-                                                                imageBackground:
-                                                                    '',
-                                                                userInterests: [],
-                                                                searchRangeEnd:
-                                                                    0,
-                                                                ageInt: 0,
-                                                                state: '',
-                                                                token: '',
-                                                                notification:
-                                                                    true,
-                                                                description:
-                                                                    ''),
-                                                            isBack: true,
-                                                            idUser: uid,
-                                                            userModelCurrent:
-                                                                userModelCurrent,
-                                                          )));
-                                                    },
-                                                    child: Container(
-                                                      height: height / 4.5,
-                                                      width: width,
-                                                      padding: EdgeInsets.all(
-                                                          height / 72),
-                                                      child: Card(
-                                                        shadowColor: Colors
-                                                            .white
-                                                            .withOpacity(.10),
-                                                        color: color_black_88,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            30),
-                                                                side:
-                                                                    const BorderSide(
-                                                                  width: 0.8,
-                                                                  color: Colors
-                                                                      .white10,
-                                                                )),
-                                                        elevation: 14,
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  height / 58),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Flexible(
-                                                                child:
-                                                                    photoUser(
-                                                                  uri: imageUri,
-                                                                  width:
-                                                                      height /
-                                                                          8.2,
-                                                                  height:
-                                                                      height /
-                                                                          8.2,
-                                                                  state: state,
-                                                                  padding: 2.2,
-                                                                ),
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    height: height / 4.5,
+                                                    padding: EdgeInsets.all(
+                                                        height / 72),
+                                                    child: Card(
+                                                      shadowColor: Colors.white
+                                                          .withOpacity(.10),
+                                                      color: color_black_88,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30),
+                                                        side: const BorderSide(
+                                                          width: 0.8,
+                                                          color: Colors.white10,
+                                                        ),
+                                                      ),
+                                                      elevation: 14,
+                                                      child: Padding(
+                                                        padding: EdgeInsets.all(
+                                                            height / 58),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Flexible(
+                                                              child: photoUser(
+                                                                uri: imageUri,
+                                                                width: height /
+                                                                    8.2,
+                                                                height: height /
+                                                                    8.2,
+                                                                state: state,
+                                                                padding: 2.2,
                                                               ),
-                                                              SizedBox(
-                                                                  width:
-                                                                      height /
-                                                                          77),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceEvenly,
-                                                                  children: [
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        Padding(
-                                                                          padding:
-                                                                              EdgeInsets.only(bottom: height / 72),
+                                                            ),
+                                                            SizedBox(
+                                                                width: height /
+                                                                    77),
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceEvenly,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding:
+                                                                            EdgeInsets.only(bottom: height / 72),
+                                                                        child:
+                                                                            DelayedDisplay(
+                                                                          delay:
+                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
                                                                           child:
-                                                                              DelayedDisplay(
-                                                                            delay:
-                                                                                Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
-                                                                            child:
-                                                                                Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                RichText(
-                                                                                  text: TextSpan(
-                                                                                    text: '${name.trim()}, $age',
-                                                                                    style: GoogleFonts.lato(
-                                                                                      textStyle: TextStyle(color: Colors.white, fontSize: height / 52, letterSpacing: .9),
-                                                                                    ),
+                                                                              Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              RichText(
+                                                                                text: TextSpan(
+                                                                                  text: '${name.trim()}, $age',
+                                                                                  style: GoogleFonts.lato(
+                                                                                    textStyle: TextStyle(color: Colors.white, fontSize: height / 49, letterSpacing: .9),
                                                                                   ),
                                                                                 ),
-                                                                                RichText(
-                                                                                  text: TextSpan(
-                                                                                    text: city,
-                                                                                    style: GoogleFonts.lato(
-                                                                                      textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 70, letterSpacing: .5),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        Container(
-                                                                          margin:
-                                                                              EdgeInsets.only(
-                                                                            bottom:
-                                                                                height / 120,
-                                                                            right:
-                                                                                height / 120,
-                                                                          ),
-                                                                          alignment:
-                                                                              Alignment.topRight,
-                                                                          child:
-                                                                              GestureDetector(
-                                                                            onTap:
-                                                                                () async {
-                                                                              deleteSympathy(idDoc, userModelCurrent.uid);
-                                                                              setState(() {});
-                                                                              await CachedNetworkImage.evictFromCache(imageUri);
-                                                                            },
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.close,
-                                                                              size: width / 18,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceAround,
-                                                                      children: [
-                                                                        if (!isMutuallyMy)
-                                                                          buttonUniversalAnimationColors(
-                                                                              'Принять симпатию',
-                                                                              [
-                                                                                color_black_88,
-                                                                                color_black_88
-                                                                              ],
-                                                                              width / 10.5,
-                                                                              () {
-                                                                            if (!isMutuallyMy) {
-                                                                              createSympathy(uid, userModelCurrent).then((value) async {
-                                                                                setState(() {});
-                                                                                if (token != '' && asyncSnapshotUser.data['notification']) {
-                                                                                  await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
-                                                                                }
-                                                                              });
-                                                                            }
-                                                                          }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
-                                                                        if (isMutuallyMy)
-                                                                          buttonUniversal(
-                                                                              'У вас взаимно',
-                                                                              listColorMulticoloured,
-                                                                              width / 10.5,
-                                                                              () {
-                                                                            deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
-                                                                              setState(() {});
-                                                                            });
-                                                                          }, indexAnimation * 300 < 1000 ? indexAnimation * 300 : 300),
-                                                                        DropShadow(
-                                                                          blurRadius:
-                                                                              2.5,
-                                                                          spread:
-                                                                              0.1,
-                                                                          opacity:
-                                                                              1,
-                                                                          child:
-                                                                              ZoomTapAnimation(
-                                                                            onTap:
-                                                                                () {
-                                                                              Navigator.of(context).push(
-                                                                                MaterialPageRoute(
-                                                                                  builder: (context) => ChatUserScreen(
-                                                                                    friendId: uid,
-                                                                                    friendName: name,
-                                                                                    friendImage: imageUri,
-                                                                                    userModelCurrent: userModelCurrent,
-                                                                                    token: token,
-                                                                                    notification: asyncSnapshotUser.data['notification'],
-                                                                                  ),
-                                                                                ),
-                                                                              );
-                                                                            },
-                                                                            child:
-                                                                                Padding(
-                                                                                  padding: EdgeInsets.only(bottom: height / 74, top: height / 140, left: height / 100, right: height / 120),
-                                                                              child: Image.asset(
-                                                                                'images/ic_send.png',
-                                                                                height: height / 21.5,
-                                                                                width: height / 21.5,
                                                                               ),
+                                                                              RichText(
+                                                                                text: TextSpan(
+                                                                                  text: city,
+                                                                                  style: GoogleFonts.lato(
+                                                                                    textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 67, letterSpacing: .5),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Container(
+                                                                        margin:
+                                                                            EdgeInsets.only(
+                                                                          bottom:
+                                                                              height / 120,
+                                                                          right:
+                                                                              height / 120,
+                                                                        ),
+                                                                        alignment:
+                                                                            Alignment.topRight,
+                                                                        child:
+                                                                            GestureDetector(
+                                                                          onTap:
+                                                                              () async {
+                                                                            deleteSympathy(idDoc,
+                                                                                userModelCurrent.uid);
+                                                                            setState(() {});
+                                                                            await CachedNetworkImage.evictFromCache(imageUri);
+                                                                          },
+                                                                          child:
+                                                                              Icon(
+                                                                            Icons.close,
+                                                                            size:
+                                                                                width / 18,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceAround,
+                                                                    children: [
+                                                                      if (!isMutuallyMy)
+                                                                        buttonUniversalAnimationColors(
+                                                                            'Принять симпатию',
+                                                                            [
+                                                                              color_black_88,
+                                                                              color_black_88
+                                                                            ],
+                                                                            width /
+                                                                                10.5,
+                                                                            () {
+                                                                          if (!isMutuallyMy) {
+                                                                            createSympathy(uid, userModelCurrent).then((value) async {
+                                                                              setState(() {});
+                                                                              if (token != '' && asyncSnapshotUser.data['notification']) {
+                                                                                await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
+                                                                              }
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                            indexAnimation * 300 < 1000
+                                                                                ? indexAnimation * 300
+                                                                                : 300),
+                                                                      if (isMutuallyMy)
+                                                                        buttonUniversal(
+                                                                            'У вас взаимно',
+                                                                            listColorMulticoloured,
+                                                                            width /
+                                                                                10.2,
+                                                                            () {
+                                                                          deleteSympathyPartner(uid, userModelCurrent.uid)
+                                                                              .then((value) {
+                                                                            setState(() {});
+                                                                          });
+                                                                        },
+                                                                            indexAnimation * 300 < 1000
+                                                                                ? indexAnimation * 300
+                                                                                : 300),
+                                                                      DropShadow(
+                                                                        blurRadius:
+                                                                            2.5,
+                                                                        spread:
+                                                                            0.1,
+                                                                        opacity:
+                                                                            1,
+                                                                        child:
+                                                                            ZoomTapAnimation(
+                                                                          onTap:
+                                                                              () {
+                                                                            Navigator.of(context).push(
+                                                                              MaterialPageRoute(
+                                                                                builder: (context) => ChatUserScreen(
+                                                                                  friendId: uid,
+                                                                                  friendName: name,
+                                                                                  friendImage: imageUri,
+                                                                                  userModelCurrent: userModelCurrent,
+                                                                                  token: token,
+                                                                                  notification: asyncSnapshotUser.data['notification'],
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          child:
+                                                                              Padding(
+                                                                            padding: EdgeInsets.only(
+                                                                                bottom: height / 74,
+                                                                                top: height / 140,
+                                                                                left: height / 100,
+                                                                                right: height / 120),
+                                                                            child:
+                                                                                Image.asset(
+                                                                              'images/ic_send.png',
+                                                                              height: height / 23,
+                                                                              width: height / 23,
                                                                             ),
                                                                           ),
                                                                         ),
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
                                                               ),
-                                                            ],
-                                                          ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ),
-                                                  );
-                                                }
-                                                return const SizedBox();
-                                              },
-                                            ),
+                                                  ),
+                                                );
+                                              }
+                                              return const SizedBox();
+                                            },
                                           );
                                         }
                                         return const SizedBox();
