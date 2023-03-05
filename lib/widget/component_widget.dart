@@ -19,13 +19,13 @@ import 'animation_widget.dart';
 import 'button_widget.dart';
 
 class slideInterests extends StatelessWidget {
-  List<InterestsModel> listStory = [];
+ final List<InterestsModel> listStory;
 
-  slideInterests(this.listStory, {super.key});
+  const slideInterests(this.listStory, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
     return Column(
       children: [
         Container(
@@ -38,10 +38,126 @@ class slideInterests extends StatelessWidget {
           height: height / 8,
           child: AnimationLimiter(
             child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(right: 20),
+              scrollDirection: Axis.horizontal,
+              itemCount: 8,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final int animation = index + 1;
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  delay: const Duration(milliseconds: 400),
+                  child: SlideAnimation(
+                    duration: const Duration(milliseconds: 1500),
+                    horizontalOffset: 160,
+                    curve: Curves.ease,
+                    child: FadeInAnimation(
+                      curve: Curves.easeOut,
+                      duration: const Duration(milliseconds: 2000),
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 22, right: 4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            if (listStory.length > index)
+                              Card(
+                                shadowColor: Colors.white30,
+                                color: color_black_88,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100),
+                                    side: const BorderSide(
+                                      width: 0.5,
+                                      color: Colors.white30,
+                                    )),
+                                elevation: 4,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: CachedNetworkImage(
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      height: height / 12,
+                                      width: height / 12,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(100)),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) => Center(
+                                      child: SizedBox(
+                                        height: height / 12,
+                                        width: height / 12,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 1,
+                                          value: progress.progress,
+                                        ),
+                                      ),
+                                    ),
+                                    imageUrl: listStory[index].uri,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            if (listStory.length > index)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    left: 0, right: 4, top: height / 160),
+                                child: animatedText(
+                                    height / 76,
+                                    listStory[index].name,
+                                    Colors.white.withOpacity(0.8),
+                                    animation * 600,
+                                    1),
+                              )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class slideInterestsSettings extends StatelessWidget {
+  final List<InterestsModel> listStory;
+  final UserModel userModel;
+
+  const slideInterestsSettings(this.listStory, this.userModel, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.all(20),
+          child: animatedText(
+              height / 62, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
+        ),
+        SizedBox(
+          height: height / 8.0,
+          child: AnimationLimiter(
+            child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.only(right: 20),
                 scrollDirection: Axis.horizontal,
-                itemCount: 8,
+                itemCount: 6,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   int animation = index + 1;
@@ -54,29 +170,29 @@ class slideInterests extends StatelessWidget {
                       curve: Curves.ease,
                       child: FadeInAnimation(
                         curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 2000),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () {},
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 22, right: 4),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                if (listStory.length > index)
-                                  Card(
-                                    shadowColor: Colors.white30,
-                                    color: color_black_88,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        side: const BorderSide(
-                                          width: 0.5,
-                                          color: Colors.white30,
-                                        )),
-                                    elevation: 4,
-                                    child: ClipRRect(
+                      duration: const Duration(milliseconds: 2000),
+                      child: Container(
+                        margin: const EdgeInsets.only(
+                          left: 18,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Card(
+                              shadowColor: Colors.white30,
+                              color: color_black_88,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                  side: const BorderSide(
+                                    width: 0.8,
+                                    color: Colors.white30,
+                                  )),
+                              elevation: 4,
+                              child: Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  if (listStory.length > index)
+                                    ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
                                       child: CachedNetworkImage(
                                         errorWidget: (context, url, error) =>
@@ -112,214 +228,79 @@ class slideInterests extends StatelessWidget {
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ),
-                                if (listStory.length > index)
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 0, right: 4, top: height / 160),
-                                    child: animatedText(
-                                        height / 76,
-                                        listStory[index].name,
-                                        Colors.white.withOpacity(0.8),
-                                        animation * 600,
-                                        1),
-                                  )
-                              ],
+                                  if (0 == index)
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            FadeRouteAnimation(
+                                                EditProfileScreen(
+                                              isFirst: false,
+                                              userModel: userModel,
+                                            )));
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(2),
+                                        child: Image.asset(
+                                          'images/ic_edit.png',
+                                          height: height / 39,
+                                          width: height / 39,
+                                        ),
+                                      ),
+                                    ),
+                                  if (listStory.length > index && index != 0)
+                                    customIconButton(
+                                        padding: 1,
+                                        width: height / 34,
+                                        height: height / 34,
+                                        path: 'images/ic_remove.png',
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              FadeRouteAnimation(
+                                                  EditProfileScreen(
+                                                isFirst: false,
+                                                userModel: userModel,
+                                              )));
+                                        }),
+                                  if (listStory.length <= index &&
+                                      listStory.isNotEmpty)
+                                    customIconButton(
+                                        padding: 6,
+                                        width: height / 36,
+                                        height: height / 36,
+                                        path: 'images/ic_add.png',
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              FadeRouteAnimation(
+                                                  EditProfileScreen(
+                                                isFirst: false,
+                                                userModel: userModel,
+                                              )));
+                                        }),
+                                ],
+                              ),
                             ),
-                          ),
+                            if (listStory.length > index)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    left: 0, right: 4, top: height / 160),
+                                child: animatedText(
+                                    height / 76,
+                                    listStory[index].name,
+                                    Colors.white.withOpacity(0.8),
+                                    animation * 600,
+                                    1),
+                              )
+                          ],
                         ),
                       ),
                     ),
-                  );
-                }),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class slideInterestsSettings extends StatelessWidget {
-  List<InterestsModel> listStory = [];
-
-  late UserModel userModel;
-
-  slideInterestsSettings(this.listStory, this.userModel, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-
-    return Column(
-      children: [
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.all(20),
-          child: animatedText(
-              height / 62, 'Интересы', Colors.white.withOpacity(0.8), 750, 1),
-        ),
-        SizedBox(
-          height: height / 8.0,
-          child: AnimationLimiter(
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(right: 20),
-                scrollDirection: Axis.horizontal,
-                itemCount: 6,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  int animation = index + 1;
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    delay: const Duration(milliseconds: 400),
-                    child: SlideAnimation(
-                      duration: const Duration(milliseconds: 1500),
-                      horizontalOffset: 160,
-                      curve: Curves.ease,
-                      child: FadeInAnimation(
-                        curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 2000),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () {},
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                              left: 18,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Card(
-                                  shadowColor: Colors.white30,
-                                  color: color_black_88,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
-                                      side: const BorderSide(
-                                        width: 0.8,
-                                        color: Colors.white30,
-                                      )),
-                                  elevation: 4,
-                                  child: Stack(
-                                    alignment: Alignment.bottomRight,
-                                    children: [
-                                      if (listStory.length > index)
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          child: CachedNetworkImage(
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              height: height / 12,
-                                              width: height / 12,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(100)),
-                                                image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                            progressIndicatorBuilder:
-                                                (context, url, progress) =>
-                                                    Center(
-                                              child: SizedBox(
-                                                height: height / 12,
-                                                width: height / 12,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: Colors.white,
-                                                  strokeWidth: 1,
-                                                  value: progress.progress,
-                                                ),
-                                              ),
-                                            ),
-                                            imageUrl: listStory[index].uri,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      if (0 == index)
-                                        InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                FadeRouteAnimation(
-                                                    EditProfileScreen(
-                                                  isFirst: false,
-                                                  userModel: userModel,
-                                                )));
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2),
-                                            child: Image.asset(
-                                              'images/ic_edit.png',
-                                              height: height / 39,
-                                              width: height / 39,
-                                            ),
-                                          ),
-                                        ),
-                                      if (listStory.length > index &&
-                                          index != 0)
-                                        customIconButton(
-                                            padding: 1,
-                                            width: height / 34,
-                                            height: height / 34,
-                                            path: 'images/ic_remove.png',
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  FadeRouteAnimation(
-                                                      EditProfileScreen(
-                                                    isFirst: false,
-                                                    userModel: userModel,
-                                                  )));
-                                            }),
-                                      if (listStory.length <= index &&
-                                          listStory.isNotEmpty)
-                                        customIconButton(
-                                            padding: 6,
-                                            width: height / 36,
-                                            height: height / 36,
-                                            path: 'images/ic_add.png',
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  FadeRouteAnimation(
-                                                      EditProfileScreen(
-                                                    isFirst: false,
-                                                    userModel: userModel,
-                                                  )));
-                                            }),
-                                    ],
-                                  ),
-                                ),
-                                if (listStory.length > index)
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 0, right: 4, top: height / 160),
-                                    child: animatedText(
-                                        height / 76,
-                                        listStory[index].name,
-                                        Colors.white.withOpacity(0.8),
-                                        animation * 600,
-                                        1),
-                                  )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -328,52 +309,46 @@ class slideInterestsSettings extends StatelessWidget {
 }
 
 class chatBackgroundPanel extends StatelessWidget {
-  List<String> listAnimationChatBac = [];
+  final List<String> listAnimationChatBac;
 
-  chatBackgroundPanel(this.listAnimationChatBac, {super.key});
+  const chatBackgroundPanel(this.listAnimationChatBac, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 16, left: 14, right: 14),
-          height: height / 5,
-          width: width,
-          child: AnimationLimiter(
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(right: 20),
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: listAnimationChatBac.length,
-                itemBuilder: (context, index) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    delay: const Duration(milliseconds: 500),
-                    child: SlideAnimation(
-                      duration: const Duration(milliseconds: 1600),
-                      horizontalOffset: 160,
-                      curve: Curves.ease,
-                      child: FadeInAnimation(
-                        curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 2200),
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 10, right: 4),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16)),
-                          child: Lottie.asset(
-                              height: height / 7, listAnimationChatBac[index]),
-                        ),
-                      ),
+    final height = MediaQuery.of(context).size.height;
+    return Container(
+      padding: const EdgeInsets.only(top: 16, left: 14, right: 14),
+      height: height / 5,
+      child: AnimationLimiter(
+        child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(right: 20),
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            itemCount: listAnimationChatBac.length,
+            itemBuilder: (context, index) {
+              return AnimationConfiguration.staggeredList(
+                position: index,
+                delay: const Duration(milliseconds: 500),
+                child: SlideAnimation(
+                  duration: const Duration(milliseconds: 1600),
+                  horizontalOffset: 160,
+                  curve: Curves.ease,
+                  child: FadeInAnimation(
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 2200),
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 10, right: 4),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Lottie.asset(
+                          height: height / 7, listAnimationChatBac[index]),
                     ),
-                  );
-                }),
-          ),
-        ),
-      ],
+                  ),
+                ),
+              );
+            }),
+      ),
     );
   }
 }
@@ -428,10 +403,10 @@ class topPanel extends StatelessWidget {
 }
 
 class topPanelChat extends StatefulWidget {
-  String friendId, friendImage, friendName;
-  UserModel userModelCurrent;
+  final String friendId, friendImage, friendName;
+  final UserModel userModelCurrent;
 
-  topPanelChat(
+  const topPanelChat(
       {Key? key,
       required this.friendId,
       required this.friendImage,
@@ -445,15 +420,15 @@ class topPanelChat extends StatefulWidget {
 }
 
 class _topPanelChatState extends State<topPanelChat> {
-  String friendId, friendImage, friendName;
-  UserModel userModelCurrent;
+  final String friendId, friendImage, friendName;
+  final UserModel userModelCurrent;
 
   _topPanelChatState(
       this.friendId, this.friendImage, this.friendName, this.userModelCurrent);
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
     return GetBuilder<GetChatDataController>(
       builder: (GetChatDataController controller) {
         return StreamBuilder(
@@ -525,8 +500,6 @@ class _topPanelChatState extends State<topPanelChat> {
                                 )));
                           },
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SizedBox(
                                 width: height / 16,
@@ -657,7 +630,7 @@ class _topPanelChatState extends State<topPanelChat> {
                                           animatedText(height / 68, 'в сети',
                                               Colors.green, 500, 1),
                                         if (isWriteUser)
-                                          showProgressWrite(height: height)
+                                          const showProgressWrite()
                                       ],
                                     ),
                                   ],
@@ -671,12 +644,37 @@ class _topPanelChatState extends State<topPanelChat> {
                   ),
                 ],
               );
-            } else {
-              return const SizedBox();
             }
+            return const SizedBox();
           },
         );
       },
+    );
+  }
+}
+
+class showAnimationBottomNotification extends StatelessWidget {
+  const showAnimationBottomNotification({
+    super.key,
+    required this.indexNotification,
+  });
+
+  final int indexNotification;
+
+  @override
+  Widget build(BuildContext context) {
+    return DelayedDisplay(
+      delay: const Duration(milliseconds: 650),
+      child: Container(
+        alignment: Alignment.center,
+        width: 15,
+        height: 15,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.deepPurpleAccent),
+        child:
+            animatedText(9.0, indexNotification.toString(), Colors.white, 0, 1),
+      ),
     );
   }
 }

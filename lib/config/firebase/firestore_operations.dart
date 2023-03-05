@@ -21,7 +21,7 @@ import '../const.dart';
 
 Future<CroppedFile?> _cropImage(
     BuildContext context, XFile pickedImage, int compressQuality) async {
-  CroppedFile? _croppedFile;
+  CroppedFile? croppedFileCurrent;
 
   final croppedFile = await ImageCropper().cropImage(
     sourcePath: pickedImage.path,
@@ -56,9 +56,9 @@ Future<CroppedFile?> _cropImage(
   );
 
   if (croppedFile != null) {
-    _croppedFile = croppedFile;
+    croppedFileCurrent = croppedFile;
   }
-  return _croppedFile;
+  return croppedFileCurrent;
 }
 
 Future<String> uploadFirstImage(
@@ -1058,4 +1058,109 @@ Future<String> getTokenUser() async {
     token = await FirebaseMessaging.instance.getToken() ?? '';
   } on FirebaseException {}
   return token;
+}
+
+Future<void> sendMessage(
+    {required bool isFirstMessage,
+    required TextEditingController controllerMessage,
+    required bool notification,
+    required String token,
+    required UserModel currentUser,
+    required String friendId}) async {
+  if (controllerMessage.text.trim().isNotEmpty) {
+    final String messageText = controllerMessage.text.trim();
+    controllerMessage.clear();
+    final String idDocMessage;
+    final dateCurrent = DateTime.now();
+
+    if (notification && token != '') {
+      sendFcmMessage(
+          'Lancelot',
+          '${currentUser.name}: отправил вам новое сообщение',
+          token,
+          'chat',
+          currentUser.uid);
+    }
+
+    final docMessage = FirebaseFirestore.instance
+        .collection('User')
+        .doc(currentUser.uid)
+        .collection('messages')
+        .doc(friendId)
+        .collection('chats')
+        .doc();
+
+    idDocMessage = docMessage.id;
+
+    await docMessage
+        .set(({
+      "senderId": currentUser.uid,
+      "idDoc": idDocMessage,
+      "receiverId": friendId,
+      "message": messageText,
+      "date": dateCurrent,
+    }))
+        .then((value) async {
+      final docUser = FirebaseFirestore.instance
+          .collection('User')
+          .doc(currentUser.uid)
+          .collection('messages')
+          .doc(friendId);
+
+      if (isFirstMessage) {
+        await docUser.update({
+          'last_msg': messageText,
+          'date': dateCurrent,
+          'writeLastData': '',
+        });
+      } else {
+        await docUser.set({
+          'last_msg': messageText,
+          'date': dateCurrent,
+          'writeLastData': '',
+          'last_date_open_chat': '',
+        });
+      }
+    });
+
+    FirebaseFirestore.instance
+        .collection('User')
+        .doc(friendId)
+        .collection('messages')
+        .doc(currentUser.uid)
+        .collection("chats")
+        .doc(idDocMessage)
+        .set({
+      "idDoc": idDocMessage,
+      "senderId": currentUser.uid,
+      "receiverId": friendId,
+      "message": messageText,
+      "date": dateCurrent,
+    }).then((value) async {
+      final docUser = FirebaseFirestore.instance
+          .collection('User')
+          .doc(friendId)
+          .collection('messages')
+          .doc(currentUser.uid);
+
+      if (isFirstMessage) {
+        await docUser.update({
+          'last_msg': messageText,
+          'date': dateCurrent,
+          'writeLastData': '',
+          'last_date_open_chat': '',
+        });
+      } else {
+        await docUser.set({
+          'last_msg': messageText,
+          'date': dateCurrent,
+          'writeLastData': '',
+          'last_date_open_chat': '',
+          'last_date_close_chat': '',
+        });
+
+        createLastCloseChat(currentUser.uid, friendId, '');
+      }
+    });
+  }
 }

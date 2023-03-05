@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:animator/animator.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -17,16 +19,18 @@ import '../screens/chat_user_screen.dart';
 import 'animation_widget.dart';
 
 class buttonAuth extends StatelessWidget {
-  String name;
-  double width;
-  int time;
-  VoidCallback voidCallback;
+  final String name;
+  final double width;
+  final int time;
+  final VoidCallback voidCallback;
 
-  buttonAuth(this.name, this.width, this.time, this.voidCallback, {super.key});
+  const buttonAuth(this.name, this.width, this.time, this.voidCallback,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final widthScreen = MediaQuery.of(context).size.width;
+
     return ZoomTapAnimation(
       onTap: voidCallback,
       end: 0.97,
@@ -35,15 +39,15 @@ class buttonAuth extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15),
           child: Container(
-              height: size.width / 8,
-              width: size.width / width,
+              height: widthScreen / 8,
+              width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(.05),
                 border: Border.all(color: Colors.white10, width: 0.5),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: animatedText(size.width / 28, name,
+              child: animatedText(widthScreen / 28, name,
                   Colors.white.withOpacity(.8), time, 1)),
         ),
       ),
@@ -52,17 +56,18 @@ class buttonAuth extends StatelessWidget {
 }
 
 class buttonAuthAnimation extends StatelessWidget {
-  String name;
-  double width;
-  int time;
-  VoidCallback voidCallback;
+  final String name;
+  final double width;
+  final int time;
+  final VoidCallback voidCallback;
 
-  buttonAuthAnimation(this.name, this.width, this.time, this.voidCallback,
+  const buttonAuthAnimation(this.name, this.width, this.time, this.voidCallback,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final widthScreen = MediaQuery.of(context).size.width;
+
     return ZoomTapAnimation(
       onTap: voidCallback,
       end: 0.97,
@@ -76,7 +81,7 @@ class buttonAuthAnimation extends StatelessWidget {
             child: FlutterColorsBorder(
               animationDuration: 5,
               colors: const [Colors.black12, Colors.white],
-              size: Size(size.width / width, size.height / 16),
+              size: Size(width, widthScreen / 8),
               boardRadius: 15,
               borderWidth: 0.7,
               child: Container(
@@ -87,7 +92,7 @@ class buttonAuthAnimation extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: animatedText(
-                      size.width / 28, name, Colors.white, time, 1)),
+                      widthScreen / 28, name, Colors.white, time, 1)),
             ),
           ),
         ),
@@ -96,26 +101,47 @@ class buttonAuthAnimation extends StatelessWidget {
   }
 }
 
-Widget buttonUniversal(String name, color, height, onTap, time) {
+ZoomTapAnimation buttonUniversal({
+  required text,
+  required colorButton,
+  required height,
+  required width,
+  required sizeText,
+  required time,
+  required darkColors,
+  required onTap,
+}) {
   return ZoomTapAnimation(
     onTap: onTap,
     child: Container(
-      height: height,
       decoration: BoxDecoration(
-        boxShadow: const [
-          BoxShadow(
-              spreadRadius: 1.5,
-              blurRadius: 4,
-              offset: Offset(-3, 0),
-              color: Colors.blueAccent),
-          BoxShadow(
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(3, 0),
-              color: Colors.purpleAccent),
-        ],
+        boxShadow: darkColors
+            ? [
+                const BoxShadow(
+                    spreadRadius: 1.5,
+                    blurRadius: 4,
+                    offset: Offset(-3, 0),
+                    color: Colors.blueAccent),
+                const BoxShadow(
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(3, 0),
+                    color: Colors.purpleAccent),
+              ]
+            : [
+                const BoxShadow(
+                    spreadRadius: 1.5,
+                    blurRadius: 4,
+                    offset: Offset(-3, 0),
+                    color: Colors.white12),
+                const BoxShadow(
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(3, 0),
+                    color: Colors.white12),
+              ],
         border: Border.all(width: 0.8, color: Colors.white54),
-        gradient: LinearGradient(colors: color),
+        gradient: LinearGradient(colors: colorButton),
         borderRadius: BorderRadius.circular(20),
       ),
       child: ClipRRect(
@@ -129,7 +155,7 @@ Widget buttonUniversal(String name, color, height, onTap, time) {
               Colors.white10,
               Colors.white70,
             ],
-            size: Size(height * 3.1, height),
+            size: Size(width, height),
             boardRadius: 20,
             borderWidth: 0.6,
             child: Align(
@@ -142,8 +168,7 @@ Widget buttonUniversal(String name, color, height, onTap, time) {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
                   ),
-                  child:
-                      animatedText(height / 3.5, name, Colors.white, time, 1)),
+                  child: animatedText(sizeText, text, Colors.white, time, 1)),
             ),
           ),
         ),
@@ -152,54 +177,47 @@ Widget buttonUniversal(String name, color, height, onTap, time) {
   );
 }
 
-Widget buttonUniversalAnimationNoColor(String name, color, height, onTap) {
+buttonUniversalNoState({
+  required text,
+  required colorButton,
+  required height,
+  required width,
+  required sizeText,
+  required time,
+  required darkColors,
+  required onTap,
+}) {
   return ZoomTapAnimation(
     onTap: onTap,
     child: Container(
-      width: height * 3.5,
-      height: height,
       decoration: BoxDecoration(
-        color: color_black_88,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: FlutterColorsBorder(
-        animationDuration: 4,
-        colors: const [
-          Colors.white10,
-          Colors.white70,
-        ],
-        size: Size(height * 3.5, height),
-        boardRadius: 20,
-        borderWidth: 0.6,
-        child: Container(
-          alignment: Alignment.center,
-          child: animatedText(height / 3.3, name, Colors.white, 500, 1),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
-  return ZoomTapAnimation(
-    onTap: onTap,
-    child: Container(
-      width: height * 3.5,
-      height: height,
-      decoration: BoxDecoration(
-        boxShadow: const [
-          BoxShadow(
-              spreadRadius: 0.4,
-              blurRadius: 4,
-              offset: Offset(-3, 0),
-              color: Colors.white12),
-          BoxShadow(
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(3, 0),
-              color: Colors.white12),
-        ],
-        gradient: LinearGradient(colors: color),
+        boxShadow: darkColors
+            ? [
+                const BoxShadow(
+                    spreadRadius: 1.5,
+                    blurRadius: 4,
+                    offset: Offset(-3, 0),
+                    color: Colors.blueAccent),
+                const BoxShadow(
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(3, 0),
+                    color: Colors.purpleAccent),
+              ]
+            : [
+                const BoxShadow(
+                    spreadRadius: 1.5,
+                    blurRadius: 4,
+                    offset: Offset(-3, 0),
+                    color: Colors.white12),
+                const BoxShadow(
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(3, 0),
+                    color: Colors.white12),
+              ],
+        border: Border.all(width: 0.8, color: Colors.white54),
+        gradient: LinearGradient(colors: colorButton),
         borderRadius: BorderRadius.circular(20),
       ),
       child: ClipRRect(
@@ -209,13 +227,38 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
           duration: const Duration(milliseconds: 2500),
           child: FlutterColorsBorder(
             animationDuration: 4,
-            colors: listColorsAnimation,
-            size: Size(height * 3.5, height),
+            colors: const [
+              Colors.white10,
+              Colors.white70,
+            ],
+            size: Size(width, height),
             boardRadius: 20,
             borderWidth: 0.6,
-            child: Container(
+            child: Align(
               alignment: Alignment.center,
-              child: animatedText(height / 3.6, name, Colors.white, time, 1),
+              child: ElevatedButton(
+                onPressed: onTap,
+                style: ElevatedButton.styleFrom(
+                  shadowColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+                child: DelayedDisplay(
+                  delay: Duration(milliseconds: time),
+                  child: Text(
+                    text,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: sizeText,
+                          letterSpacing: .6),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -225,11 +268,11 @@ Widget buttonUniversalAnimationColors(String name, color, height, onTap, time) {
 }
 
 class customIconButton extends StatelessWidget {
-  String path;
-  double height, width, padding;
-  VoidCallback onTap;
+  final String path;
+  final double height, width, padding;
+  final VoidCallback onTap;
 
-  customIconButton(
+  const customIconButton(
       {Key? key,
       required this.path,
       required this.height,
@@ -258,7 +301,7 @@ class customIconButton extends StatelessWidget {
 class buttonProfileUser extends StatefulWidget {
   final UserModel userModel, userModelCurrent;
 
-  buttonProfileUser(
+  const buttonProfileUser(
     this.userModelCurrent,
     this.userModel, {
     super.key,
@@ -277,28 +320,41 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
 
     Widget buttonLogic(
         bool isMutuallyMy, bool isMutuallyFriend, BuildContext context) {
       if (!isMutuallyMy && isMutuallyFriend) {
-        return buttonUniversalAnimationColors('Ожидайте ответа',
-            [Colors.blueAccent, Colors.purpleAccent], height / 20, () {
-          if (!isMutuallyMy && isMutuallyFriend) {
-            deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid)
-                .then((value) {
+        return buttonUniversalNoState(
+          text: 'Ожидайте ответа',
+          darkColors: false,
+          colorButton: const [Colors.blueAccent, Colors.purpleAccent],
+          height: height / 20,
+          width: height / 4.8,
+          sizeText: height / 66,
+          time: 400,
+          onTap: () async {
+            if (!isMutuallyMy && isMutuallyFriend) {
+              await deleteSympathyPartner(
+                  userModelFriend.uid, userModelCurrent.uid);
               setState(() {});
-            });
-          }
-        }, 400);
+            }
+          },
+        );
       } else if (!isMutuallyMy && !isMutuallyFriend) {
-        return buttonUniversalAnimationColors(
-            'Оставить симпатию', [color_black_88, color_black_88], height / 20,
-            () {
-          if (!isMutuallyMy && !isMutuallyFriend) {
-            createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
-              setState(() {});
-              if (userModelFriend.token != '' && userModelFriend.notification) {
+        return buttonUniversal(
+          text: 'Оставить симпатию',
+          darkColors: false,
+          colorButton: const [color_black_88, color_black_88],
+          height: height / 20,
+          width: height / 4.8,
+          sizeText: height / 66,
+          time: 400,
+          onTap: () async {
+            if (!isMutuallyMy && !isMutuallyFriend) {
+              await createSympathy(userModelFriend.uid, userModelCurrent);
+              if (userModelFriend.token.isNotEmpty &&
+                  userModelFriend.notification) {
                 sendFcmMessage(
                     'Lancelot',
                     'У вас симпатия',
@@ -307,21 +363,27 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                     userModelCurrent.uid,
                     userModelCurrent.userImageUrl[0]);
               }
-            });
-          } else {
-            deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid)
-                .then((value) {
-              setState(() {});
-            });
-          }
-        }, 400);
+            } else {
+              await deleteSympathyPartner(
+                  userModelFriend.uid, userModelCurrent.uid);
+            }
+            setState(() {});
+          },
+        );
       } else if (isMutuallyMy && !isMutuallyFriend) {
-        return buttonUniversalAnimationColors('Принять симпатию',
-            [Colors.blueAccent, Colors.purpleAccent], height / 20, () {
-          if (isMutuallyMy && !isMutuallyFriend) {
-            createSympathy(userModelFriend.uid, userModelCurrent).then((value) {
-              setState(() {});
-              if (userModelFriend.token != '' && userModelFriend.notification) {
+        return buttonUniversal(
+          darkColors: false,
+          text: 'Принять симпатию',
+          colorButton: const [Colors.blueAccent, Colors.purpleAccent],
+          height: height / 20,
+          width: height / 4.8,
+          sizeText: height / 66,
+          time: 400,
+          onTap: () async {
+            if (isMutuallyMy && !isMutuallyFriend) {
+              await createSympathy(userModelFriend.uid, userModelCurrent);
+              if (userModelFriend.token.isNotEmpty &&
+                  userModelFriend.notification) {
                 sendFcmMessage(
                     'Lancelot',
                     'У вас взаимная симпатия',
@@ -330,33 +392,39 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                     userModelCurrent.uid,
                     userModelCurrent.userImageUrl[0]);
               }
-            });
-          } else {
-            deleteSympathyPartner(userModelFriend.uid, userModelCurrent.uid)
-                .then((value) {
-              setState(() {});
-            });
-          }
-        }, 400);
+            } else {
+              await deleteSympathyPartner(
+                  userModelFriend.uid, userModelCurrent.uid);
+            }
+
+            setState(() {});
+          },
+        );
       } else {
-        return buttonUniversal(
-            'Написать',
-            [Colors.blueAccent, Colors.purpleAccent, Colors.orangeAccent],
-            height / 20, () {
-          Navigator.push(
-            context,
-            FadeRouteAnimation(
-              ChatUserScreen(
-                friendId: userModelFriend.uid,
-                friendName: userModelFriend.name,
-                friendImage: userModelFriend.userImageUrl[0],
-                userModelCurrent: userModelCurrent,
-                token: userModelFriend.token,
-                notification: userModelFriend.notification,
+        return buttonUniversalNoState(
+          text: 'Написать',
+          darkColors: true,
+          colorButton: listColorMulticoloured,
+          height: height / 20,
+          width: height / 5.6,
+          sizeText: height / 64,
+          time: 400,
+          onTap: () {
+            Navigator.push(
+              context,
+              FadeRouteAnimation(
+                ChatUserScreen(
+                  friendId: userModelFriend.uid,
+                  friendName: userModelFriend.name,
+                  friendImage: userModelFriend.userImageUrl[0],
+                  userModelCurrent: userModelCurrent,
+                  token: userModelFriend.token,
+                  notification: userModelFriend.notification,
+                ),
               ),
-            ),
-          );
-        }, 400);
+            );
+          },
+        );
       }
     }
 
@@ -417,22 +485,18 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
               for (int i = 0; i < snapshot.data.docs.length; i++) {
                 isMutuallyFriend =
                     snapshot.data.docs[i]['uid'] == userModelCurrent.uid;
-                if (isMutuallyFriend) {
-                  break;
-                }
+                if (isMutuallyFriend) break;
               }
               for (int i = 0; i < snapshotMy.data.docs.length; i++) {
                 isMutuallyMy =
                     snapshotMy.data.docs[i]['uid'] == userModelFriend.uid;
-                if (isMutuallyMy) {
-                  break;
-                }
+                if (isMutuallyMy) break;
               }
             } catch (E) {}
 
             if (snapshotMy.hasData && snapshot.hasData) {
-              return SlideFadeTransition(
-                  animationDuration: const Duration(milliseconds: 500),
+              return DelayedDisplay(
+                  delay: const Duration(milliseconds: 400),
                   child: buttonLogic(isMutuallyMy, isMutuallyFriend, context));
             }
 
@@ -445,10 +509,10 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
 }
 
 class buttonLike extends StatelessWidget {
-  bool isLike;
-  UserModel userModelFriend, userModelCurrent;
+  final bool isLike;
+  final UserModel userModelFriend, userModelCurrent;
 
-  buttonLike(
+  const buttonLike(
       {Key? key,
       required this.isLike,
       required this.userModelCurrent,
@@ -457,14 +521,14 @@ class buttonLike extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final height = MediaQuery.of(context).size.height;
 
     return ZoomTapAnimation(
       child: Container(
         margin: const EdgeInsets.only(right: 30),
         child: LikeButton(
           isLiked: isLike,
-          size: size.height * 0.04,
+          size: height * 0.04,
           circleColor:
               const CircleColor(start: Colors.pinkAccent, end: Colors.red),
           bubblesColor: const BubblesColor(
@@ -475,8 +539,8 @@ class buttonLike extends StatelessWidget {
           ),
           likeBuilder: (bool isLiked) {
             return SizedBox(
-              height: size.height * 0.07,
-              width: size.height * 0.07,
+              height: height * 0.07,
+              width: height * 0.07,
               child: Animator<double>(
                 duration: const Duration(milliseconds: 2000),
                 cycles: 0,
@@ -505,56 +569,74 @@ class buttonLike extends StatelessWidget {
   }
 }
 
-ZoomTapAnimation homeAnimationButton(
-    double height, double width, onTap, Color colors, IconData icon, int time) {
-  return ZoomTapAnimation(
-    onTap: onTap,
-    end: 0.88,
-    child: SizedBox(
-      height: height * 0.20,
-      width: width / 2,
-      child: AvatarGlow(
-        glowColor: Colors.blueAccent,
-        endRadius: height * 0.1,
-        repeatPauseDuration: const Duration(milliseconds: 500),
-        duration: Duration(milliseconds: time),
-        repeat: true,
-        showTwoGlows: true,
-        curve: Curves.easeOutQuad,
-        child: FlutterColorsBorder(
-          animationDuration: 5,
-          colors: const [
-            // Colors.deepOrange,
-            Colors.yellowAccent,
-            Colors.purpleAccent,
-            Colors.deepPurpleAccent,
-            Colors.pinkAccent,
-          ],
-          size: Size(height * 0.13, height * 0.13),
-          boardRadius: 100,
-          borderWidth: 1,
-          child: Container(
-            height: height * 0.15,
-            width: height * 0.15,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(99)),
-            child: SizedBox(
-              height: height * 0.7,
-              width: height * 0.7,
-              child: Animator<double>(
-                duration: const Duration(milliseconds: 2000),
-                cycles: 0,
-                curve: Curves.elasticIn,
-                tween: Tween<double>(begin: 20.0, end: 25.0),
-                builder: (context, animatorState, child) => Icon(
-                  icon,
-                  size: animatorState.value * 2.3,
-                  color: colors,
+class homeAnimationButton extends StatelessWidget {
+  const homeAnimationButton({
+    super.key,
+    required this.onTap,
+    required this.colors,
+    required this.icon,
+    required this.time,
+  });
+
+  final VoidCallback onTap;
+  final Color colors;
+  final IconData icon;
+  final int time;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
+    return ZoomTapAnimation(
+      onTap: onTap,
+      end: 0.88,
+      child: SizedBox(
+        height: height * 0.20,
+        width: width / 2,
+        child: AvatarGlow(
+          glowColor: Colors.blueAccent,
+          endRadius: height * 0.1,
+          repeatPauseDuration: const Duration(milliseconds: 500),
+          duration: Duration(milliseconds: time),
+          repeat: true,
+          showTwoGlows: true,
+          curve: Curves.easeOutQuad,
+          child: FlutterColorsBorder(
+            animationDuration: 5,
+            colors: const [
+              Colors.yellowAccent,
+              Colors.purpleAccent,
+              Colors.deepPurpleAccent,
+              Colors.pinkAccent,
+            ],
+            size: Size(height * 0.13, height * 0.13),
+            boardRadius: 100,
+            borderWidth: 1,
+            child: Container(
+              height: height * 0.15,
+              width: height * 0.15,
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(99)),
+              child: SizedBox(
+                height: height * 0.7,
+                width: height * 0.7,
+                child: Animator<double>(
+                  duration: const Duration(milliseconds: 2000),
+                  cycles: 0,
+                  curve: Curves.elasticIn,
+                  tween: Tween<double>(begin: 20.0, end: 25.0),
+                  builder: (context, animatorState, child) => Icon(
+                    icon,
+                    size: animatorState.value * 2.3,
+                    color: colors,
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

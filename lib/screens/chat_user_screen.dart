@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -56,9 +55,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
   int limit = 20;
-  double chatBlur = 0, chatBlackout = 2, chatBlackoutFinal = 0.2;
+  double chatBlur = 0, chatBlackout = 1, chatBlackoutFinal = 0.2;
   bool isLoading = false, isWrite = true;
-  final box = GetStorage();
   final getChatDataController = Get.put(GetChatDataController());
 
   _ChatUserScreenState(this.friendId, this.friendName, this.friendImage,
@@ -210,9 +208,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     await SharedPreferences.getInstance()
         .then((i) => i.setDouble('chatBlackout', result));
 
-    setState(() {
-      chatBlackoutFinal = result;
-    });
+    setState(() => chatBlackoutFinal = result);
   }
 
   @override
@@ -278,8 +274,13 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                             ),
                             onSelected: (value) {
                               if (value == 0) {
-                                showAlertDialogDeleteChat(context, friendId,
-                                    friendName, true, friendImage, height);
+                                showAlertDialogDeleteChat(
+                                    context: context,
+                                    friendId: friendId,
+                                    friendName: friendName,
+                                    isBack: true,
+                                    friendUri: friendImage,
+                                    height: height);
                               } else if (value == 1) {
                                 showBottomSheetChat(context, height, width);
                               }
@@ -382,14 +383,16 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                     }
 
                                                     showAlertDialogDeleteMessage(
-                                                        context,
-                                                        friendId,
-                                                        userModelCurrent.uid,
-                                                        friendName,
-                                                        idDoc,
-                                                        snapshotMy,
-                                                        index + 1,
-                                                        isLastMessage);
+                                                        context: context,
+                                                        friendId: friendId,
+                                                        myId: userModelCurrent
+                                                            .uid,
+                                                        friendName: friendName,
+                                                        idDoc: idDoc,
+                                                        snapshotMy: snapshotMy,
+                                                        index: index + 1,
+                                                        isLastMessage:
+                                                            isLastMessage);
                                                   },
                                                   child: MessagesItem(
                                                     message,
@@ -404,10 +407,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                             ),
                                           );
                                         } else {
-                                          bool isLimitMax =
-                                              snapshotMy.data.docs.length >=
-                                                  limit;
-                                          if (isLimitMax) {
+                                          if (snapshotMy.data.docs.length >=
+                                              limit) {
                                             return const Padding(
                                               padding: EdgeInsets.symmetric(
                                                   vertical: 20),
@@ -500,9 +501,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                           stepSize: 1,
                           enableTooltip: false,
                           onChanged: (dynamic value) {
-                            setState(() {
-                              chatBlur = value;
-                            });
+                            setState(() => chatBlur = value);
                             setBlur(value);
                           },
                         ),

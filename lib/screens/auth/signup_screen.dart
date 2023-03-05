@@ -114,6 +114,8 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
         nameValid = false;
       }
 
+      setState(() {});
+
       emailController.addListener(() {
         emailValid = RegExp(
                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -127,24 +129,27 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
           }
 
           if (emailValid && passwordValid && nameValid) {
-            setState(() => signStart = true);
+            signStart = true;
           } else {
-            setState(() => signStart = false);
+            signStart = false;
           }
+
+          setState(() {});
         });
 
         if (emailValid && passwordValid && nameValid) {
-          setState(() => signStart = true);
+          signStart = true;
         } else {
-          setState(() => signStart = false);
+          signStart = false;
         }
       });
 
       if (emailValid && passwordValid && nameValid) {
-        setState(() => signStart = true);
+        signStart = true;
       } else {
-        setState(() => signStart = false);
+        signStart = false;
       }
+      setState(() {});
     });
   }
 
@@ -157,47 +162,49 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: color_blue_90,
       body: ScrollConfiguration(
         behavior: MyBehavior(),
         child: SingleChildScrollView(
           child: SizedBox(
-            height: size.height,
+            height: height,
             child: Stack(
               children: [
                 Positioned(
-                  top: size.height * (animation2.value + .58),
-                  left: size.width * .21,
+                  top: height * (animation2.value + .58),
+                  left: width * .21,
                   child: CustomPaint(
                     painter: MyPainter(50),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .98,
-                  left: size.width * .1,
+                  top: height * .98,
+                  left: width * .1,
                   child: CustomPaint(
                     painter: MyPainter(animation4.value - 30),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .5,
-                  left: size.width * (animation2.value + .8),
+                  top: height * .5,
+                  left: width * (animation2.value + .8),
                   child: CustomPaint(
                     painter: MyPainter(30),
                   ),
                 ),
                 Positioned(
-                  top: size.height * animation3.value,
-                  left: size.width * (animation1.value + .1),
+                  top: height * animation3.value,
+                  left: width * (animation1.value + .1),
                   child: CustomPaint(
                     painter: MyPainter(60),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .1,
-                  left: size.width * .8,
+                  top: height * .1,
+                  left: width * .8,
                   child: CustomPaint(
                     painter: MyPainter(animation4.value),
                   ),
@@ -207,8 +214,8 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                     Expanded(
                       flex: 4,
                       child: Padding(
-                          padding: EdgeInsets.only(top: size.height * .1),
-                          child: animatedText(size.width / 11, 'Lancelot',
+                          padding: EdgeInsets.only(top: height * .1),
+                          child: animatedText(width / 11, 'Lancelot',
                               Colors.white.withOpacity(.8), 0, 1)),
                     ),
                     const Spacer(flex: 2),
@@ -218,7 +225,6 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           textFieldAuth(
-                            size: size,
                             controller: nameController,
                             hint: 'Name...',
                             icon: Icons.account_circle_sharp,
@@ -229,7 +235,6 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             },
                           ),
                           textFieldAuth(
-                            size: size,
                             controller: emailController,
                             hint: 'Email...',
                             icon: Icons.email_outlined,
@@ -240,7 +245,6 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             },
                           ),
                           textFieldAuth(
-                            size: size,
                             controller: passwordController,
                             hint: 'Password...',
                             icon: Icons.lock_open_outlined,
@@ -252,10 +256,10 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                           ),
                           Container(
                               padding: EdgeInsets.only(
-                                  right: size.height / 22, top: 4, bottom: 4),
+                                  right: height / 22, top: 4, bottom: 4),
                               alignment: Alignment.centerRight,
                               child: animatedText(
-                                  size.height / 66,
+                                  height / 66,
                                   'Введите реальную почту',
                                   Colors.white,
                                   500,
@@ -265,10 +269,12 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             children: [
                               signStart
                                   ? buttonAuthAnimation(
-                                      'Зарегистрироваться', 1.7, 350, () {
+                                      'Зарегистрироваться', width / 1.4, 350,
+                                      () {
                                       sigUpTap(context);
                                     })
-                                  : buttonAuth('Зарегистрироваться', 1.7, 500,
+                                  : buttonAuth(
+                                      'Зарегистрироваться', width / 1.4, 500,
                                       () {
                                       sigUpTap(context);
                                     }),
@@ -282,13 +288,13 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          buttonAuth('Войти в аккаунт', 2, 0,  () {
+                          buttonAuth('Войти в аккаунт', width / 1.4, 0, () {
                             Navigator.push(
                               context,
                               FadeRouteAnimation(const SignInScreen()),
                             );
                           }),
-                          SizedBox(height: size.height * .05),
+                          SizedBox(height: height * .05),
                         ],
                       ),
                     ),

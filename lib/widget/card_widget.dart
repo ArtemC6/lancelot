@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:animate_gradient/animate_gradient.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:card_loading/card_loading.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
@@ -16,10 +16,10 @@ import 'animation_widget.dart';
 import 'button_widget.dart';
 
 class photoUser extends StatelessWidget {
-  String uri, state;
-  double height, width, padding;
+  final String uri, state;
+  final double height, width, padding;
 
-  photoUser(
+  const photoUser(
       {Key? key,
       required this.uri,
       required this.height,
@@ -30,7 +30,7 @@ class photoUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double heightScreen = MediaQuery.of(context).size.height;
+    final heightScreen = MediaQuery.of(context).size.height;
     return SizedBox(
       child: Stack(
         alignment: Alignment.bottomRight,
@@ -42,11 +42,12 @@ class photoUser extends StatelessWidget {
               shadowColor: Colors.white30,
               color: color_black_88,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                  side: const BorderSide(
-                    width: 0.5,
-                    color: Colors.white24,
-                  )),
+                borderRadius: BorderRadius.circular(100),
+                side: const BorderSide(
+                  width: 0.5,
+                  color: Colors.white24,
+                ),
+              ),
               elevation: 8,
               child: Container(
                 decoration: const BoxDecoration(
@@ -103,18 +104,32 @@ class itemUserLike extends StatelessWidget {
   final UserModel userModelCurrent, userModelLike;
   final int indexAnimation;
 
-  itemUserLike(this.userModelLike, this.userModelCurrent, this.indexAnimation,
+  const itemUserLike(
+      this.userModelLike, this.userModelCurrent, this.indexAnimation,
       {super.key});
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     return ZoomTapAnimation(
+      end: 0.97,
+      onTap: () {
+        Navigator.push(
+          context,
+          FadeRouteAnimation(
+            ProfileScreen(
+              userModelPartner: userModelLike,
+              isBack: true,
+              idUser: '',
+              userModelCurrent: userModelCurrent,
+            ),
+          ),
+        );
+      },
       child: Container(
         height: height / 7.3,
-        width: width,
         padding: EdgeInsets.only(
             left: width / 30, top: 0, right: width / 30, bottom: width / 30),
         child: Card(
@@ -130,103 +145,74 @@ class itemUserLike extends StatelessWidget {
           child: Container(
             padding:
                 const EdgeInsets.only(left: 8, top: 8, bottom: 8, right: 14),
-            child: InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  FadeRouteAnimation(
-                    ProfileScreen(
-                      userModelPartner: userModelLike,
-                      isBack: true,
-                      idUser: '',
-                      userModelCurrent: userModelCurrent,
-                    ),
-                  ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
+            child: Row(
+              children: [
+                SizedBox(
+                  width: height / 12,
+                  height: height / 12,
+                  child: photoUser(
+                    uri: userModelLike.userImageUrl[0],
                     width: height / 12,
                     height: height / 12,
-                    child: photoUser(
-                      uri: userModelLike.userImageUrl[0],
-                      width: height / 12,
-                      height: height / 12,
-                      state: userModelLike.state,
-                      padding: 0,
-                    ),
+                    state: userModelLike.state,
+                    padding: 0,
                   ),
-                  const SizedBox(width: 10),
-                  // SizedBox(
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        DelayedDisplay(
-                          delay: Duration(
-                              milliseconds: indexAnimation * 300 < 2700
-                                  ? indexAnimation * 300
-                                  : 300),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  text:
-                                      '${userModelLike.name}, ${userModelLike.ageInt}',
-                                  style: GoogleFonts.lato(
-                                    textStyle: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: height / 56,
-                                        letterSpacing: .5),
-                                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DelayedDisplay(
+                        delay: Duration(
+                            milliseconds: indexAnimation * 300 < 2700
+                                ? indexAnimation * 300
+                                : 300),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text:
+                                    '${userModelLike.name}, ${userModelLike.ageInt}',
+                                style: GoogleFonts.lato(
+                                  textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: height / 56,
+                                      letterSpacing: .5),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              RichText(
-                                maxLines: 1,
-                                text: TextSpan(
-                                  text: userModelLike.myCity,
-                                  style: GoogleFonts.lato(
-                                    textStyle: TextStyle(
-                                        color: Colors.white.withOpacity(.6),
-                                        fontSize: height / 67,
-                                        letterSpacing: .5),
-                                  ),
+                            ),
+                            const SizedBox(
+                              height: 3,
+                            ),
+                            RichText(
+                              maxLines: 1,
+                              text: TextSpan(
+                                text: userModelLike.myCity,
+                                style: GoogleFonts.lato(
+                                  textStyle: TextStyle(
+                                      color: Colors.white.withOpacity(.6),
+                                      fontSize: height / 67,
+                                      letterSpacing: .5),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        customIconButton(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                FadeRouteAnimation(ProfileScreen(
-                                  userModelPartner: userModelLike,
-                                  isBack: true,
-                                  idUser: '',
-                                  userModelCurrent: userModelCurrent,
-                                )));
-                          },
-                          path: 'images/ic_send.png',
-                          height: height / 28,
-                          width: height / 28,
-                          padding: 4,
-                        )
-                      ],
-                    ),
+                      ),
+                      customIconButton(
+                        onTap: () {},
+                        path: 'images/ic_send.png',
+                        height: height / 28,
+                        width: height / 28,
+                        padding: 4,
+                      )
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -235,24 +221,33 @@ class itemUserLike extends StatelessWidget {
   }
 }
 
-class cardLoading extends StatelessWidget {
-  const cardLoading({
+class cardLoadingHome extends StatelessWidget {
+  const cardLoadingHome({
     super.key,
-    required this.size,
     required this.radius,
   });
 
-  final Size size;
   final double radius;
 
   @override
   Widget build(BuildContext context) {
-    return CardLoading(
-      cardLoadingTheme: CardLoadingTheme(
-          colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
-      height: size.height,
-      width: size.width,
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
+    return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
+      child: Shimmer(
+        color: Colors.white10,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
+            borderRadius: BorderRadius.circular(radius),
+            color: color_black_88,
+          ),
+          height: height,
+          width: width,
+        ),
+      ),
     );
   }
 }
@@ -260,16 +255,19 @@ class cardLoading extends StatelessWidget {
 class cardPartner extends StatelessWidget {
   const cardPartner({
     super.key,
-    required this.size,
     required this.userModelPartner,
+    required this.onTap,
   });
 
-  final Size size;
   final UserModel userModelPartner;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return ZoomTapAnimation(
+      onTap: onTap,
       end: 0.995,
       child: Card(
         color: color_black_88,
@@ -283,7 +281,7 @@ class cardPartner extends StatelessWidget {
             Colors.white10,
             Colors.white70,
           ],
-          size: Size(size.height, size.height),
+          size: Size(height, height),
           boardRadius: 22,
           borderWidth: 1,
           child: Stack(
@@ -291,6 +289,8 @@ class cardPartner extends StatelessWidget {
             alignment: Alignment.bottomLeft,
             children: [
               CachedNetworkImage(
+                  fadeOutDuration: const Duration(milliseconds: 1500),
+                  fadeInDuration: const Duration(milliseconds: 700),
                   imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -302,27 +302,24 @@ class cardPartner extends StatelessWidget {
                       ),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                   progressIndicatorBuilder: (context, url, progress) =>
-                      loadingPhotoAnimation(
-                        height: size.height,
-                      ),
+                      const loadingPhotoAnimation(),
                   imageUrl: userModelPartner.userImageUrl[0],
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
-                  width: size.width),
+                  width: width),
               Positioned(
-                height: size.height / 12.5,
+                height: height / 12.5,
                 child: Container(
                   alignment: Alignment.bottomLeft,
                   padding: EdgeInsets.only(
-                    left: size.height / 72,
-                    bottom: size.height / 82,
+                    left: height / 72,
+                    bottom: height / 82,
                   ),
                   child: FlutterColorsBorder(
                     animationDuration: 5,
                     colors: listColorsAnimation,
-                    size: Size(
-                        size.height / 9.0 + userModelPartner.name.length * 4,
-                        size.height / 12),
+                    size: Size(height / 9.0 + userModelPartner.name.length * 4,
+                        height / 12),
                     boardRadius: 14,
                     borderWidth: 0.8,
                     child: ClipRRect(
@@ -356,13 +353,13 @@ class cardPartner extends StatelessWidget {
                             child: Container(
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.all(
-                                size.height / 120,
+                                height / 120,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   animatedText(
-                                      size.height / 54,
+                                      height / 54,
                                       '${userModelPartner.name}, '
                                       '${userModelPartner.ageInt}',
                                       Colors.white,
@@ -371,7 +368,7 @@ class cardPartner extends StatelessWidget {
                                   Row(
                                     children: [
                                       animatedText(
-                                          size.height / 66,
+                                          height / 66,
                                           userModelPartner.myCity,
                                           Colors.white,
                                           550,
@@ -379,11 +376,11 @@ class cardPartner extends StatelessWidget {
                                       if (userModelPartner.state == 'online')
                                         Padding(
                                           padding: EdgeInsets.only(
-                                            left: size.height / 160,
+                                            left: height / 160,
                                           ),
                                           child: Container(
-                                            height: size.height / 86,
-                                            width: size.height / 86,
+                                            height: height / 86,
+                                            width: height / 86,
                                             decoration: const BoxDecoration(
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(100)),

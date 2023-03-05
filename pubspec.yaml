@@ -51,7 +51,6 @@ dependencies:
   auto_size_text: ^3.0.0
   shimmer_animation: ^2.1.0+1
   get: ^4.6.5
-  get_storage: ^2.1.1
 
 
 dev_dependencies:

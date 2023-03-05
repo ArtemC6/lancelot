@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -71,24 +72,26 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: color_black_88,
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            showAnimationVerify(size.height, 'images/animation_email_send.json',
-                animationController),
+            showAnimationVerify(
+              animationController: animationController,
+              path: 'images/animation_email_send.json',
+            ),
             Padding(
               padding: EdgeInsets.only(
-                  top: size.height / 32,
-                  bottom: size.height / 18,
-                  left: size.height / 48,
-                  right: size.height / 48),
-              child: SlideFadeTransition(
-                animationDuration: const Duration(milliseconds: 200),
+                  top: height / 32,
+                  bottom: height / 18,
+                  left: height / 48,
+                  right: height / 48),
+              child: DelayedDisplay(
+                delay: const Duration(milliseconds: 200),
                 child: Text(
                   maxLines: 3,
                   textAlign: TextAlign.center,
@@ -96,7 +99,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(
                         color: Colors.white,
-                        fontSize: size.height / 52,
+                        fontSize: height / 52,
                         letterSpacing: .6),
                   ),
                 ),
@@ -109,81 +112,73 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 },
                 child: Padding(
                   padding: EdgeInsets.only(
-                      bottom: size.height / 16,
-                      left: size.height / 48,
-                      right: size.height / 48),
-                  child: SlideFadeTransition(
-                    animationDuration: const Duration(milliseconds: 400),
-                    child: Text(
-                      maxLines: 3,
-                      textAlign: TextAlign.center,
-                      'Не приходит код подтверждения ?',
-                      style: GoogleFonts.lato(
-                        textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height / 54,
-                            letterSpacing: .6),
-                      ),
-                    ),
-                  ),
+                      bottom: height / 16,
+                      left: height / 48,
+                      right: height / 48),
+                  child: animatedText(height / 54,
+                      'Не приходит код подтверждения ?', Colors.white, 400, 3),
                 ),
               ),
             if (isDescriptionEmail)
               Padding(
                 padding: EdgeInsets.only(
-                    bottom: size.height / 16,
-                    left: size.height / 48,
-                    right: size.height / 48),
-                child: SlideFadeTransition(
-                  animationDuration: const Duration(milliseconds: 450),
-                  child: Text(
-                    maxLines: 3,
-                    textAlign: TextAlign.center,
-                    'Посмотрите письмо в разделе спам.',
-                    style: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: size.height / 54,
-                          letterSpacing: .6),
-                    ),
-                  ),
-                ),
+                    bottom: height / 16, left: height / 48, right: height / 48),
+                child: animatedText(height / 54,
+                    'Посмотрите письмо в разделе спам.', Colors.white, 400, 3),
               ),
             Padding(
-              padding: EdgeInsets.only(bottom: size.height / 32),
+              padding: EdgeInsets.only(bottom: height / 32),
               child: isEmail
-                  ? buttonUniversal('Отправить повторно',
-                      listColorMulticoloured, size.height / 17, () {
-                      sendEmail();
-                    }, 400)
-                  : buttonUniversalAnimationColors(
-                  'Отправить повторно',
-                      [color_black_88, color_black_88],
-                      size.height / 18,
-                      () {},
-                      400),
+                  ? buttonUniversal(
+                      text: 'Отправить повторно',
+                      darkColors: true,
+                      colorButton: listColorMulticoloured,
+                      height: height / 18,
+                      width: width / 1.5,
+                      sizeText: height / 62,
+                      time: 400,
+                      onTap: () {
+                        sendEmail();
+                      },
+                    )
+                  : buttonUniversalNoState(
+                      text: 'Отправить повторно',
+                      darkColors: false,
+                      colorButton: const [color_black_88, color_black_88],
+                      height: height / 18,
+                      width: width / 1.5,
+                      sizeText: height / 62,
+                      time: 400,
+                      onTap: () {},
+                    ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: size.height / 14),
-              child: buttonUniversalAnimationColors('Другая почта',
-                  [color_black_88, color_black_88], size.height / 18, () async {
-                try {
-                  if (FirebaseAuth.instance.currentUser?.uid != null) {
-                    await FirebaseFirestore.instance
-                        .collection("User")
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .delete();
-                    await FirebaseAuth.instance.currentUser!.delete();
+              padding: EdgeInsets.only(bottom: height / 14),
+              child: buttonUniversalNoState(
+                text: 'Другая почта',
+                darkColors: false,
+                colorButton: const [color_black_88, color_black_88],
+                height: height / 18,
+                width: width / 1.5,
+                sizeText: height / 62,
+                time: 400,
+                onTap: () async {
+                  try {
+                    if (FirebaseAuth.instance.currentUser?.uid != null) {
+                      await FirebaseFirestore.instance
+                          .collection("User")
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .delete();
+                      await FirebaseAuth.instance.currentUser!.delete();
+                    }
                     await FirebaseAuth.instance.signOut();
-                  } else {
+                  } catch (e) {
                     await FirebaseAuth.instance.signOut();
                   }
-                } catch (e) {
-                  await FirebaseAuth.instance.signOut();
-                }
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const Manager()));
-              }, 400),
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const Manager()));
+                },
+              ),
             ),
           ],
         ),

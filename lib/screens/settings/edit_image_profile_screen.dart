@@ -12,7 +12,8 @@ import '../../widget/button_widget.dart';
 class EditImageProfileScreen extends StatefulWidget {
   final String bacImage;
 
-  EditImageProfileScreen({Key? key, required this.bacImage}) : super(key: key);
+  const EditImageProfileScreen({Key? key, required this.bacImage})
+      : super(key: key);
 
   @override
   State<EditImageProfileScreen> createState() =>
@@ -43,7 +44,9 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     AnimationLimiter listImageProfile(BuildContext context) {
       return AnimationLimiter(
         child: AnimationConfiguration.staggeredList(
@@ -83,7 +86,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                 listImageUri[index], context);
                           },
                           child: Padding(
-                            padding: EdgeInsets.all(size.width / 140),
+                            padding: EdgeInsets.all(width / 140),
                             child: Card(
                               shadowColor: Colors.white30,
                               color: color_black_88,
@@ -116,9 +119,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                 ),
                                 progressIndicatorBuilder:
                                     (context, url, progress) =>
-                                        loadingPhotoAnimation(
-                                  height: size.height,
-                                ),
+                                    const loadingPhotoAnimation(),
                                 imageUrl: listImageUri[index],
                               ),
                             ),
@@ -126,8 +127,8 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                         ),
                         if (indexImage == index && indexImage != 100)
                           customIconButton(
-                              height: size.height / 40,
-                              width: size.height / 40,
+                              height: height / 40,
+                              width: height / 40,
                               padding: 2,
                               path: 'images/ic_save.png',
                               onTap: () {
@@ -143,8 +144,8 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                                   listImageUri[index], context);
                             },
                             child: Container(
-                              height: size.height / 40,
-                              width: size.height / 40,
+                              height: height / 40,
+                              width: height / 40,
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       width: 0.5, color: Colors.white54),
@@ -164,7 +165,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
 
     Padding topPanelProfile(BuildContext context) {
       return Padding(
-        padding: EdgeInsets.all(size.height / 200),
+        padding: EdgeInsets.all(height / 200),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -173,19 +174,18 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(Icons.arrow_back_ios_new_rounded,
-                    size: size.height / 40),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, size: height / 40),
                 color: Colors.white,
               ),
             if (bacImage == '') const SizedBox(),
-            animatedText(size.height / 50, 'Фон профиля', Colors.white, 700, 1),
+            animatedText(height / 50, 'Фон профиля', Colors.white, 700, 1),
             Padding(
               padding: EdgeInsets.only(
-                right: size.height / 80,
+                right: height / 80,
               ),
               child: customIconButton(
-                height: size.height / 35,
-                width: size.height / 35,
+                height: height / 35,
+                width: height / 35,
                 path: 'images/ic_image.png',
                 padding: 2,
                 onTap: () {},
@@ -208,11 +208,9 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                   (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
                   SliverAppBar(
-                    expandedHeight: size.height / 28,
+                    expandedHeight: height / 28,
                     automaticallyImplyLeading: false,
-                    floating: false,
                     forceElevated: innerBoxIsScrolled,
-                    pinned: false,
                     titleSpacing: 0,
                     backgroundColor:
                         innerBoxIsScrolled ? color_black_88 : color_black_88,
@@ -225,8 +223,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                   ),
                 ];
               },
-              body: SizedBox(
-                  height: size.height, child: listImageProfile(context)),
+              body: SizedBox(height: height, child: listImageProfile(context)),
             ),
           ),
         ),

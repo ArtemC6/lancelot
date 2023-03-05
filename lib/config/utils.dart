@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -48,4 +49,10 @@ Future<void> launchUrlEmail(String uri) async {
   );
 
   launchUrl(emailLaunchUri);
+}
+
+Future<void> clearAllNotification() async {
+  try {
+    await const MethodChannel('clear_all_notifications').invokeMethod('clear');
+  } catch (e) {}
 }

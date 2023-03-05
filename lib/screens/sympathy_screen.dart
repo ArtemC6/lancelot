@@ -46,9 +46,8 @@ class _SympathyScreenState extends State<SympathyScreen>
   void initState() {
     animationController = AnimationController(vsync: this);
     scrollController.addListener(() {
-      if (!isLoadingUser) {
-        setState(() => isLoadingUser = true);
-      }
+      if (!isLoadingUser) setState(() => isLoadingUser = true);
+
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
         setState(() => limit += 3);
@@ -63,6 +62,7 @@ class _SympathyScreenState extends State<SympathyScreen>
         });
       }
     });
+
     super.initState();
   }
 
@@ -74,8 +74,9 @@ class _SympathyScreenState extends State<SympathyScreen>
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: color_black_88,
       body: SafeArea(
@@ -120,13 +121,14 @@ class _SympathyScreenState extends State<SympathyScreen>
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
-                      return showIfNoData(height, 'images/animation_heart.json',
-                          'У вас нет симпатий', animationController, 3);
+                      return showIfNoData(
+                          imagePath: 'images/animation_heart.json',
+                          text: 'У вас нет симпатий',
+                          animationController: animationController);
                     } else {
                       return AnimationLimiter(
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
                           itemCount: snapshot.data.docs.length + 1,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -411,42 +413,58 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             .spaceAround,
                                                                     children: [
                                                                       if (!isMutuallyMy)
-                                                                        buttonUniversalAnimationColors(
-                                                                            'Принять симпатию',
-                                                                            [
-                                                                              color_black_88,
-                                                                              color_black_88
-                                                                            ],
-                                                                            width /
-                                                                                10.5,
-                                                                            () {
-                                                                          if (!isMutuallyMy) {
+                                                                        buttonUniversalNoState(
+                                                                          text:
+                                                                              'Принять симпатию',
+                                                                          darkColors:
+                                                                              false,
+                                                                          colorButton: const [
+                                                                            color_black_88,
+                                                                            color_black_88
+                                                                          ],
+                                                                          height:
+                                                                              width / 9.9,
+                                                                          width:
+                                                                              width / 2.6,
+                                                                          sizeText:
+                                                                              width / 35,
+                                                                          time: indexAnimation * 300 < 1000
+                                                                              ? indexAnimation * 300
+                                                                              : 300,
+                                                                          onTap:
+                                                                              () {
                                                                             createSympathy(uid, userModelCurrent).then((value) async {
                                                                               setState(() {});
-                                                                              if (token != '' && asyncSnapshotUser.data['notification']) {
+                                                                              if (token.isNotEmpty && asyncSnapshotUser.data['notification']) {
                                                                                 await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
                                                                               }
                                                                             });
-                                                                          }
-                                                                        },
-                                                                            indexAnimation * 300 < 1000
-                                                                                ? indexAnimation * 300
-                                                                                : 300),
+                                                                          },
+                                                                        ),
                                                                       if (isMutuallyMy)
                                                                         buttonUniversal(
-                                                                            'У вас взаимно',
-                                                                            listColorMulticoloured,
-                                                                            width /
-                                                                                10.2,
-                                                                            () {
-                                                                          deleteSympathyPartner(uid, userModelCurrent.uid)
-                                                                              .then((value) {
-                                                                            setState(() {});
-                                                                          });
-                                                                        },
-                                                                            indexAnimation * 300 < 1000
-                                                                                ? indexAnimation * 300
-                                                                                : 300),
+                                                                          text:
+                                                                              'У вас взаимно',
+                                                                          darkColors:
+                                                                              true,
+                                                                          colorButton:
+                                                                              listColorMulticoloured,
+                                                                          height:
+                                                                              width / 10.2,
+                                                                          width:
+                                                                              width / 3.2,
+                                                                          sizeText:
+                                                                              width / 34.5,
+                                                                          time: indexAnimation * 300 < 1000
+                                                                              ? indexAnimation * 300
+                                                                              : 300,
+                                                                          onTap:
+                                                                              () {
+                                                                            deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
+                                                                              setState(() {});
+                                                                            });
+                                                                          },
+                                                                        ),
                                                                       DropShadow(
                                                                         blurRadius:
                                                                             2.5,

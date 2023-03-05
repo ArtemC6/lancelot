@@ -7,7 +7,6 @@ import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +27,7 @@ class ProfileScreen extends StatefulWidget {
   final bool isBack;
   final String idUser;
 
-  ProfileScreen(
+  const ProfileScreen(
       {super.key,
       required this.userModelPartner,
       required this.isBack,
@@ -45,7 +44,6 @@ class _ProfileScreen extends State<ProfileScreen> {
   UserModel userModelPartner, userModelCurrent;
   final String idUser;
   List<InterestsModel> listStory = [];
-  final FirebaseStorage storage = FirebaseStorage.instance;
 
   _ProfileScreen(
       this.userModelPartner, this.isBack, this.idUser, this.userModelCurrent);
@@ -65,48 +63,41 @@ class _ProfileScreen extends State<ProfileScreen> {
   }
 
   Future readFirebase() async {
-    try {
-      if (userModelPartner.uid == '' && idUser != '') {
-        await readUserFirebase(idUser).then((user) {
-          setState(() {
-            userModelPartner = UserModel(
-                name: user.name,
-                uid: user.uid,
-                ageTime: user.ageTime,
-                userPol: user.userPol,
-                searchPol: user.searchPol,
-                searchRangeStart: user.searchRangeStart,
-                userInterests: user.userInterests,
-                userImagePath: user.userImagePath,
-                userImageUrl: user.userImageUrl,
-                searchRangeEnd: user.searchRangeEnd,
-                myCity: user.myCity,
-                imageBackground: user.imageBackground,
-                ageInt: user.ageInt,
-                state: user.state,
-                token: user.token,
-                notification: user.notification,
-                description: user.description);
-            isLoading = true;
-          });
-        });
-        await sortingList();
-      } else {
-        await sortingList();
-      }
-
-      putLike(userModelCurrent, userModelPartner, false).then((value) {
-        setState(() {
-          if (userModelCurrent.uid == userModelPartner.uid) {
-            isProprietor = true;
-          } else {
-            isProprietor = false;
-          }
-          isLike = !value;
-          isLoading = true;
-        });
+    if (userModelPartner.uid == '' && idUser != '') {
+      await readUserFirebase(idUser).then((user) {
+        userModelPartner = UserModel(
+            name: user.name,
+            uid: user.uid,
+            ageTime: user.ageTime,
+            userPol: user.userPol,
+            searchPol: user.searchPol,
+            searchRangeStart: user.searchRangeStart,
+            userInterests: user.userInterests,
+            userImagePath: user.userImagePath,
+            userImageUrl: user.userImageUrl,
+            searchRangeEnd: user.searchRangeEnd,
+            myCity: user.myCity,
+            imageBackground: user.imageBackground,
+            ageInt: user.ageInt,
+            state: user.state,
+            token: user.token,
+            notification: user.notification,
+            description: user.description);
       });
-    } catch (error) {}
+    }
+
+    await sortingList();
+    await putLike(userModelCurrent, userModelPartner, false).then((value) {
+      if (userModelCurrent.uid == userModelPartner.uid) {
+        isProprietor = true;
+      } else {
+        isProprietor = false;
+      }
+      isLike = !value;
+    });
+
+    isLoading = true;
+    setState(() {});
   }
 
   @override
@@ -117,8 +108,8 @@ class _ProfileScreen extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     if (isLoading) {
       return Scaffold(
@@ -132,8 +123,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                 delay: const Duration(milliseconds: 250),
                 child: SlideAnimation(
                   duration: const Duration(milliseconds: 2200),
-                  horizontalOffset: size.width / 2,
-                  curve: Curves.ease,
+                  horizontalOffset: width / 2,
                   child: FadeInAnimation(
                     curve: Curves.easeOut,
                     duration: const Duration(milliseconds: 3000),
@@ -143,8 +133,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                       children: [
                         Positioned(
                           child: SizedBox(
-                            height: size.height * .28,
-                            width: size.width,
+                            height: height * .28,
+                            width: width,
                             child: CachedNetworkImage(
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
@@ -155,11 +145,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                         if (isBack)
                           Positioned(
-                            height: size.height / 10,
+                            height: height / 10,
                             child: Container(
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.only(
-                                left: size.height / 50,
+                                left: height / 50,
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(14),
@@ -172,35 +162,35 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ),
                                   ),
                                   child: BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 8,
-                                  sigmaY: 8,
-                                ),
-                                child: SizedBox(
-                                  height: size.height / 20,
-                                  width: size.height / 20,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: Icon(
-                                        Icons.arrow_back_ios_new_rounded,
-                                        size: size.height / 44),
-                                    color: Colors.white,
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 8,
+                                      sigmaY: 8,
+                                    ),
+                                    child: SizedBox(
+                                      height: height / 20,
+                                      width: height / 20,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        icon: Icon(
+                                            Icons.arrow_back_ios_new_rounded,
+                                            size: height / 44),
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    if (isProprietor)
-                      Positioned(
-                            height: size.height / 9,
+                        if (isProprietor)
+                          Positioned(
+                            height: height / 9,
                             child: Container(
                               alignment: Alignment.bottomRight,
                               padding: EdgeInsets.only(
-                                right: size.height / 54,
+                                right: height / 54,
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15),
@@ -218,31 +208,32 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       sigmaY: 8,
                                     ),
                                     child: SizedBox(
-                                      height: size.height / 20,
-                                  width: size.height / 20,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          FadeRouteAnimation(
-                                              ProfileSettingScreen(
-                                            userModel: userModelPartner,
-                                            listInterests: listStory,
-                                          )));
-                                    },
-                                    icon: Icon(Icons.settings, size: size.height / 36),
-                                    color: Colors.white,
+                                      height: height / 20,
+                                      width: height / 20,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              FadeRouteAnimation(
+                                                  ProfileSettingScreen(
+                                                userModel: userModelPartner,
+                                                listInterests: listStory,
+                                              )));
+                                        },
+                                        icon: Icon(Icons.settings,
+                                            size: height / 36),
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    Container(
-                      margin: EdgeInsets.only(top: size.height * .20),
-                      child: Column(
-                        children: [
+                        Container(
+                          margin: EdgeInsets.only(top: height * .20),
+                          child: Column(
+                            children: [
                               Container(
                                 margin: const EdgeInsets.only(left: 20),
                                 alignment: Alignment.centerLeft,
@@ -262,7 +253,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           animationDuration: const Duration(
                                               milliseconds: 1300),
                                           isLiked: isLike,
-                                          size: size.height * 0.05,
+                                          size: height * 0.05,
                                           circleColor: const CircleColor(
                                               start: Colors.pinkAccent,
                                               end: Colors.red),
@@ -276,8 +267,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           ),
                                           likeBuilder: (bool isLiked) {
                                             return SizedBox(
-                                              height: size.height * 0.07,
-                                              width: size.height * 0.07,
+                                              height: height * 0.07,
+                                              width: height * 0.07,
                                               child: Animator<double>(
                                                 duration: const Duration(
                                                     milliseconds: 1600),
@@ -308,9 +299,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                         milliseconds: 0)
                                                     : const Duration(
                                                         milliseconds: 350), () {
-                                              setState(() {
-                                                isLike = !isLike;
-                                              });
+                                              setState(() => isLike = !isLike);
                                             });
                                             return putLike(
                                               userModelCurrent,
@@ -330,13 +319,13 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 children: [
                                   Container(
                                     padding: EdgeInsets.only(
-                                        top: size.height / 44, left: 14),
+                                        top: height / 44, left: 14),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         animatedText(
-                                            size.height / 50,
+                                            height / 50,
                                             '${userModelPartner.name}, ${userModelPartner.ageInt}',
                                             Colors.white,
                                             700,
@@ -345,7 +334,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           height: 1,
                                         ),
                                         animatedText(
-                                            size.height / 64,
+                                            height / 64,
                                             userModelPartner.myCity,
                                             Colors.white.withOpacity(.8),
                                             750,
@@ -354,20 +343,28 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ),
                                   ),
                                   if (isProprietor)
-                                    buttonUniversalAnimationColors(
-                                        'Редактировать',
-                                        [
+                                    buttonUniversal(
+                                        height: height / 20,
+                                        width: height / 5.5,
+                                        sizeText: height / 66,
+                                        time: 400,
+                                        text: 'Редактировать',
+                                        darkColors: false,
+                                        colorButton: const [
                                           Colors.blueAccent,
                                           Colors.purpleAccent
                                         ],
-                                        size.height / 20, () {
-                                      Navigator.push(
-                                          context,
-                                          FadeRouteAnimation(EditProfileScreen(
-                                            isFirst: false,
-                                            userModel: userModelCurrent,
-                                          )));
-                                    }, 480),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            FadeRouteAnimation(
+                                              EditProfileScreen(
+                                                isFirst: false,
+                                                userModel: userModelCurrent,
+                                              ),
+                                            ),
+                                          );
+                                        }),
                                   if (!isProprietor)
                                     buttonProfileUser(
                                       userModelCurrent,
@@ -381,8 +378,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                                   alignment: Alignment.centerLeft,
                                   padding: EdgeInsets.only(
                                       left: 14,
-                                      top: size.height / 48,
-                                      right: size.width / 24),
+                                      top: height / 48,
+                                      right: width / 24),
                                   child: DelayedDisplay(
                                     fadeIn: true,
                                     delay: const Duration(milliseconds: 600),
@@ -393,14 +390,14 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       style: GoogleFonts.lato(
                                         textStyle: TextStyle(
                                             color: Colors.white70,
-                                            fontSize: size.height / 66,
+                                            fontSize: height / 66,
                                             letterSpacing: .15),
                                       ),
                                     ),
                                   ),
                                 ),
                               Container(
-                                margin: EdgeInsets.only(top: size.height / 32),
+                                margin: EdgeInsets.only(top: height / 32),
                                 alignment: Alignment.topLeft,
                                 decoration: const BoxDecoration(
                                     color: color_black_88,
@@ -501,22 +498,19 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                                   QuerySnapshot>
                                                               snapshot) {
                                                     if (snapshot.hasData) {
-                                                      return SlideFadeTransition(
-                                                          animationDuration:
+                                                      return DelayedDisplay(
+                                                        delay: const Duration(
+                                                            milliseconds: 1000),
+                                                        child: AnimatedSwitcher(
+                                                          duration:
                                                               const Duration(
                                                                   milliseconds:
-                                                                      1250),
-                                                          child:
-                                                              AnimatedSwitcher(
-                                                            duration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        500),
-                                                            transitionBuilder:
-                                                                ((child,
-                                                                    animation) {
-                                                              return ScaleTransition(
-                                                                  scale:
+                                                                      500),
+                                                          transitionBuilder:
+                                                              ((child,
+                                                                  animation) {
+                                                            return ScaleTransition(
+                                                                scale:
                                                                       animation,
                                                                   child: child);
                                                             }),
@@ -535,17 +529,18 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                                   textStyle: TextStyle(
                                                                       color: Colors
                                                                           .white
-                                                                          .withOpacity(
-                                                                              0.9),
-                                                                      fontSize:
-                                                                          height /
-                                                                              50,
-                                                                      letterSpacing:
-                                                                          .5),
-                                                                ),
+                                                                        .withOpacity(
+                                                                            0.9),
+                                                                    fontSize:
+                                                                        height /
+                                                                            50,
+                                                                    letterSpacing:
+                                                                        .5),
                                                               ),
                                                             ),
-                                                          ));
+                                                          ),
+                                                        ),
+                                                      );
                                                     }
                                                     return const SizedBox();
                                                   },

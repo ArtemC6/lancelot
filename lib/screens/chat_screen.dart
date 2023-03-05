@@ -37,14 +37,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     animationController = AnimationController(vsync: this);
     scrollController.addListener(() {
-      if (!isLoadingUser) {
-        setState(() => isLoadingUser = true);
-      }
+      if (!isLoadingUser) setState(() => isLoadingUser = true);
+
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
-        setState(() {
-          limit += 4;
-        });
+        setState(() => limit += 4);
 
         Future.delayed(const Duration(milliseconds: 600), () {
           scrollController.animateTo(
@@ -67,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: color_black_88,
@@ -96,11 +93,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   if (snapshotFriendId.hasData) {
                     if (snapshotFriendId.data.docs.length <= 0) {
                       return showIfNoData(
-                          height,
-                          'images/animation_user_chat.json',
-                          'У вас нет сообщений',
-                          animationController,
-                          3.5);
+                          imagePath: 'images/animation_user_chat.json',
+                          text: 'У вас нет сообщений',
+                          animationController: animationController);
                     } else {
                       return AnimationLimiter(
                         child: ListView.builder(
@@ -257,17 +252,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                       isReadMessage = true;
                                                     }
                                                   }
-                                                } catch (errro) {}
+                                                } catch (e) {}
 
                                                 return ZoomTapAnimation(
                                                   onLongTap: () {
                                                     showAlertDialogDeleteChat(
-                                                        context,
-                                                        friendId,
-                                                        nameUser,
-                                                        false,
-                                                        imageUri,
-                                                        height);
+                                                        context: context,
+                                                        friendId: friendId,
+                                                        friendName: nameUser,
+                                                        isBack: false,
+                                                        friendUri: imageUri,
+                                                        height: height);
                                                   },
                                                   onTap: () {
                                                     Navigator.push(
@@ -400,9 +395,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                           ),
                                                                         ),
                                                                       if (isWriteUser)
-                                                                        showProgressWrite(
-                                                                            height:
-                                                                                height),
+                                                                        const showProgressWrite(),
                                                                       if (isNewMessage)
                                                                         DelayedDisplay(
                                                                           delay:

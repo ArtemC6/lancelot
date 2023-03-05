@@ -1,6 +1,7 @@
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -17,15 +18,17 @@ import '../../config/utils.dart';
 import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
+import '../../widget/dialog_widget.dart';
 import '../../widget/textField_widget.dart';
 import '../manager_screen.dart';
 import 'edit_image_profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  bool isFirst;
-  UserModel userModel;
+  final bool isFirst;
+  final UserModel userModel;
 
-  EditProfileScreen({super.key, required this.isFirst, required this.userModel});
+  const EditProfileScreen(
+      {super.key, required this.isFirst, required this.userModel});
 
   @override
   State<EditProfileScreen> createState() =>
@@ -50,7 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _descriptionController = TextEditingController();
 
   var _selectedInterests = [];
-  DateTime _dateTimeBirthday = DateTime.now();
+  var _dateTimeBirthday = DateTime.now();
   late SfRangeValues _valuesAge;
   int interestsCount = 0;
 
@@ -94,10 +97,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userPhoto &&
         userAge &&
         ageRange) {
-      setState(() {
-        isError = false;
-        isPhoto = true;
-      });
+      isError = false;
+      isPhoto = true;
 
       final json = {
         'listInterests': _selectedInterests,
@@ -125,27 +126,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               context,
               FadeRouteAnimation(
                 ManagerScreen(
-                  currentIndex: 3,
-                  userModelCurrent: UserModel(
-                      name: '',
-                      uid: '',
-                      state: '',
-                      myCity: '',
-                      ageInt: 0,
-                      ageTime: Timestamp.now(),
-                      userPol: '',
-                      searchPol: '',
-                      searchRangeStart: 0,
-                      userImageUrl: [],
-                      userImagePath: [],
-                      imageBackground: '',
-                      userInterests: [],
-                      searchRangeEnd: 0,
-                      token: '',
-                      notification: true,
-                      description: ''),
-                ),
-              ));
+                currentIndex: 3,
+                userModelCurrent: UserModel(
+                    name: '',
+                    uid: '',
+                    state: '',
+                    myCity: '',
+                    ageInt: 0,
+                    ageTime: Timestamp.now(),
+                    userPol: '',
+                    searchPol: '',
+                    searchRangeStart: 0,
+                    userImageUrl: [],
+                    userImagePath: [],
+                    imageBackground: '',
+                    userInterests: [],
+                    searchRangeEnd: 0,
+                    token: '',
+                    notification: true,
+                    description: ''),
+              ),
+            ),
+          );
         } else {
           Navigator.pushReplacement(
               context,
@@ -160,8 +162,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       } else {
         isPhoto = false;
       }
-      setState(() {});
     }
+    setState(() {});
   }
 
   void settingsValue() {
@@ -245,8 +247,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     SizedBox imageProfileSettings(double height, BuildContext context) {
       return SizedBox(
@@ -400,9 +402,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               height,
                               context,
                             ),
-                            SlideFadeTransition(
-                              animationDuration:
-                                  const Duration(milliseconds: 800),
+                            DelayedDisplay(
+                              delay: const Duration(milliseconds: 700),
                               child: Container(
                                 padding: EdgeInsets.only(
                                     bottom: height / 62,
@@ -410,11 +411,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     right: height / 64),
                                 alignment: Alignment.centerRight,
                                 child: buttonUniversal(
-                                    isFirst ? 'Завершить' : 'Сохранить',
-                                    listColorMulticoloured,
-                                    width / 10, () {
-                                  _uploadData();
-                                }, 900),
+                                  text: isFirst ? 'Завершить' : 'Сохранить',
+                                  time: 900,
+                                  sizeText: width / 32,
+                                  height: width / 10,
+                                  width: width / 3.1,
+                                  darkColors: true,
+                                  colorButton: listColorMulticoloured,
+                                  onTap: () {
+                                    _uploadData();
+                                  },
+                                ),
                               ),
                             ),
                             if (isError)
@@ -437,233 +444,248 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     550,
                                     1),
                               ),
-                            textFieldProfileSettings(_nameController, false,
-                                'Имя', context, 10, height, () {}),
                             textFieldProfileSettings(
-                                _ageController,
-                                true,
-                                'Возраст',
-                                context,
-                                3,
-                                height,
-                                () => showDatePicker()),
-                            textFieldProfileSettings(_myPolController, true,
-                                'Ваш пол', context, 10, height, () async {
-                              if (MediaQuery.of(context).viewInsets.bottom >
-                                  10) {
-                                Navigator.pop(context);
-                                await Future.delayed(
-                                    Duration(microseconds: 1000));
-                              }
-                              showBottomSheet(
-                                  context,
-                                  'Укажите свой пол',
-                                  'Мужской',
-                                  'Женский',
-                                  _myPolController,
-                                  height);
-                            }),
+                                nameController: _nameController,
+                                isLook: false,
+                                hint: 'Имя',
+                                length: 10,
+                                imaxLength: 1,
+                                onTap: () {}),
                             textFieldProfileSettings(
-                                _searchPolController,
-                                true,
-                                'С кем вы хотите познакомиться',
-                                context,
-                                10,
-                                height, () {
-                              showBottomSheet(
-                                  context,
-                                  'Укажите с кем вы хотите познакомиться',
-                                  'С парнем',
-                                  'С девушкой',
-                                  _searchPolController,
-                                  height);
-                            }),
-                            textFieldProfileSettings(_localController, true,
-                                'Вы проживаете', context, 10, height, () {
-                                  showBottomSheet(
-                                  context,
-                                  'Укажите где вы проживаете',
-                                  'Бишкек',
-                                  'Каракол',
-                                  _localController,
-                                  height);
+                                nameController: _ageController,
+                                isLook: true,
+                                hint: 'Возраст',
+                                length: 3,
+                                imaxLength: 1,
+                                onTap: () => showDatePicker()),
+                            textFieldProfileSettings(
+                                nameController: _myPolController,
+                                isLook: true,
+                                hint: 'Ваш пол',
+                                length: 10,
+                                imaxLength: 1,
+                                onTap: () async {
+                                  showBottomSheetShow(
+                                      context,
+                                      'Укажите свой пол',
+                                      'Мужской',
+                                      'Женский',
+                                      _myPolController,
+                                      height);
                                 }),
-                            textFieldProfileSettings(_ageRangController, true,
-                                'Диапазон поиска', context, 14, height, () {
+                            textFieldProfileSettings(
+                                nameController: _searchPolController,
+                                isLook: true,
+                                hint: 'С кем вы хотите познакомиться',
+                                length: 10,
+                                imaxLength: 1,
+                                onTap: () {
+                                  showBottomSheetShow(
+                                      context,
+                                      'Укажите с кем вы хотите познакомиться',
+                                      'С парнем',
+                                      'С девушкой',
+                                      _searchPolController,
+                                      height);
+                                }),
+                            textFieldProfileSettings(
+                                nameController: _localController,
+                                isLook: true,
+                                hint: 'Вы проживаете',
+                                length: 10,
+                                imaxLength: 1,
+                                onTap: () {
+                                  showBottomSheetShow(
+                                      context,
+                                      'Укажите где вы проживаете',
+                                      'Бишкек',
+                                      'Каракол',
+                                      _localController,
+                                      height);
+                                }),
+                            textFieldProfileSettings(
+                                nameController: _ageRangController,
+                                isLook: true,
+                                hint: 'Диапазон поиска',
+                                length: 14,
+                                imaxLength: 1,
+                                onTap: () {
                                   showFlexibleBottomSheet(
-                                  duration: const Duration(milliseconds: 700),
-                                  decoration: const BoxDecoration(
-                                      color: color_black_88,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(16))),
-                                  bottomSheetColor: Colors.transparent,
-                                  initHeight: 0.28,
-                                  context: context,
-                                  builder: (
-                                    BuildContext context,
-                                    ScrollController scrollController,
-                                    double bottomSheetOffset,
-                                  ) {
-                                    return StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return SizedBox(
-                                        height: 300,
-                                        width: width,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 20,
-                                                    bottom: height / 18),
-                                                child: animatedText(
-                                                    height / 57,
-                                                    'От ${_valuesAge.start} до ${_valuesAge.end} лет',
-                                                    Colors.white,
-                                                    450,
-                                                    1)),
-                                            SfRangeSlider(
-                                              activeColor: Colors.blue,
-                                              min: 16,
-                                              max: 30,
-                                              values: _valuesAge,
-                                              stepSize: 1,
-                                              enableTooltip: true,
-                                              onChanged:
-                                                  (SfRangeValues values) {
-                                                setState(() {
-                                                  _valuesAge = values;
-                                                  _ageRangController.text =
-                                                      'От ${_valuesAge.start} до ${_valuesAge.end} лет';
-                                                });
-                                              },
+                                      duration:
+                                          const Duration(milliseconds: 700),
+                                      decoration: const BoxDecoration(
+                                          color: color_black_88,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(16))),
+                                      bottomSheetColor: Colors.transparent,
+                                      initHeight: 0.28,
+                                      context: context,
+                                      builder: (
+                                        BuildContext context,
+                                        ScrollController scrollController,
+                                        double bottomSheetOffset,
+                                      ) {
+                                        return StatefulBuilder(
+                                            builder: (context, setState) {
+                                          return SizedBox(
+                                            height: 300,
+                                            width: width,
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: 20,
+                                                        bottom: height / 18),
+                                                    child: animatedText(
+                                                        height / 57,
+                                                        'От ${_valuesAge.start} до ${_valuesAge.end} лет',
+                                                        Colors.white,
+                                                        450,
+                                                        1)),
+                                                SfRangeSlider(
+                                                  activeColor: Colors.blue,
+                                                  min: 16,
+                                                  max: 30,
+                                                  values: _valuesAge,
+                                                  stepSize: 1,
+                                                  enableTooltip: true,
+                                                  onChanged:
+                                                      (SfRangeValues values) {
+                                                    setState(() {
+                                                      _valuesAge = values;
+                                                      _ageRangController.text =
+                                                          'От ${_valuesAge.start} до ${_valuesAge.end} лет';
+                                                    });
+                                                  },
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      );
-                                            });
+                                          );
+                                        });
                                       });
                                 }),
                             textFieldProfileSettings(
-                                _descriptionController,
-                                false,
-                                'Расскажите о себе (необязательно)',
-                                context,
-                                100,
-                                height,
-                                    () {},
-                                3),
-                            textFieldProfileSettings(_notificationController,
-                                true, 'Уведомления', context, 10, height, () {
-                              showBottomSheet(
-                                  context,
-                                  'Укажите хотите получать уведомления',
-                                  'Включить',
-                                  'Выключить',
-                                  _notificationController,
-                                  height);
-                            }),
-                            textFieldProfileSettings(_supportController, true,
-                                'Техподдержка', context, 30, height, () async {
-                              launchUrlEmail('lancelotsuport@gmail.com');
-                            }, 2),
+                                nameController: _descriptionController,
+                                isLook: false,
+                                hint: 'Расскажите о себе (необязательно)',
+                                length: 100,
+                                imaxLength: 3,
+                                onTap: () {}),
+                            textFieldProfileSettings(
+                                nameController: _notificationController,
+                                isLook: true,
+                                hint: 'Уведомления',
+                                length: 10,
+                                imaxLength: 1,
+                                onTap: () {
+                                  showBottomSheetShow(
+                                      context,
+                                      'Укажите хотите получать уведомления',
+                                      'Включить',
+                                      'Выключить',
+                                      _notificationController,
+                                      height);
+                                }),
+                            textFieldProfileSettings(
+                                nameController: _supportController,
+                                isLook: true,
+                                hint: 'Техподдержка',
+                                length: 30,
+                                imaxLength: 1,
+                                onTap: () async {
+                                  launchUrlEmail('lancelotsuport@gmail.com');
+                                }),
                             Theme(
                               data: ThemeData.light(),
-                              child: MediaQuery(
-                                data: MediaQuery.of(context)
-                                    .copyWith(textScaleFactor: 1.0),
-                                child: Card(
-                                  color: color_black_88,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18),
-                                      side: const BorderSide(
-                                        width: 0.8,
-                                        color: Colors.white38,
-                                      )),
-                                  elevation: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                        top: 8, bottom: 8),
-                                    child: MultiSelectBottomSheetField(
-                                      initialValue: modelUser.userInterests,
-                                      searchHintStyle:
-                                      const TextStyle(color: Colors.white),
-                                      buttonText: Text(
-                                        'Выбрать $interestsCount максимум (6)',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: height / 62),
-                                      ),
-                                      buttonIcon: Icon(
-                                        Icons.arrow_forward_ios_outlined,
-                                        color: Colors.white,
-                                        size: height / 54,
-                                      ),
-                                      backgroundColor: color_black_88,
-                                      checkColor: Colors.white,
-                                      confirmText: Text(
-                                        'Выбрать',
-                                        style: GoogleFonts.lato(
-                                            textStyle: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: height / 60,
-                                                letterSpacing: .6)),
-                                      ),
-                                      cancelText: Text(
-                                        'Закрыть',
-                                        style: GoogleFonts.lato(
-                                            textStyle: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: height / 60,
-                                                letterSpacing: .6)),
-                                      ),
-                                      searchIcon: const Icon(
-                                        Icons.search,
-                                        color: Colors.white,
-                                      ),
-                                      closeSearchIcon: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                      ),
-                                      searchHint: 'Поиск',
-                                      searchTextStyle:
-                                      const TextStyle(color: Colors.white),
-                                      initialChildSize: 0.4,
-                                      listType: MultiSelectListType.CHIP,
-                                      searchable: true,
-                                      itemsTextStyle: GoogleFonts.lato(
+                              child: Card(
+                                color: color_black_88,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: const BorderSide(
+                                      width: 0.8,
+                                      color: Colors.white38,
+                                    )),
+                                elevation: 10,
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.only(top: 8, bottom: 8),
+                                  child: MultiSelectBottomSheetField(
+                                    initialValue: modelUser.userInterests,
+                                    searchHintStyle:
+                                        const TextStyle(color: Colors.white),
+                                    buttonText: Text(
+                                      'Выбрать $interestsCount максимум (6)',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: height / 62),
+                                    ),
+                                    buttonIcon: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.white,
+                                      size: height / 54,
+                                    ),
+                                    backgroundColor: color_black_88,
+                                    checkColor: Colors.white,
+                                    confirmText: Text(
+                                      'Выбрать',
+                                      style: GoogleFonts.lato(
                                           textStyle: TextStyle(
-                                              color: Colors.black,
+                                              color: Colors.blueAccent,
                                               fontSize: height / 60,
                                               letterSpacing: .6)),
-                                      selectedItemsTextStyle: GoogleFonts.lato(
+                                    ),
+                                    cancelText: Text(
+                                      'Закрыть',
+                                      style: GoogleFonts.lato(
                                           textStyle: TextStyle(
-                                              color: Colors.black,
+                                              color: Colors.blueAccent,
                                               fontSize: height / 60,
                                               letterSpacing: .6)),
-                                      title: animatedText(
-                                          height / 60,
-                                          "Ваши интересы ${interestsCount.toString()} максимум (6)",
-                                          Colors.white,
-                                          500,
-                                          1),
-                                      items: items,
-                                      onSelectionChanged: (value) {
-                                        setState(() {
-                                          interestsCount = value.length;
-                                        });
+                                    ),
+                                    searchIcon: const Icon(
+                                      Icons.search,
+                                      color: Colors.white,
+                                    ),
+                                    closeSearchIcon: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
+                                    searchHint: 'Поиск',
+                                    searchTextStyle:
+                                        const TextStyle(color: Colors.white),
+                                    initialChildSize: 0.4,
+                                    listType: MultiSelectListType.CHIP,
+                                    searchable: true,
+                                    itemsTextStyle: GoogleFonts.lato(
+                                        textStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: height / 60,
+                                            letterSpacing: .6)),
+                                    selectedItemsTextStyle: GoogleFonts.lato(
+                                        textStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: height / 60,
+                                            letterSpacing: .6)),
+                                    title: animatedText(
+                                        height / 60,
+                                        "Ваши интересы ${interestsCount.toString()} максимум (6)",
+                                        Colors.white,
+                                        500,
+                                        1),
+                                    items: items,
+                                    onSelectionChanged: (value) {
+                                      setState(
+                                          () => interestsCount = value.length);
+                                    },
+                                    onConfirm: (values) {
+                                      setState(
+                                          () => _selectedInterests = values);
+                                    },
+                                    chipDisplay: MultiSelectChipDisplay(
+                                      onTap: (value) {
+                                        setState(() =>
+                                            _selectedInterests.remove(value));
                                       },
-                                      onConfirm: (values) {
-                                        setState(() {
-                                          _selectedInterests = values;
-                                        });
-                                      },
-                                      chipDisplay: MultiSelectChipDisplay(
-                                        onTap: (value) {
-                                          setState(() {
-                                            _selectedInterests.remove(value);
-                                          });
-                                        },
-                                      ),
                                     ),
                                   ),
                                 ),
@@ -690,70 +712,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return !isFirst;
         },
         child: const loadingCustom());
-  }
-
-  Future<dynamic> showBottomSheet(context, title, select_1, select_2,
-      TextEditingController controller, double height) {
-    return showFlexibleBottomSheet(
-        duration: const Duration(milliseconds: 800),
-        decoration: const BoxDecoration(
-            color: color_black_88,
-            borderRadius: BorderRadius.all(Radius.circular(16))),
-        bottomSheetColor: color_black_88,
-        initHeight: 0.345,
-        context: context,
-        builder: (
-          BuildContext context,
-          ScrollController scrollController,
-          double bottomSheetOffset,
-        ) {
-          return StatefulBuilder(builder: (context, setState) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Card(
-                shadowColor: Colors.white30,
-                color: color_black_88,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    side: const BorderSide(
-                      width: 0.8,
-                      color: Colors.white38,
-                    )),
-                elevation: 16,
-                child: Theme(
-                  data: ThemeData.light(),
-                  child: ExpansionTile(
-                    key: GlobalKey(),
-                    initiallyExpanded: true,
-                    maintainState: true,
-                    title: animatedText(height / 56, title, Colors.white, 0, 2),
-                    children: [
-                      ListTile(
-                        title: animatedText(
-                            height / 57, select_1, Colors.white, 550, 1),
-                        onTap: () {
-                          setState(() {
-                            controller.text = select_1;
-                            Navigator.pop(context);
-                          });
-                        },
-                      ),
-                      ListTile(
-                        title: animatedText(
-                            height / 57, select_2, Colors.white, 550, 1),
-                        onTap: () {
-                          setState(() {
-                            controller.text = select_2;
-                            Navigator.pop(context);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          });
-        });
   }
 }

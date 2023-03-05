@@ -21,11 +21,11 @@ class ChatDataFirebase {
         .listen((snapshot) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
-      var lastDateCloseChat = data['last_date_close_chat'];
-      var lastDateOpenChat = data['last_date_open_chat'];
-      var writeLastData = data['writeLastData'];
-      var lastMsg = data['lastMsg'];
-      var dateTime = data['date'];
+      final lastDateCloseChat = data['last_date_close_chat'];
+      final lastDateOpenChat = data['last_date_open_chat'];
+      final writeLastData = data['writeLastData'];
+      final lastMsg = data['lastMsg'];
+      final dateTime = data['date'];
 
       if (lastDateCloseChat != null) {
         getChatDataController

@@ -41,8 +41,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: color_black_88,
@@ -55,7 +55,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
               delay: const Duration(milliseconds: 250),
               child: SlideAnimation(
                 duration: const Duration(milliseconds: 2200),
-                horizontalOffset: size.width / 2,
+                horizontalOffset: width / 2,
                 curve: Curves.ease,
                 child: FadeInAnimation(
                   curve: Curves.easeOut,
@@ -64,8 +64,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                     children: [
                       Positioned(
                         child: SizedBox(
-                          height: size.height * .28,
-                          width: size.width,
+                          height: height * .28,
+                          width: width,
                           child: CachedNetworkImage(
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
@@ -75,11 +75,11 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                         ),
                       ),
                       Positioned(
-                        height: size.height / 10,
+                        height: height / 10,
                         child: Container(
                           alignment: Alignment.bottomLeft,
                           padding: EdgeInsets.only(
-                            left: size.height / 62,
+                            left: height / 62,
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(14),
@@ -97,14 +97,14 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                   sigmaY: 8,
                                 ),
                                 child: SizedBox(
-                                  height: size.height / 20,
-                                  width: size.height / 20,
+                                  height: height / 20,
+                                  width: height / 20,
                                   child: IconButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                     icon: Icon(Icons.arrow_back_ios_new_rounded,
-                                        size: size.height / 44),
+                                        size: height / 44),
                                     color: Colors.white,
                                   ),
                                 ),
@@ -116,7 +116,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                       Positioned(
                         child: Container(
                           padding: EdgeInsets.only(
-                              top: size.height / 18, right: size.height / 38),
+                              top: height / 18, right: height / 38),
                           alignment: Alignment.centerRight,
                           child: Container(
                             padding: const EdgeInsets.all(6),
@@ -124,8 +124,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 borderRadius: BorderRadius.circular(30),
                                 border: Border.all(color: Colors.white12)),
                             child: customIconButton(
-                              height: size.height / 35,
-                              width: size.height / 35,
+                              height: height / 35,
+                              width: height / 35,
                               path: 'images/ic_image.png',
                               padding: 2,
                               onTap: () {
@@ -143,7 +143,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: size.height * .20),
+                        margin: EdgeInsets.only(top: height * .20),
                         child: Column(
                           children: [
                             Container(
@@ -160,17 +160,18 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                       children: [
                                         photoProfile(
                                             uri: userModel.userImageUrl[0]),
-                                        customIconButton(
-                                          path: 'images/ic_edit.png',
-                                          width: size.height / 30,
-                                          height: size.height / 30,
-                                          onTap: () async {
-                                            updateFirstImage(
-                                                context, userModel, false);
-                                          },
-                                          padding: 0,
-                                        ),
-                                      ]),
+                                      customIconButton(
+                                        path: 'images/ic_edit.png',
+                                        width: height / 30,
+                                        height: height / 30,
+                                        onTap: () async {
+                                          updateFirstImage(
+                                              context, userModel, false);
+                                        },
+                                        padding: 0,
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -179,13 +180,13 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                               children: [
                                 Container(
                                   padding: EdgeInsets.only(
-                                      top: size.height / 44, left: 14),
+                                      top: height / 44, left: 14),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       animatedText(
-                                          size.height / 50,
+                                          height / 50,
                                           '${userModel.name}, ${userModel.ageInt}',
                                           Colors.white,
                                           700,
@@ -194,7 +195,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                         height: 1,
                                       ),
                                       animatedText(
-                                          size.height / 64,
+                                          height / 64,
                                           userModel.myCity,
                                           Colors.white.withOpacity(.8),
                                           750,
@@ -202,20 +203,25 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                     ],
                                   ),
                                 ),
-                                buttonUniversalAnimationColors(
-                                  'Редактировать',
-                                  [Colors.blueAccent, Colors.purpleAccent],
-                                  size.height / 20,
-                                  () {
-                                    Navigator.push(
-                                        context,
-                                        FadeRouteAnimation(EditProfileScreen(
-                                          isFirst: false,
-                                          userModel: userModel,
-                                        )));
-                                  },
-                                  480,
-                                ),
+                                buttonUniversal(
+                                    height: height / 20,
+                                    width: height / 5.5,
+                                    sizeText: height / 66,
+                                    time: 400,
+                                    text: 'Редактировать',
+                                    darkColors: false,
+                                    colorButton: const [
+                                      Colors.blueAccent,
+                                      Colors.purpleAccent
+                                    ],
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          FadeRouteAnimation(EditProfileScreen(
+                                            isFirst: false,
+                                            userModel: userModel,
+                                          )));
+                                    }),
                                 const SizedBox()
                               ],
                             ),
@@ -224,8 +230,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(
                                     left: 14,
-                                    top: size.height / 48,
-                                    right: size.width / 24),
+                                    top: height / 48,
+                                    right: width / 24),
                                 child: DelayedDisplay(
                                   fadeIn: true,
                                   delay: const Duration(milliseconds: 600),
@@ -236,7 +242,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                     style: GoogleFonts.lato(
                                       textStyle: TextStyle(
                                           color: Colors.white70,
-                                          fontSize: size.height / 66,
+                                          fontSize: height / 66,
                                           letterSpacing: .15),
                                     ),
                                   ),
@@ -296,9 +302,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                             thickness: 1,
                                           ),
                                         ),
-                                        InkWell(
-                                          splashColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
+                                        GestureDetector(
                                           onTap: () {
                                             Navigator.push(
                                                 context,
@@ -308,8 +312,6 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                 )));
                                           },
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
                                             children: [
                                               FutureBuilder(
                                                 future: FirebaseFirestore
@@ -342,11 +344,9 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                     AsyncSnapshot<QuerySnapshot>
                                                         snapshot) {
                                                   if (snapshot.hasData) {
-                                                    return SlideFadeTransition(
-                                                        animationDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    1250),
+                                                    return DelayedDisplay(
+                                                        delay: const Duration(
+                                                            milliseconds: 1000),
                                                         child: AnimatedSwitcher(
                                                           duration:
                                                               const Duration(
@@ -412,8 +412,6 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           ),
                                         ),
                                         Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
                                           children: [
                                             animatedText(
                                                 height / 50,

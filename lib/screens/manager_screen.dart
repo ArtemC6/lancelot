@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:Lancelot/screens/profile_screen.dart';
 import 'package:Lancelot/screens/sympathy_screen.dart';
-import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';
@@ -13,15 +11,16 @@ import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
+import '../widget/component_widget.dart';
 import 'chat_screen.dart';
 import 'chat_user_screen.dart';
 import 'home_screen.dart';
 
 class ManagerScreen extends StatefulWidget {
-  int currentIndex;
-  UserModel userModelCurrent;
+  final int currentIndex;
+  final UserModel userModelCurrent;
 
-  ManagerScreen(
+  const ManagerScreen(
       {super.key, required this.currentIndex, required this.userModelCurrent});
 
   @override
@@ -45,64 +44,39 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
-        setState(() {
-          isWrite = true;
-        });
+        setState(() => isWrite = true);
         timer.cancel();
       },
     );
   }
 
-  void setIndexPage(String payload, String uid) {
-    setState(() {
-      if (payload == 'sympathy') {
-        currentIndex = 1;
-      }
-      if (payload == 'chat') {
-        currentIndex = 2;
-        if (isLoading) {
-          Navigator.push(
-            context,
-            FadeRouteAnimation(
-              ChatUserScreen(
-                friendId: uid,
-                friendName: '',
-                friendImage: '',
-                userModelCurrent: userModelCurrent,
-                token: '',
-                notification: true,
-              ),
-            ),
-          );
-        } else {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            Navigator.push(
-              context,
-              FadeRouteAnimation(
-                ChatUserScreen(
-                  friendId: uid,
-                  friendName: '',
-                  friendImage: '',
-                  userModelCurrent: userModelCurrent,
-                  token: '',
-                  notification: true,
-                ),
-              ),
-            );
-          });
-        }
-      }
-      if (payload == 'like') {
-        currentIndex = 3;
-      }
-    });
+  Future<void> setIndexPage(String payload, String uid) async {
+    if (payload == 'sympathy') currentIndex = 1;
+    if (payload == 'like') currentIndex = 3;
+
+    if (payload == 'chat') {
+      currentIndex = 2;
+      if (isLoading) await Future.delayed(const Duration(milliseconds: 300));
+      Navigator.push(
+        context,
+        FadeRouteAnimation(
+          ChatUserScreen(
+            friendId: uid,
+            friendName: '',
+            friendImage: '',
+            userModelCurrent: userModelCurrent,
+            token: '',
+            notification: true,
+          ),
+        ),
+      );
+    }
+
+    setState(() {});
   }
 
   Future<void> getNotificationFcm() async {
-    try {
-      await const MethodChannel('clear_all_notifications')
-          .invokeMethod('clear');
-    } catch (e) {}
+    clearAllNotification();
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
         setIndexPage(message.data['type'], message.data['uid']);
@@ -113,18 +87,11 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
-        setState(() {
-          if (message.data['type'] == 'sympathy') {
-            indexSympathy++;
-          }
-          if (message.data['type'] == 'chat') {
-            indexChat++;
-          }
-          if (message.data['type'] == 'like') {
-            indexProfile++;
-          }
-        });
+        if (message.data['type'] == 'sympathy') indexSympathy++;
+        if (message.data['type'] == 'chat') indexChat++;
+        if (message.data['type'] == 'like') indexProfile++;
 
+        setState(() {});
         await setValueSharedPref('indexSympathy', indexSympathy);
         await setValueSharedPref('indexChat', indexChat);
         await setValueSharedPref('indexProfile', indexProfile);
@@ -142,50 +109,48 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    initSharedPref();
     WidgetsBinding.instance.addObserver(this);
+    initSharedPref();
     getNotificationFcm();
+    readUser();
+    super.initState();
+  }
+
+  Future readUser() async {
     if (userModelCurrent.uid.isEmpty) {
-      readUserFirebase().then((user) {
-        setState(() {
-          userModelCurrent = UserModel(
-              name: user.name,
-              uid: user.uid,
-              ageTime: user.ageTime,
-              userPol: user.userPol,
-              searchPol: user.searchPol,
-              searchRangeStart: user.searchRangeStart,
-              userInterests: user.userInterests,
-              userImagePath: user.userImagePath,
-              userImageUrl: user.userImageUrl,
-              searchRangeEnd: user.searchRangeEnd,
-              myCity: user.myCity,
-              imageBackground: user.imageBackground,
-              ageInt: user.ageInt,
-              state: user.state,
-              token: user.token,
-              notification: user.notification,
-              description: user.description);
-        });
-        isLoading = true;
-        setStateFirebase('online');
-      });
-    } else {
-      setState(() {
-        isLoading = true;
-        setStateFirebase('online');
+      await readUserFirebase().then((user) {
+        userModelCurrent = UserModel(
+            name: user.name,
+            uid: user.uid,
+            ageTime: user.ageTime,
+            userPol: user.userPol,
+            searchPol: user.searchPol,
+            searchRangeStart: user.searchRangeStart,
+            userInterests: user.userInterests,
+            userImagePath: user.userImagePath,
+            userImageUrl: user.userImageUrl,
+            searchRangeEnd: user.searchRangeEnd,
+            myCity: user.myCity,
+            imageBackground: user.imageBackground,
+            ageInt: user.ageInt,
+            state: user.state,
+            token: user.token,
+            notification: user.notification,
+            description: user.description);
       });
     }
-    super.initState();
+
+    setStateFirebase('online');
+    isLoading = true;
+    setState(() {});
   }
 
   Future<void> initSharedPref() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      indexSympathy = prefs.getInt('indexSympathy') ?? 0;
-      indexChat = prefs.getInt('indexChat') ?? 0;
-      indexProfile = prefs.getInt('indexProfile') ?? 0;
-    });
+    indexSympathy = prefs.getInt('indexSympathy') ?? 0;
+    indexChat = prefs.getInt('indexChat') ?? 0;
+    indexProfile = prefs.getInt('indexProfile') ?? 0;
+    setState(() {});
   }
 
   @override
@@ -231,54 +196,54 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    SizedBox bottomNavigationBar(Size size) {
+    final width = MediaQuery.of(context).size.width;
+
+    SizedBox bottomNavigationBar() {
       return SizedBox(
-        height: size.width * .150,
+        height: width * .150,
         child: ListView.builder(
           itemCount: 4,
           scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: size.width * .024),
-          itemBuilder: (context, index) => InkWell(
+          padding: EdgeInsets.symmetric(horizontal: width * .024),
+          itemBuilder: (context, index) => GestureDetector(
             onTap: () {
-              Future.delayed(const Duration(milliseconds: 20), () {
-                setState(() {
-                  currentIndex = index;
-                });
+              Future.delayed(const Duration(milliseconds: 40), () {
+                setState(() => currentIndex = index);
               });
             },
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(height: size.width * .014),
+                SizedBox(height: width * .014),
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
                     Icon(listOfIcons[index],
-                        size: size.width * .076, color: Colors.white),
+                        size: width * .076, color: Colors.white),
                     if (index == 1 && currentIndex != 1)
                       if (indexSympathy > 0)
-                        showAnimationBottomNotification(indexSympathy),
+                        showAnimationBottomNotification(
+                            indexNotification: indexSympathy),
                     if (index == 2 && currentIndex != 2)
                       if (indexChat > 0)
-                        showAnimationBottomNotification(indexChat),
+                        showAnimationBottomNotification(
+                            indexNotification: indexChat),
                     if (index == 3 && currentIndex != 3)
                       if (indexProfile > 0)
-                        showAnimationBottomNotification(indexProfile),
+                        showAnimationBottomNotification(
+                            indexNotification: indexProfile),
                   ],
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 1500),
                   curve: Curves.fastLinearToSlowEaseIn,
                   margin: EdgeInsets.only(
-                    top: index == currentIndex ? 0 : size.width * .029,
-                    right: size.width * .0422,
-                    left: size.width * .0422,
+                    top: index == currentIndex ? 0 : width * .029,
+                    right: width * .0422,
+                    left: width * .0422,
                   ),
-                  width: size.width * .153,
-                  height: index == currentIndex ? size.width * .014 : 0,
+                  width: width * .153,
+                  height: index == currentIndex ? width * .014 : 0,
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
@@ -332,26 +297,11 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     if (isLoading) {
       return Scaffold(
           backgroundColor: color_black_88,
-          bottomNavigationBar: bottomNavigationBar(size),
+          bottomNavigationBar: bottomNavigationBar(),
           body: SizedBox.expand(child: childEmployee()));
     }
 
     return const loadingCustom();
   }
 
-  DelayedDisplay showAnimationBottomNotification(int indexNotification) {
-    return DelayedDisplay(
-      delay: const Duration(milliseconds: 650),
-      child: Container(
-        alignment: Alignment.center,
-        width: 15,
-        height: 15,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.deepPurpleAccent),
-        child:
-            animatedText(9.0, indexNotification.toString(), Colors.white, 0, 1),
-      ),
-    );
-  }
 }

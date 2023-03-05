@@ -36,9 +36,7 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
   void initState() {
     animationController = AnimationController(vsync: this);
     scrollController.addListener(() {
-      if (!isLoadingNewUser) {
-        setState(() => isLoadingNewUser = true);
-      }
+      if (!isLoadingNewUser) setState(() => isLoadingNewUser = true);
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
         setState(() => limit += 6);
@@ -65,7 +63,7 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: color_black_88,
       body: SafeArea(
@@ -107,8 +105,10 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
-                      return showIfNoData(height, 'images/animation_heart.json',
-                          'У вас нет Лайков', animationController, 3);
+                      return showIfNoData(
+                          imagePath: 'images/animation_heart.json',
+                          text: 'У вас нет Лайков',
+                          animationController: animationController);
                     } else {
                       return AnimationLimiter(
                         child: ListView.builder(

@@ -1,10 +1,10 @@
 import 'dart:ui';
 
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ndialog/ndialog.dart';
 
@@ -51,14 +51,14 @@ void showDialogZoom({required String uri, required BuildContext context}) {
 }
 
 showAlertDialogDeleteMessage(
-    BuildContext context,
-    String friendId,
-    String myId,
-    String friendName,
-    String idDoc,
-    AsyncSnapshot snapshotMy,
-    int index,
-    bool isLastMessage) {
+    {required BuildContext context,
+    required String friendId,
+    required String myId,
+    required String friendName,
+    required String idDoc,
+    required AsyncSnapshot snapshotMy,
+    required int index,
+    required bool isLastMessage}) {
   Widget cancelButton = TextButton(
     child: const Text("Отмена"),
     onPressed: () {
@@ -77,69 +77,71 @@ showAlertDialogDeleteMessage(
   );
 
   showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                backgroundColor: color_black_88,
-                actions: <Widget>[
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Удалить сообщение',
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  letterSpacing: .4),
-                            ),
-                          ),
-                        ),
+    context: context,
+    builder: (context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: color_black_88,
+          actions: <Widget>[
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Удалить сообщение',
+                      style: GoogleFonts.lato(
+                        textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            letterSpacing: .4),
                       ),
-                      CheckboxListTile(
-                        activeColor: Colors.blue,
-                        title: RichText(
-                          text: TextSpan(
-                            text: "Также удалить для $friendName",
-                            style: GoogleFonts.lato(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  letterSpacing: .6),
-                            ),
-                          ),
-                        ),
-                        value: true,
-                        onChanged: (newValue) {},
-                        controlAffinity: ListTileControlAffinity
-                            .leading, //  <-- leading Checkbox
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: cancelButton),
-                          Expanded(child: continueButton),
-                        ],
-                      )
-                    ],
+                    ),
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      });
+                ),
+                CheckboxListTile(
+                  activeColor: Colors.blue,
+                  title: RichText(
+                    text: TextSpan(
+                      text: "Также удалить для $friendName",
+                      style: GoogleFonts.lato(
+                        textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            letterSpacing: .6),
+                      ),
+                    ),
+                  ),
+                  value: true,
+                  onChanged: (newValue) {},
+                  controlAffinity:
+                      ListTileControlAffinity.leading, //  <-- leading Checkbox
+                ),
+                Row(
+                  children: [
+                    Expanded(child: cancelButton),
+                    Expanded(child: continueButton),
+                  ],
+                )
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
-showAlertDialogDeleteChat(BuildContext context, String friendId,
-    String friendName, bool isBack, String friendUri, double height) {
+showAlertDialogDeleteChat(
+    {required BuildContext context,
+    required String friendId,
+    required String friendName,
+    required bool isBack,
+    required String friendUri,
+    required double height}) {
   Widget cancelButton = TextButton(
     child: animatedText(height / 62, 'Отмена', Colors.blueAccent, 400, 1),
     onPressed: () {
@@ -250,12 +252,6 @@ showAlertDialogLoading(BuildContext context) {
           width: MediaQuery.of(context).size.width * 0.58,
           height: MediaQuery.of(context).size.height * 0.58,
           alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-            return LoadingAnimationWidget.dotsTriangle(
-              size: 48,
-              color: Colors.blueAccent,
-            );
-          },
         ),
       ),
     ),
@@ -268,21 +264,82 @@ showAlertDialogLoading(BuildContext context) {
 showAlertDialogSuccess(BuildContext context) {
   CustomProgressDialog.future(
     loadingWidget: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Lottie.asset(
-          'images/animation_success.json',
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-            return LoadingAnimationWidget.dotsTriangle(
-              size: 48,
-              color: Colors.blueAccent,
-            );
-          },
-        )),
+      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      child: Lottie.asset(
+        'images/animation_success.json',
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        alignment: Alignment.center,
+      ),
+    ),
     dismissable: false,
     context,
     future: Future.delayed(const Duration(milliseconds: 1850)),
+  );
+}
+
+Future<dynamic> showBottomSheetShow(context, title, select_1, select_2,
+    TextEditingController controller, double height) {
+  return showFlexibleBottomSheet(
+    duration: const Duration(milliseconds: 800),
+    decoration: const BoxDecoration(
+        color: color_black_88,
+        borderRadius: BorderRadius.all(Radius.circular(16))),
+    bottomSheetColor: color_black_88,
+    initHeight: 0.345,
+    context: context,
+    builder: (
+      BuildContext context,
+      ScrollController scrollController,
+      double bottomSheetOffset,
+    ) {
+      return StatefulBuilder(builder: (context, setState) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Card(
+            shadowColor: Colors.white30,
+            color: color_black_88,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+                side: const BorderSide(
+                  width: 0.8,
+                  color: Colors.white38,
+                )),
+            elevation: 16,
+            child: Theme(
+              data: ThemeData.light(),
+              child: ExpansionTile(
+                key: GlobalKey(),
+                initiallyExpanded: true,
+                maintainState: true,
+                title: animatedText(height / 56, title, Colors.white, 0, 2),
+                children: [
+                  ListTile(
+                    title: animatedText(
+                        height / 57, select_1, Colors.white, 550, 1),
+                    onTap: () {
+                      setState(() {
+                        controller.text = select_1;
+                        Navigator.pop(context);
+                      });
+                    },
+                  ),
+                  ListTile(
+                    title: animatedText(
+                        height / 57, select_2, Colors.white, 550, 1),
+                    onTap: () {
+                      setState(() {
+                        controller.text = select_2;
+                        Navigator.pop(context);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      });
+    },
   );
 }

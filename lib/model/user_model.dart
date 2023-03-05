@@ -37,4 +37,26 @@ class UserModel {
       required this.imageBackground,
       required this.userInterests,
       required this.searchRangeEnd});
+
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
+      name: data['name'],
+      uid: data['uid'],
+      state: data['state'],
+      description: data['description'],
+      myCity: data['myCity'],
+      ageInt: data['ageInt'],
+      ageTime: data['ageTime'],
+      token: data['token'],
+      notification: data['notification'],
+      userPol: data['userPol'],
+      searchPol: data['searchPol'],
+      searchRangeStart: data['searchRangeStart'],
+      userImageUrl: data['userImageUrl'],
+      userImagePath: data['userImagePath'],
+      imageBackground: data['imageBackground'],
+      userInterests: data['userInterests'],
+      searchRangeEnd: data['searchRangeEnd'],
+    );
+  }
 }

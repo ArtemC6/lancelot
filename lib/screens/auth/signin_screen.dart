@@ -21,7 +21,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
   late AnimationController controller1, controller2;
   late Animation<double> animation1, animation2, animation3, animation4;
-  final TextEditingController emailController = TextEditingController(),
+  final emailController = TextEditingController(),
       passwordController = TextEditingController();
   bool signStart = false;
 
@@ -107,7 +107,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
   void userValidatorSigIn() {
     bool passwordValid = false;
     emailController.addListener(() {
-      final bool emailValid = RegExp(
+      bool emailValid = RegExp(
               r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
           .hasMatch(emailController.text);
 
@@ -119,17 +119,19 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
         }
 
         if (emailValid && passwordValid) {
-          setState(() => signStart = true);
+          signStart = true;
         } else {
-          setState(() => signStart = false);
+          signStart = false;
         }
+        setState(() {});
       });
 
       if (emailValid && passwordValid) {
-        setState(() => signStart = true);
+        signStart = true;
       } else {
-        setState(() => signStart = false);
+        signStart = false;
       }
+      setState(() {});
     });
   }
 
@@ -142,48 +144,49 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    var width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: color_blue_90,
       body: ScrollConfiguration(
         behavior: MyBehavior(),
         child: SingleChildScrollView(
           child: SizedBox(
-            height: size.height,
+            height: height,
             child: Stack(
               children: [
                 Positioned(
-                  top: size.height * (animation2.value + .58),
-                  left: size.width * .21,
+                  top: height * (animation2.value + .58),
+                  left: width * .21,
                   child: CustomPaint(
                     painter: MyPainter(50),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .98,
-                  left: size.width * .1,
+                  top: height * .98,
+                  left: width * .1,
                   child: CustomPaint(
                     painter: MyPainter(animation4.value - 30),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .5,
-                  left: size.width * (animation2.value + .8),
+                  top: height * .5,
+                  left: width * (animation2.value + .8),
                   child: CustomPaint(
                     painter: MyPainter(30),
                   ),
                 ),
                 Positioned(
-                  top: size.height * animation3.value,
-                  left: size.width * (animation1.value + .1),
+                  top: height * animation3.value,
+                  left: width * (animation1.value + .1),
                   child: CustomPaint(
                     painter: MyPainter(60),
                   ),
                 ),
                 Positioned(
-                  top: size.height * .1,
-                  left: size.width * .8,
+                  top: height * .1,
+                  left: width * .8,
                   child: CustomPaint(
                     painter: MyPainter(animation4.value),
                   ),
@@ -193,7 +196,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                     Expanded(
                       flex: 5,
                       child: Padding(
-                          padding: EdgeInsets.only(top: size.height * .1),
+                          padding: EdgeInsets.only(top: height * .1),
                           child: animatedText(width / 11, 'Lancelot',
                               Colors.white.withOpacity(.8), 0, 1)),
                     ),
@@ -206,7 +209,6 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           textFieldAuth(
-                            size: size,
                             controller: emailController,
                             hint: 'Email...',
                             icon: Icons.email_outlined,
@@ -217,7 +219,6 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                             },
                           ),
                           textFieldAuth(
-                            size: size,
                             controller: passwordController,
                             hint: 'Password...',
                             icon: Icons.lock_open_outlined,
@@ -231,10 +232,11 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               signStart
-                                  ? buttonAuthAnimation('Войти', 2.2, 350, () {
+                                  ? buttonAuthAnimation('Войти', width / 2, 350,
+                                      () {
                                       sigInTap(context);
                                     })
-                                  : buttonAuth('Войти', 2.2, 500, () {
+                                  : buttonAuth('Войти', width / 2, 500, () {
                                       sigInTap(context);
                                     }),
                             ],
@@ -247,13 +249,14 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          buttonAuth('Зарегистрировать аккаунт', 1.5, 0, () {
+                          buttonAuth('Зарегистрировать аккаунт', width / 1.4, 0,
+                              () {
                             Navigator.push(
                               context,
                               FadeRouteAnimation(const SignUpScreen()),
                             );
                           }),
-                          SizedBox(height: size.height * .05),
+                          SizedBox(height: height * .05),
                         ],
                       ),
                     ),
