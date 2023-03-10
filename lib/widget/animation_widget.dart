@@ -256,33 +256,25 @@ class loadingPhotoAnimation extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: FlutterColorsBorder(
-          animationDuration: 1,
-          colors: const [
-            Colors.black12,
-            Colors.white10,
-            Colors.white54,
-            Colors.white70,
-          ],
-          size: Size(height, height),
-          boardRadius: 12,
-          borderWidth: 0.4,
-          child: Shimmer(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: color_black_88,
-              ),
+        animationDuration: 1,
+        colors: const [
+          Colors.black12,
+          Colors.white10,
+          Colors.white54,
+          Colors.white70,
+        ],
+        size: Size(height, height),
+        boardRadius: 12,
+        borderWidth: 0.4,
+        child: Shimmer(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: color_black_88,
             ),
-          )
-          // CardLoading(
-          //   animationDuration: const Duration(milliseconds: 800),
-          //   animationDurationTwo: const Duration(milliseconds: 800),
-          //   cardLoadingTheme: CardLoadingTheme(
-          //       colorTwo: color_black_88, colorOne: Colors.white.withOpacity(0.12)),
-          //   height: height,
-          //   borderRadius: BorderRadius.circular(12),
-          // ),
           ),
+        ),
+      ),
     );
   }
 }

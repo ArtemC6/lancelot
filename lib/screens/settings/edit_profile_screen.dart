@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../../config/const.dart';
@@ -198,12 +199,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _searchPolController.text = ' ';
     } else {
       _searchPolController.text =
-      modelUser.searchPol == 'Мужской' ? 'С парнем' : 'С девушкой';
+          modelUser.searchPol == 'Мужской' ? 'С парнем' : 'С девушкой';
     }
 
-    if (modelUser.userImageUrl.isNotEmpty) {
-      isPhoto = true;
-    }
+    if (modelUser.userImageUrl.isNotEmpty) isPhoto = true;
+
     _selectedInterests = modelUser.userInterests;
     interestsCount = modelUser.userInterests.length;
     _dateTimeBirthday = getDataTime(modelUser.ageTime);
@@ -232,10 +232,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             description: user.description);
       });
     }
-    setState(() {
-      isLoading = true;
-      settingsValue();
-    });
+
+    settingsValue();
+    setState(() => isLoading = true);
   }
 
 
@@ -264,17 +263,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 color: Colors.white30,
               )),
           elevation: 8,
-          child: InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
+          child: GestureDetector(
             onTap: () {
               if (modelUser.userImageUrl.isEmpty) {
                 uploadFirstImage(context, modelUser).then((uri) {
                   if (uri != '') {
-                    setState(() {
-                      isPhoto = true;
-                      modelUser.userImageUrl.add(uri);
-                    });
+                    modelUser.userImageUrl.add(uri);
+                    setState(() => isPhoto = true);
                   }
                 });
               } else {
@@ -302,13 +297,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       progressIndicatorBuilder: (context, url, progress) =>
                           Center(
-                        child: SizedBox(
-                          height: width / 2.8,
-                          width: width / 2.8,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 0.8,
-                            value: progress.progress,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Shimmer(
+                            child: SizedBox(
+                              height: width / 2.8,
+                              width: width / 2.8,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 0.8,
+                                value: progress.progress,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -324,10 +324,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     onTap: () async {
                       uploadFirstImage(context, modelUser).then((uri) {
                         if (uri != '') {
-                          setState(() {
-                            isPhoto = true;
-                            modelUser.userImageUrl.add(uri);
-                          });
+                          modelUser.userImageUrl.add(uri);
+                          setState(() => isPhoto = true);
                         }
                       });
                     },
@@ -368,7 +366,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: SlideAnimation(
                       duration: const Duration(milliseconds: 1800),
                       verticalOffset: height * .40,
-                      curve: Curves.ease,
                       child: FadeInAnimation(
                         curve: Curves.easeOut,
                         duration: const Duration(milliseconds: 3800),
@@ -380,9 +377,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 if (!isFirst)
                                   IconButton(
                                     color: Colors.white,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
+                                    onPressed: () => Navigator.pop(context),
                                     icon: Icon(Icons.arrow_back_ios_new_rounded,
                                         size: height / 38),
                                   ),

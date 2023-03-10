@@ -23,7 +23,7 @@ class FirebaseAuthMethods {
           .then((value) async {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
-        await FirebaseFirestore.instance
+         FirebaseFirestore.instance
             .collection('User')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .set({
@@ -47,8 +47,10 @@ class FirebaseAuthMethods {
           'notification': true,
         });
 
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Manager()));
+        Future.delayed(const Duration(milliseconds: 1800), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager()));
+        });
       }).onError((error, stackTrace) async {
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
@@ -57,7 +59,7 @@ class FirebaseAuthMethods {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
 
-          await FirebaseFirestore.instance
+          FirebaseFirestore.instance
               .collection('User')
               .doc(FirebaseAuth.instance.currentUser?.uid)
               .set({
@@ -81,8 +83,10 @@ class FirebaseAuthMethods {
             'notification': true,
           });
 
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const Manager()));
+          Future.delayed(const Duration(milliseconds: 1800), () {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const Manager()));
+          });
         }).onError((error, stackTrace) {
           Navigator.pop(context);
         });
@@ -104,11 +108,13 @@ class FirebaseAuthMethods {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
 
-        await setStateFirebase('online');
-        await setTokenUserFirebase();
+        setStateFirebase('online');
+        setTokenUserFirebase();
 
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Manager()));
+        Future.delayed(const Duration(milliseconds: 1800), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager()));
+        });
       }).onError((error, stackTrace) {
         FirebaseAuth.instance
             .signInWithEmailAndPassword(
@@ -117,11 +123,12 @@ class FirebaseAuthMethods {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
 
-          await setStateFirebase('online');
-          await setTokenUserFirebase();
-
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const Manager()));
+          setStateFirebase('online');
+          setTokenUserFirebase();
+          Future.delayed(const Duration(milliseconds: 1800), () {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const Manager()));
+          });
         }).onError((error, stackTrace) {
           Navigator.pop(context);
         });

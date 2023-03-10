@@ -56,20 +56,23 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
     if (payload == 'chat') {
       currentIndex = 2;
-      if (isLoading) await Future.delayed(const Duration(milliseconds: 300));
-      Navigator.push(
-        context,
-        FadeRouteAnimation(
-          ChatUserScreen(
-            friendId: uid,
-            friendName: '',
-            friendImage: '',
-            userModelCurrent: userModelCurrent,
-            token: '',
-            notification: true,
-          ),
-        ),
-      );
+      if (isLoading) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          Navigator.push(
+            context,
+            FadeRouteAnimation(
+              ChatUserScreen(
+                friendId: uid,
+                friendName: '',
+                friendImage: '',
+                userModelCurrent: userModelCurrent,
+                token: '',
+                notification: true,
+              ),
+            ),
+          );
+        });
+      }
     }
 
     setState(() {});
@@ -208,7 +211,9 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
           itemBuilder: (context, index) => GestureDetector(
             onTap: () {
               Future.delayed(const Duration(milliseconds: 40), () {
-                setState(() => currentIndex = index);
+                setState(() {
+                  currentIndex = index;
+                });
               });
             },
             child: Column(

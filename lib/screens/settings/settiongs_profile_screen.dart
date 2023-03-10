@@ -23,7 +23,7 @@ class ProfileSettingScreen extends StatefulWidget {
   final UserModel userModel;
   final List<InterestsModel> listInterests;
 
-  ProfileSettingScreen(
+  const ProfileSettingScreen(
       {Key? key, required this.userModel, required this.listInterests})
       : super(key: key);
 
@@ -34,7 +34,7 @@ class ProfileSettingScreen extends StatefulWidget {
 
 class _ProfileSettingScreen extends State<ProfileSettingScreen> {
   bool isLike = false;
-  late UserModel userModel;
+  final UserModel userModel;
   final List<InterestsModel> listInterests;
 
   _ProfileSettingScreen(this.userModel, this.listInterests);
@@ -362,28 +362,28 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                           }),
                                                           child: RichText(
                                                             key: ValueKey<int>(
-                                                                snapshot.data!
-                                                                    .size),
-                                                            text: TextSpan(
-                                                              text: snapshot
-                                                                  .data!.size
-                                                                  .toString(),
-                                                              style: GoogleFonts
-                                                                  .lato(
-                                                                textStyle: TextStyle(
-                                                                    color: Colors
-                                                                        .white
-                                                                        .withOpacity(
-                                                                            0.9),
-                                                                    fontSize:
-                                                                        height /
-                                                                            50,
-                                                                    letterSpacing:
-                                                                        .5),
-                                                              ),
+                                                                snapshot.data!.size),
+                                                          text: TextSpan(
+                                                            text: snapshot
+                                                                .data!.size
+                                                                .toString(),
+                                                            style: GoogleFonts
+                                                                .lato(
+                                                              textStyle: TextStyle(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.9),
+                                                                  fontSize:
+                                                                      height /
+                                                                          50,
+                                                                  letterSpacing:
+                                                                      .5),
                                                             ),
                                                           ),
-                                                        ));
+                                                        ),
+                                                      ),
+                                                    );
                                                   }
                                                   return const SizedBox();
                                                 },

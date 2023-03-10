@@ -113,7 +113,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 child: SlideAnimation(
                                   duration: const Duration(milliseconds: 950),
                                   verticalOffset: 100,
-                                  curve: Curves.ease,
                                   child: FadeInAnimation(
                                     curve: Curves.easeOut,
                                     duration:
@@ -200,7 +199,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                   notification =
                                                       asyncSnapshotUser
                                                           .data['notification'];
-
                                                   timeLastMessage =
                                                       snapshotChat.data['date'];
                                                   isLastOpenChat = snapshotChat
@@ -214,16 +212,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                 getDataTime(
                                                                     dataLastWrite))
                                                             .inSeconds <
-                                                        4) {
+                                                        6) {
                                                       Future.delayed(
                                                           const Duration(
-                                                              milliseconds:
-                                                                  3500), () {
-                                                        getState(4000)
+                                                              seconds: 5), () {
+                                                        getState(4500)
                                                             .then((value) {
-                                                          setState(() {
-                                                            isWriteUser = value;
-                                                          });
+                                                          setState(() =>
+                                                              isWriteUser =
+                                                                  value);
                                                         });
                                                       });
                                                       isWriteUser = true;
@@ -311,12 +308,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                 top: 4,
                                                                 right: 24),
                                                         child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
                                                           children: [
                                                             Expanded(
                                                               flex: 1,

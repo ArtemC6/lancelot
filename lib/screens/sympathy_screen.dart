@@ -183,7 +183,6 @@ class _SympathyScreenState extends State<SympathyScreen>
                                           try {
                                             name =
                                                 asyncSnapshotUser.data['name'];
-
                                             age = DateTime.now()
                                                     .difference(getDataTime(
                                                         asyncSnapshotUser

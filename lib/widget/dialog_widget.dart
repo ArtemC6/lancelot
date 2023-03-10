@@ -274,7 +274,7 @@ showAlertDialogSuccess(BuildContext context) {
     ),
     dismissable: false,
     context,
-    future: Future.delayed(const Duration(milliseconds: 1850)),
+    future: Future.delayed(const Duration(milliseconds: 1880)),
   );
 }
 
@@ -318,20 +318,16 @@ Future<dynamic> showBottomSheetShow(context, title, select_1, select_2,
                     title: animatedText(
                         height / 57, select_1, Colors.white, 550, 1),
                     onTap: () {
-                      setState(() {
-                        controller.text = select_1;
-                        Navigator.pop(context);
-                      });
+                      setState(() => controller.text = select_1);
+                      Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: animatedText(
                         height / 57, select_2, Colors.white, 550, 1),
                     onTap: () {
-                      setState(() {
-                        controller.text = select_2;
-                        Navigator.pop(context);
-                      });
+                      setState(() => controller.text = select_2);
+                      Navigator.pop(context);
                     },
                   ),
                 ],

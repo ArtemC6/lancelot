@@ -135,6 +135,13 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
     });
   }
 
+  void sigInTap(BuildContext context) {
+    FirebaseAuthMethods.loginWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        context: context);
+  }
+
   @override
   void dispose() {
     controller1.dispose();
@@ -268,13 +275,6 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  void sigInTap(BuildContext context) {
-    FirebaseAuthMethods.loginWithEmail(
-        email: emailController.text,
-        password: passwordController.text,
-        context: context);
   }
 }
 

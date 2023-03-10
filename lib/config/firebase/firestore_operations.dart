@@ -13,6 +13,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
+import '../../model/interests_model.dart';
 import '../../model/user_model.dart';
 import '../../screens/manager_screen.dart';
 import '../../screens/settings/edit_profile_screen.dart';
@@ -288,9 +289,7 @@ Future<void> createSympathy(
         .get()
         .then((querySnapshot) {
       for (var document in querySnapshot.docs) {
-        if (document['uid'] == userModelCurrent.uid) {
-          return;
-        }
+        if (document['uid'] == userModelCurrent.uid) return;
       }
       final docUser = FirebaseFirestore.instance
           .collection("User")
@@ -534,13 +533,6 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
           .collection('User')
           .doc(idUser ?? FirebaseAuth.instance.currentUser?.uid)
           .get(const GetOptions(source: Source.cache));
-
-      if (query == null) {
-        query = await FirebaseFirestore.instance
-            .collection('User')
-            .doc(idUser ?? FirebaseAuth.instance.currentUser?.uid)
-            .get(const GetOptions(source: Source.server));
-      }
     } on FirebaseException {
       query = await FirebaseFirestore.instance
           .collection('User')
@@ -597,7 +589,7 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
         searchRangeEnd: data['rangeEnd'],
         myCity: data['myCity'],
         imageBackground: data['imageBackground'],
-        ageInt: ageInt(data),
+        ageInt: ageIntParse(data),
         state: data['state'],
         token: data['token'],
         notification: data['notification'],
@@ -615,13 +607,6 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
         .doc(idUser)
         .collection('dislike')
         .get(const GetOptions(source: Source.cache));
-    if (query == null) {
-      query = await FirebaseFirestore.instance
-          .collection('User')
-          .doc(idUser)
-          .collection('dislike')
-          .get(const GetOptions(source: Source.server));
-    }
   } on FirebaseException {
     query = await FirebaseFirestore.instance
         .collection('User')
@@ -651,7 +636,6 @@ Future deleteDislike(String idUser) async {
         .collection('User')
         .doc(idUser)
         .collection('dislike');
-
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     return collection.get().then((querySnapshot) {
@@ -722,14 +706,6 @@ Future<bool> putLike(
           .doc(userModel.uid)
           .collection('likes')
           .get(const GetOptions(source: Source.cache));
-
-      if (query == null) {
-        query = await FirebaseFirestore.instance
-            .collection('User')
-            .doc(userModel.uid)
-            .collection('likes')
-            .get(const GetOptions(source: Source.server));
-      }
     } on FirebaseException {
       query = await FirebaseFirestore.instance
           .collection('User')
@@ -791,12 +767,6 @@ Future<Map> readInterestsFirebase() async {
     query = await FirebaseFirestore.instance
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.cache));
-
-    if (query == null) {
-      query = await FirebaseFirestore.instance
-          .collection('ImageInterests')
-          .get(const GetOptions(source: Source.server));
-    }
   } on FirebaseException {
     query = await FirebaseFirestore.instance
         .collection('ImageInterests')
@@ -846,13 +816,6 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
             .collection('User')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get(const GetOptions(source: Source.cache));
-
-        if (queryUser == null) {
-          queryUser = await FirebaseFirestore.instance
-              .collection('User')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .get(const GetOptions(source: Source.server));
-        }
       } on FirebaseException {
         queryUser = await FirebaseFirestore.instance
             .collection('User')
@@ -911,7 +874,7 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
             searchRangeEnd: data['rangeEnd'],
             myCity: data['myCity'],
             imageBackground: data['imageBackground'],
-            ageInt: ageInt(data),
+            ageInt: ageIntParse(data),
             state: data['state'],
             token: data['token'],
             notification: data['notification'],
@@ -984,12 +947,6 @@ Future<List<String>> readFirebaseImageProfile() async {
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.cache));
-    if (query == null) {
-      query = await FirebaseFirestore.instance
-          .collection('ImageProfile')
-          .doc('Image')
-          .get(const GetOptions(source: Source.server));
-    }
   } on FirebaseException {
     query = await FirebaseFirestore.instance
         .collection('ImageProfile')
@@ -1163,4 +1120,21 @@ Future<void> sendMessage(
       }
     });
   }
+}
+
+Future<List<InterestsModel>> sortingList(UserModel userModelPartner) async {
+  List<InterestsModel> listStory = [];
+  await readInterestsFirebase().then((map) {
+    for (var elementMain in userModelPartner.userInterests) {
+      map.forEach((key, value) {
+        if (elementMain == key) {
+          if (userModelPartner.userInterests.length != listStory.length) {
+            listStory.add(InterestsModel(name: key, id: '', uri: value));
+          }
+        }
+      });
+    }
+  });
+
+  return listStory;
 }

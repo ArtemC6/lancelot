@@ -153,6 +153,15 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
     });
   }
 
+  void sigUpTap(BuildContext context) {
+    FirebaseAuthMethods.signUpWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        name: nameController.text[0].toUpperCase() +
+            nameController.text.substring(1).toLowerCase(),
+        context: context);
+  }
+
   @override
   void dispose() {
     controller1.dispose();
@@ -306,15 +315,6 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  void sigUpTap(BuildContext context) {
-    FirebaseAuthMethods.signUpWithEmail(
-        email: emailController.text,
-        password: passwordController.text,
-        name: nameController.text[0].toUpperCase() +
-            nameController.text.substring(1).toLowerCase(),
-        context: context);
   }
 }
 

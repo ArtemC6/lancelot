@@ -232,9 +232,7 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                       imageUrl: userModel.userImageUrl[index],
                                     ),
                                   if (0 == index)
-                                    InkWell(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
+                                    GestureDetector(
                                       onTap: () {
                                         updateFirstImage(
                                             context, userModel, false);

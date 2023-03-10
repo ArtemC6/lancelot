@@ -5,14 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../getx/chat_data_controller.dart';
 
 class ChatDataFirebase {
-  static late StreamSubscription listener;
+  static late StreamSubscription listenerChatData;
 
   Future readChatDataFirebase(
     String uid,
     String friendId,
     GetChatDataController getChatDataController,
   ) async {
-    listener = FirebaseFirestore.instance
+    listenerChatData = FirebaseFirestore.instance
         .collection('User')
         .doc(uid)
         .collection('messages')
@@ -46,6 +46,8 @@ class ChatDataFirebase {
   }
 
   Future closeChatDataFirebase() async {
-    listener.cancel();
+    try {
+      listenerChatData.cancel();
+    } catch (e) {}
   }
 }

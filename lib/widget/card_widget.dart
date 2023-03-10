@@ -31,71 +31,74 @@ class photoUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final heightScreen = MediaQuery.of(context).size.height;
-    return SizedBox(
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          SizedBox(
-            height: height,
-            width: width,
-            child: Card(
-              shadowColor: Colors.white30,
-              color: color_black_88,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-                side: const BorderSide(
-                  width: 0.5,
-                  color: Colors.white24,
-                ),
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        SizedBox(
+          height: height,
+          width: width,
+          child: Card(
+            shadowColor: Colors.white30,
+            color: color_black_88,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+              side: const BorderSide(
+                width: 0.5,
+                color: Colors.white24,
               ),
-              elevation: 8,
-              child: Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
-                ),
-                child: CachedNetworkImage(
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  progressIndicatorBuilder: (context, url, progress) => Center(
-                    child: SizedBox(
-                      height: height,
-                      width: width,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 0.8,
-                        value: progress.progress,
+            ),
+            elevation: 8,
+            child: Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(100)),
+              ),
+              child: CachedNetworkImage(
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Shimmer(
+                      child: SizedBox(
+                        height: height,
+                        width: width,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 0.8,
+                          value: progress.progress,
+                        ),
                       ),
                     ),
                   ),
-                  imageUrl: uri,
-                  imageBuilder: (context, imageProvider) => Container(
-                    height: height,
-                    width: width,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
-                      ),
+                ),
+                imageUrl: uri,
+                imageBuilder: (context, imageProvider) => Container(
+                  height: height,
+                  width: width,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          if (state == 'online')
-            DelayedDisplay(
-              delay: const Duration(milliseconds: 500),
-              child: customIconButton(
-                  padding: padding,
-                  width: heightScreen / 28,
-                  height: heightScreen / 28,
-                  path: 'images/ic_green_dot.png',
-                  onTap: () {}),
-            ),
-        ],
-      ),
+        ),
+        if (state == 'online')
+          DelayedDisplay(
+            delay: const Duration(milliseconds: 500),
+            child: customIconButton(
+                padding: padding,
+                width: heightScreen / 28,
+                height: heightScreen / 28,
+                path: 'images/ic_green_dot.png',
+                onTap: () {}),
+          ),
+      ],
     );
   }
 }
@@ -232,7 +235,6 @@ class cardLoadingHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -245,7 +247,7 @@ class cardLoadingHome extends StatelessWidget {
             color: color_black_88,
           ),
           height: height,
-          width: width,
+          width: height,
         ),
       ),
     );

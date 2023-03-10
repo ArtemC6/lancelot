@@ -48,20 +48,6 @@ class _ProfileScreen extends State<ProfileScreen> {
   _ProfileScreen(
       this.userModelPartner, this.isBack, this.idUser, this.userModelCurrent);
 
-  Future sortingList() async {
-    await readInterestsFirebase().then((map) {
-      for (var elementMain in userModelPartner.userInterests) {
-        map.forEach((key, value) {
-          if (elementMain == key) {
-            if (userModelPartner.userInterests.length != listStory.length) {
-              listStory.add(InterestsModel(name: key, id: '', uri: value));
-            }
-          }
-        });
-      }
-    });
-  }
-
   Future readFirebase() async {
     if (userModelPartner.uid == '' && idUser != '') {
       await readUserFirebase(idUser).then((user) {
@@ -86,18 +72,13 @@ class _ProfileScreen extends State<ProfileScreen> {
       });
     }
 
-    await sortingList();
+    await sortingList(userModelPartner).then((result) => listStory = result);
     await putLike(userModelCurrent, userModelPartner, false).then((value) {
-      if (userModelCurrent.uid == userModelPartner.uid) {
-        isProprietor = true;
-      } else {
-        isProprietor = false;
-      }
+      if (userModelCurrent.uid == userModelPartner.uid) isProprietor = true;
       isLike = !value;
     });
 
-    isLoading = true;
-    setState(() {});
+    setState(() => isLoading = true);
   }
 
   @override
@@ -298,7 +279,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                     ? const Duration(
                                                         milliseconds: 0)
                                                     : const Duration(
-                                                        milliseconds: 350), () {
+                                                        milliseconds: 400), () {
                                               setState(() => isLike = !isLike);
                                             });
                                             return putLike(
@@ -381,7 +362,6 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       top: height / 48,
                                       right: width / 24),
                                   child: DelayedDisplay(
-                                    fadeIn: true,
                                     delay: const Duration(milliseconds: 600),
                                     child: Text(
                                       textAlign: TextAlign.start,
@@ -457,8 +437,6 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                   )));
                                             },
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
                                               children: [
                                                 FutureBuilder(
                                                   future: FirebaseFirestore
@@ -570,8 +548,6 @@ class _ProfileScreen extends State<ProfileScreen> {
                                             ),
                                           ),
                                           Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
                                             children: [
                                               animatedText(
                                                   height / 50,

@@ -86,6 +86,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
         });
       }
     });
+
     createLastOpenChat(widget.friendId, userModelCurrent.uid);
     createLastCloseChat(userModelCurrent.uid, widget.friendId, '');
   }
@@ -147,25 +148,22 @@ class _ChatUserScreenState extends State<ChatUserScreen>
   }
 
   Future readUser() async {
-    final prefs = await SharedPreferences.getInstance();
     if (friendName.isEmpty && friendImage.isEmpty && token.isEmpty) {
       await readUserFirebase(friendId).then((user) {
-        setState(() {
-          friendName = user.name;
-          friendImage = user.userImageUrl[0];
-          token = user.token;
-          notification = user.notification;
-        });
-        isLoading = true;
+        friendName = user.name;
+        friendImage = user.userImageUrl[0];
+        token = user.token;
+        notification = user.notification;
       });
     }
 
-    setState(() {
-      getDataChat(prefs);
-    });
+    await getDataChat();
+    setState(() => isLoading = true);
   }
 
-  void getDataChat(SharedPreferences prefs) {
+  Future getDataChat() async {
+    final prefs = await SharedPreferences.getInstance();
+
     chatBackground =
         prefs.getString('chatBackground') ?? 'images/animation_chat_bac_2.json';
     chatBlur = prefs.getDouble('chatBlur') ?? 0;
@@ -184,17 +182,13 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     await SharedPreferences.getInstance()
         .then((i) => i.setString('chatBackground', listAnimationChatBac));
 
-    setState(() {
-      chatBackground = listAnimationChatBac;
-    });
+    setState(() => chatBackground = listAnimationChatBac);
   }
 
   Future setBlur(value) async {
     await SharedPreferences.getInstance()
         .then((i) => i.setDouble('chatBlur', value));
-    setState(() {
-      chatBlur = value;
-    });
+    setState(() => chatBlur = value);
   }
 
   Future setBlackout(double value) async {
@@ -221,9 +215,9 @@ class _ChatUserScreenState extends State<ChatUserScreen>
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    double statusBarHeight = MediaQuery.of(context).padding.top;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
     final getChatController = Get.put(GetFirsMessageChatController());
 
     if (isLoading) {
@@ -289,10 +283,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                               return [
                                 PopupMenuItem(
                                   value: 0,
-                                  child: Container(
-                                    child: animatedText(height / 58,
-                                        'Удалить чат', Colors.white, 400, 1),
-                                  ),
+                                  child: animatedText(height / 58,
+                                      'Удалить чат', Colors.white, 400, 1),
                                 ),
                                 PopupMenuItem(
                                   value: 1,
@@ -371,7 +363,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                 curve: Curves.easeOut,
                                                 duration: const Duration(
                                                     milliseconds: 2200),
-                                                child: InkWell(
+                                                child: GestureDetector(
                                                   onLongPress: () async {
                                                     bool isLastMessage = false;
                                                     int indexRevers = index == 0
@@ -553,7 +545,6 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                           child: SlideAnimation(
                             duration: const Duration(milliseconds: 1500),
                             horizontalOffset: 160,
-                            curve: Curves.ease,
                             child: FadeInAnimation(
                               curve: Curves.easeOut,
                               duration: const Duration(milliseconds: 2000),

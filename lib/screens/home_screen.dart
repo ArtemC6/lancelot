@@ -62,14 +62,12 @@ class _HomeScreen extends State<HomeScreen>
         .then((QuerySnapshot querySnapshot) async {
       for (var document in querySnapshot.docs) {
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-        if (userModelCurrent.searchRangeStart <= ageInt(data) &&
-            userModelCurrent.searchRangeEnd >= ageInt(data) &&
+        if (userModelCurrent.searchRangeStart <= ageIntParse(data) &&
+            userModelCurrent.searchRangeEnd >= ageIntParse(data) &&
             data['uid'] != userModelCurrent.uid) {
           bool isDislike = true;
           await Future.forEach(listDisLike, (idUser) {
-            if (idUser == data['uid']) {
-              isDislike = false;
-            }
+            if (idUser == data['uid']) isDislike = false;
           }).then((value) async {
             if (isDislike) {
               userModelPartner.add(UserModel(
@@ -85,7 +83,7 @@ class _HomeScreen extends State<HomeScreen>
                   searchRangeEnd: data['searchRangeEnd'],
                   myCity: data['myCity'],
                   imageBackground: data['imageBackground'],
-                  ageInt: ageInt(data),
+                  ageInt: ageIntParse(data),
                   state: data['state'],
                   token: data['token'],
                   notification: data['notification'],
@@ -118,9 +116,7 @@ class _HomeScreen extends State<HomeScreen>
       }
 
       isWrite = true;
-      isLoading = true;
-
-      setState(() {});
+      setState(() => isLoading = true);
     });
   }
 
@@ -315,7 +311,7 @@ class _HomeScreen extends State<HomeScreen>
                               child: Padding(
                                 padding: EdgeInsets.only(top: height / 14),
                                 child: buttonUniversal(
-                                  time: 750,
+                                  time: 550,
                                   text: 'Обновить',
                                   sizeText: height / 62,
                                   height: height / 18,
