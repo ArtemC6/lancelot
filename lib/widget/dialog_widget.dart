@@ -274,7 +274,7 @@ showAlertDialogSuccess(BuildContext context) {
     ),
     dismissable: false,
     context,
-    future: Future.delayed(const Duration(milliseconds: 1880)),
+    future: Future.delayed(const Duration(milliseconds: 1900)),
   );
 }
 

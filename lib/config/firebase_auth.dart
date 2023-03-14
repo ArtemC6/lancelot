@@ -47,7 +47,7 @@ class FirebaseAuthMethods {
           'notification': true,
         });
 
-        Future.delayed(const Duration(milliseconds: 1800), () {
+        Future.delayed(const Duration(milliseconds: 1740), () {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager()));
         });
@@ -83,7 +83,7 @@ class FirebaseAuthMethods {
             'notification': true,
           });
 
-          Future.delayed(const Duration(milliseconds: 1800), () {
+          Future.delayed(const Duration(milliseconds: 1740), () {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const Manager()));
           });
@@ -111,7 +111,7 @@ class FirebaseAuthMethods {
         setStateFirebase('online');
         setTokenUserFirebase();
 
-        Future.delayed(const Duration(milliseconds: 1800), () {
+        Future.delayed(const Duration(milliseconds: 1740), () {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager()));
         });
@@ -125,7 +125,7 @@ class FirebaseAuthMethods {
 
           setStateFirebase('online');
           setTokenUserFirebase();
-          Future.delayed(const Duration(milliseconds: 1800), () {
+          Future.delayed(const Duration(milliseconds: 1740), () {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const Manager()));
           });

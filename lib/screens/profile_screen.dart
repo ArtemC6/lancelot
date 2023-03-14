@@ -50,26 +50,7 @@ class _ProfileScreen extends State<ProfileScreen> {
 
   Future readFirebase() async {
     if (userModelPartner.uid == '' && idUser != '') {
-      await readUserFirebase(idUser).then((user) {
-        userModelPartner = UserModel(
-            name: user.name,
-            uid: user.uid,
-            ageTime: user.ageTime,
-            userPol: user.userPol,
-            searchPol: user.searchPol,
-            searchRangeStart: user.searchRangeStart,
-            userInterests: user.userInterests,
-            userImagePath: user.userImagePath,
-            userImageUrl: user.userImageUrl,
-            searchRangeEnd: user.searchRangeEnd,
-            myCity: user.myCity,
-            imageBackground: user.imageBackground,
-            ageInt: user.ageInt,
-            state: user.state,
-            token: user.token,
-            notification: user.notification,
-            description: user.description);
-      });
+      await readUserFirebase(idUser).then((user) => userModelPartner = user);
     }
 
     await sortingList(userModelPartner).then((result) => listStory = result);
@@ -151,9 +132,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       height: height / 20,
                                       width: height / 20,
                                       child: IconButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
+                                        onPressed: () => Navigator.pop(context),
                                         icon: Icon(
                                             Icons.arrow_back_ios_new_rounded,
                                             size: height / 44),

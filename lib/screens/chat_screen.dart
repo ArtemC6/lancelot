@@ -109,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   snapshotFriendId.data.docs[index].id;
                               return AnimationConfiguration.staggeredList(
                                 position: index,
-                                delay: const Duration(milliseconds: 350),
+                                delay: const Duration(milliseconds: 400),
                                 child: SlideAnimation(
                                   duration: const Duration(milliseconds: 950),
                                   verticalOffset: 100,

@@ -35,7 +35,6 @@ class showProgressWrite extends StatelessWidget {
     super.key,
   });
 
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -50,15 +49,13 @@ class showProgressWrite extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 5, bottom: 2),
-            child: RichText(
-              text: TextSpan(
-                text: 'печатает...',
-                style: GoogleFonts.lato(
-                  textStyle: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: height / 70,
-                      letterSpacing: .7),
-                ),
+            child: Text(
+              'печатает...',
+              style: GoogleFonts.lato(
+                textStyle: TextStyle(
+                    color: Colors.blueAccent,
+                    fontSize: height / 70,
+                    letterSpacing: .7),
               ),
             ),
           ),
@@ -220,7 +217,7 @@ class showAnimationNoUser extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10, top: height / 8),
+      padding: EdgeInsets.only(left: 10, right: 10, top: height / 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

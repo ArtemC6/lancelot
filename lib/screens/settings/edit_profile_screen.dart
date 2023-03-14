@@ -211,26 +211,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future readFirebase() async {
     if (modelUser.uid == '') {
-      await readUserFirebase().then((user) {
-        modelUser = UserModel(
-            name: user.name,
-            uid: user.uid,
-            ageTime: user.ageTime,
-            userPol: user.userPol,
-            searchPol: user.searchPol,
-            searchRangeStart: user.searchRangeStart,
-            userInterests: user.userInterests,
-            userImagePath: user.userImagePath,
-            userImageUrl: user.userImageUrl,
-            searchRangeEnd: user.searchRangeEnd,
-            myCity: user.myCity,
-            imageBackground: user.imageBackground,
-            ageInt: user.ageInt,
-            state: user.state,
-            token: user.token,
-            notification: user.notification,
-            description: user.description);
-      });
+      await readUserFirebase().then((user) => modelUser = user);
     }
 
     settingsValue();
@@ -371,27 +352,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         duration: const Duration(milliseconds: 3800),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (!isFirst)
-                                  IconButton(
-                                    color: Colors.white,
-                                    onPressed: () => Navigator.pop(context),
-                                    icon: Icon(Icons.arrow_back_ios_new_rounded,
-                                        size: height / 38),
+                            Padding(
+                              padding: EdgeInsets.only(top: height / 70),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (!isFirst)
+                                    IconButton(
+                                      color: Colors.white,
+                                      onPressed: () => Navigator.pop(context),
+                                      icon: Icon(
+                                          Icons.arrow_back_ios_new_rounded,
+                                          size: height / 38),
+                                    ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(right: height / 66),
+                                    child: customIconButton(
+                                      path: 'images/ic_log_out.png',
+                                      width: height / 26,
+                                      height: height / 26,
+                                      onTap: () async {
+                                        FirebaseAuthMethods.signOut(
+                                            context, modelUser.uid);
+                                      },
+                                      padding: 0,
+                                    ),
                                   ),
-                                customIconButton(
-                                  path: 'images/ic_log_out.png',
-                                  width: height / 26,
-                                  height: height / 26,
-                                  onTap: () async {
-                                    FirebaseAuthMethods.signOut(
-                                        context, modelUser.uid);
-                                  },
-                                  padding: 0,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             imageProfileSettings(
                               height,
@@ -402,7 +392,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               child: Container(
                                 padding: EdgeInsets.only(
                                     bottom: height / 62,
-                                    top: height / 52,
+                                    top: height / 38,
                                     right: height / 64),
                                 alignment: Alignment.centerRight,
                                 child: buttonUniversal(

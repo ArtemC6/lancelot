@@ -121,31 +121,11 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
   Future readUser() async {
     if (userModelCurrent.uid.isEmpty) {
-      await readUserFirebase().then((user) {
-        userModelCurrent = UserModel(
-            name: user.name,
-            uid: user.uid,
-            ageTime: user.ageTime,
-            userPol: user.userPol,
-            searchPol: user.searchPol,
-            searchRangeStart: user.searchRangeStart,
-            userInterests: user.userInterests,
-            userImagePath: user.userImagePath,
-            userImageUrl: user.userImageUrl,
-            searchRangeEnd: user.searchRangeEnd,
-            myCity: user.myCity,
-            imageBackground: user.imageBackground,
-            ageInt: user.ageInt,
-            state: user.state,
-            token: user.token,
-            notification: user.notification,
-            description: user.description);
-      });
+      await readUserFirebase().then((user) => userModelCurrent = user);
     }
 
     setStateFirebase('online');
-    isLoading = true;
-    setState(() {});
+    setState(() => isLoading = true);
   }
 
   Future<void> initSharedPref() async {
@@ -208,13 +188,12 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
           itemCount: 4,
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.symmetric(horizontal: width * .024),
-          itemBuilder: (context, index) => GestureDetector(
+          itemBuilder: (context, index) => InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             onTap: () {
-              Future.delayed(const Duration(milliseconds: 40), () {
-                setState(() {
-                  currentIndex = index;
-                });
-              });
+              Future.delayed(const Duration(milliseconds: 40),
+                  () => setState(() => currentIndex = index));
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -303,7 +282,9 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       return Scaffold(
           backgroundColor: color_black_88,
           bottomNavigationBar: bottomNavigationBar(),
-          body: SizedBox.expand(child: childEmployee()));
+          body: SafeArea(
+            top: false,
+              child: SizedBox.expand(child: childEmployee())));
     }
 
     return const loadingCustom();

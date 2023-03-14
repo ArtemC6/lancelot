@@ -149,7 +149,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                               } catch (E) {}
                               return AnimationConfiguration.staggeredList(
                                 position: index,
-                                delay: const Duration(milliseconds: 200),
+                                delay: const Duration(milliseconds: 400),
                                 child: SlideAnimation(
                                   duration: const Duration(milliseconds: 1500),
                                   verticalOffset: 220,

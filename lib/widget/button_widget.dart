@@ -592,7 +592,7 @@ class homeAnimationButton extends StatelessWidget {
       onTap: onTap,
       end: 0.88,
       child: SizedBox(
-        height: height * 0.20,
+        height: height * 0.22,
         width: width / 2,
         child: AvatarGlow(
           glowColor: Colors.blueAccent,
@@ -610,12 +610,12 @@ class homeAnimationButton extends StatelessWidget {
               Colors.deepPurpleAccent,
               Colors.pinkAccent,
             ],
-            size: Size(height * 0.13, height * 0.13),
+            size: Size(height * 0.15, height * 0.15),
             boardRadius: 100,
             borderWidth: 1,
             child: Container(
-              height: height * 0.15,
-              width: height * 0.15,
+              height: height * 0.16,
+              width: height * 0.16,
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(99)),
               child: SizedBox(

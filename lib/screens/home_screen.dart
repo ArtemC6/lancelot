@@ -161,8 +161,9 @@ class _HomeScreen extends State<HomeScreen>
                           alignment: Alignment.center,
                           children: [
                             SizedBox(
-                              height: height * 0.70,
+                              height: height * 0.67,
                               child: TinderSwapCard(
+                                animDuration: 1000,
                                 totalNum: userModelPartner.length + 1,
                                 maxWidth: width * 0.98,
                                 maxHeight: height * 0.49,
@@ -178,11 +179,11 @@ class _HomeScreen extends State<HomeScreen>
                                           FadeRouteAnimation(
                                             ProfileScreen(
                                               userModelPartner:
-                                                  userModelPartner[index],
+                                              userModelPartner[index],
                                               isBack: true,
                                               idUser: '',
                                               userModelCurrent:
-                                                  userModelCurrent,
+                                              userModelCurrent,
                                             ),
                                           ),
                                         );
@@ -229,7 +230,7 @@ class _HomeScreen extends State<HomeScreen>
                                 },
                                 swipeCompleteCallback:
                                     (CardSwipeOrientation orientation,
-                                        int index) async {
+                                    int index) async {
                                   if (orientation.toString() ==
                                       'CardSwipeOrientation.LEFT') {
                                     listDisLike
@@ -313,7 +314,7 @@ class _HomeScreen extends State<HomeScreen>
                                 child: buttonUniversal(
                                   time: 550,
                                   text: 'Обновить',
-                                  sizeText: height / 62,
+                                  sizeText: height / 60,
                                   height: height / 18,
                                   width: height / 5,
                                   darkColors: true,

@@ -370,7 +370,7 @@ class cardPartner extends StatelessWidget {
                                   Row(
                                     children: [
                                       animatedText(
-                                          height / 66,
+                                          height / 63,
                                           userModelPartner.myCity,
                                           Colors.white,
                                           550,
