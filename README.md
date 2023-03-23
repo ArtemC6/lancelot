@@ -5,7 +5,7 @@
   + Firebase Cloud Storage
   + Firebase Cloud Firestore
 
-[PlayMarket] https://play.google.com/store/apps/details?id=com.lancelotcomsanyn.lancelot
+PlayMarket https://play.google.com/store/apps/details?id=com.lancelotcomsanyn.lancelot
 
  
 <table>
