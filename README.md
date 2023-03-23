@@ -5,7 +5,7 @@
   + Firebase Cloud Storage
   + Firebase Cloud Firestore
 
-[Anroid Apk](https://drive.google.com/drive/folders/1F6rqRSiczG_B6GQAPkRxZh09hUUThbk2?usp=sharing) 
+[PlayMarket] https://play.google.com/store/apps/details?id=com.lancelotcomsanyn.lancelot
 
  
 <table>
