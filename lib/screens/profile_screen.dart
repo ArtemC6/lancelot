@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -171,15 +172,13 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       height: height / 20,
                                       width: height / 20,
                                       child: IconButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              FadeRouteAnimation(
-                                                  ProfileSettingScreen(
-                                                userModel: userModelPartner,
-                                                listInterests: listStory,
-                                              )));
-                                        },
+                                        onPressed: () => Navigator.push(
+                                            context,
+                                            FadeRouteAnimation(
+                                                ProfileSettingScreen(
+                                              userModel: userModelPartner,
+                                              listInterests: listStory,
+                                            ))),
                                         icon: Icon(Icons.settings,
                                             size: height / 36),
                                         color: Colors.white,
@@ -204,7 +203,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     photoProfile(
-                                        uri: userModelPartner.userImageUrl[0]),
+                                        uri: userModelPartner.listImageUri[0]),
                                     ZoomTapAnimation(
                                       child: Container(
                                         margin:
@@ -314,17 +313,15 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           Colors.blueAccent,
                                           Colors.purpleAccent
                                         ],
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            FadeRouteAnimation(
-                                              EditProfileScreen(
-                                                isFirst: false,
-                                                userModel: userModelCurrent,
+                                        onTap: () => Navigator.push(
+                                              context,
+                                              FadeRouteAnimation(
+                                                EditProfileScreen(
+                                                  isFirst: false,
+                                                  userModel: userModelCurrent,
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        }),
+                                            )),
                                   if (!isProprietor)
                                     buttonProfileUser(
                                       userModelCurrent,
@@ -378,7 +375,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                               animatedText(
                                                   height / 50,
                                                   userModelPartner
-                                                      .userImageUrl.length
+                                                      .listImageUri.length
                                                       .toString(),
                                                   Colors.white.withOpacity(0.9),
                                                   750,
@@ -406,54 +403,23 @@ class _ProfileScreen extends State<ProfileScreen> {
                                             ),
                                           ),
                                           GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  FadeRouteAnimation(
-                                                      ViewLikesScreen(
-                                                    userModelCurrent:
-                                                        userModelPartner,
-                                                  )));
-                                            },
+                                            onTap: () => Navigator.push(
+                                                context,
+                                                FadeRouteAnimation(
+                                                    ViewLikesScreen(
+                                                  userModelCurrent:
+                                                      userModelPartner,
+                                                ))),
                                             child: Column(
                                               children: [
                                                 FutureBuilder(
-                                                  future: FirebaseFirestore
-                                                          .instance
-                                                          .collection('User')
-                                                          .doc(userModelPartner
-                                                              .uid)
-                                                          .collection('likes')
-                                                          .get(const GetOptions(
-                                                              source:
-                                                                  Source.cache))
-                                                          .toString()
-                                                          .isEmpty
-                                                      ? FirebaseFirestore
-                                                          .instance
-                                                          .collection('User')
-                                                          .doc(userModelPartner
-                                                              .uid)
-                                                          .collection('likes')
-                                                          .get(const GetOptions(
-                                                              source:
-                                                                  Source.cache))
-                                                      : FirebaseFirestore
-                                                          .instance
-                                                          .collection('User')
-                                                          .doc(userModelPartner
-                                                              .uid)
-                                                          .collection('likes')
-                                                          .get(
-                                                            const GetOptions(
-                                                                source: Source
-                                                                    .server),
-                                                          ),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
+                                                  future: GetIt.I<
+                                                          FirebaseFirestore>()
+                                                      .collection('User')
+                                                      .doc(userModelPartner.uid)
+                                                      .collection('likes')
+                                                      .get(),
+                                                  builder: (context, snapshot) {
                                                     if (snapshot.hasData) {
                                                       return DelayedDisplay(
                                                         delay: const Duration(
@@ -531,7 +497,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                               animatedText(
                                                   height / 50,
                                                   userModelPartner
-                                                      .userInterests.length
+                                                      .listInterests.length
                                                       .toString(),
                                                   Colors.white.withOpacity(0.9),
                                                   1350,
@@ -554,7 +520,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ),
                                     slideInterests(listStory),
                                     photoProfileGallery(
-                                        userModelPartner.userImageUrl),
+                                        userModelPartner.listImageUri),
                                   ],
                                 ),
                               ),

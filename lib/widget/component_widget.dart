@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -23,7 +24,6 @@ import 'button_widget.dart';
 
 class slideInterests extends StatelessWidget {
  final List<InterestsModel> listStory;
-
   const slideInterests(this.listStory, {super.key});
 
   @override
@@ -244,15 +244,12 @@ class slideInterestsSettings extends StatelessWidget {
                                     ),
                                   if (0 == index)
                                     GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            FadeRouteAnimation(
-                                                EditProfileScreen(
-                                              isFirst: false,
-                                              userModel: userModel,
-                                            )));
-                                      },
+                                      onTap: () => Navigator.push(
+                                          context,
+                                          FadeRouteAnimation(EditProfileScreen(
+                                            isFirst: false,
+                                            userModel: userModel,
+                                          ))),
                                       child: Padding(
                                         padding: const EdgeInsets.all(2),
                                         child: Image.asset(
@@ -268,15 +265,13 @@ class slideInterestsSettings extends StatelessWidget {
                                         width: height / 34,
                                         height: height / 34,
                                         path: 'images/ic_remove.png',
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              FadeRouteAnimation(
-                                                  EditProfileScreen(
-                                                isFirst: false,
-                                                userModel: userModel,
-                                              )));
-                                        }),
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            FadeRouteAnimation(
+                                                EditProfileScreen(
+                                              isFirst: false,
+                                              userModel: userModel,
+                                            )))),
                                   if (listStory.length <= index &&
                                       listStory.isNotEmpty)
                                     customIconButton(
@@ -284,15 +279,12 @@ class slideInterestsSettings extends StatelessWidget {
                                       width: height / 36,
                                       height: height / 36,
                                       path: 'images/ic_add.png',
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            FadeRouteAnimation(
-                                                EditProfileScreen(
-                                              isFirst: false,
-                                              userModel: userModel,
-                                            )));
-                                      },
+                                      onTap: () => Navigator.push(
+                                          context,
+                                          FadeRouteAnimation(EditProfileScreen(
+                                            isFirst: false,
+                                            userModel: userModel,
+                                          ))),
                                     ),
                                 ],
                               ),
@@ -394,9 +386,7 @@ class topPanel extends StatelessWidget {
         children: [
           if (isBack)
             IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new_rounded,
                   color: Colors.white, size: height / 38),
             ),
@@ -448,13 +438,13 @@ class _topPanelChatState extends State<topPanelChat> {
     return GetBuilder<GetChatDataController>(
       builder: (GetChatDataController controller) {
         return StreamBuilder(
-          stream: FirebaseFirestore.instance
+          stream: GetIt.I<FirebaseFirestore>()
               .collection('User')
               .doc(friendId)
               .snapshots(),
           builder: (BuildContext context, AsyncSnapshot asyncSnapshot) {
             if (asyncSnapshot.hasData) {
-              var isWriteUser = false, isOnline = false;
+              bool isWriteUser = false, isOnline = false;
               isOnline = asyncSnapshot.data['state'] != 'offline';
               try {
                 if (controller.writeLastData != '') {
@@ -476,9 +466,7 @@ class _topPanelChatState extends State<topPanelChat> {
                   Row(
                     children: [
                       ZoomTapAnimation(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
+                        onTap: () => Navigator.pop(context),
                         child: Icon(
                           Icons.arrow_back_ios_new_rounded,
                           color: Colors.white,
@@ -489,27 +477,12 @@ class _topPanelChatState extends State<topPanelChat> {
                         padding: const EdgeInsets.only(left: 22, right: 4),
                         child: ZoomTapAnimation(
                           onTap: () {
+                            final Map<String, dynamic> data = {};
                             Navigator.push(
                                 context,
                                 FadeRouteAnimation(ProfileScreen(
-                                  userModelPartner: UserModel(
-                                      name: '',
-                                      uid: '',
-                                      myCity: '',
-                                      ageTime: Timestamp.now(),
-                                      userPol: '',
-                                      searchPol: '',
-                                      searchRangeStart: 0,
-                                      userImageUrl: [],
-                                      userImagePath: [],
-                                      imageBackground: '',
-                                      userInterests: [],
-                                      searchRangeEnd: 0,
-                                      ageInt: 0,
-                                      state: '',
-                                      token: '',
-                                      notification: true,
-                                      description: ''),
+                                  userModelPartner:
+                                      UserModel.fromDocument(data),
                                   isBack: true,
                                   idUser: friendId,
                                   userModelCurrent: userModelCurrent,
@@ -742,9 +715,8 @@ class listImageProfile extends StatelessWidget {
                     children: [
                       ZoomTapAnimation(
                         end: 0.985,
-                        onTap: () {
-                          uploadImagePhotoProfile(listImageUri[index], context);
-                        },
+                        onTap: () => uploadImagePhotoProfile(
+                            listImageUri[index], context),
                         child: Padding(
                           padding: EdgeInsets.all(width / 140),
                           child: Card(
@@ -791,16 +763,12 @@ class listImageProfile extends StatelessWidget {
                             width: height / 40,
                             padding: 2,
                             path: 'images/ic_save.png',
-                            onTap: () {
-                              uploadImagePhotoProfile(
-                                  listImageUri[index], context);
-                            }),
+                            onTap: () => uploadImagePhotoProfile(
+                                listImageUri[index], context)),
                       if (indexImage != index)
                         GestureDetector(
-                          onTap: () {
-                            uploadImagePhotoProfile(
-                                listImageUri[index], context);
-                          },
+                          onTap: () => uploadImagePhotoProfile(
+                              listImageUri[index], context),
                           child: Container(
                             height: height / 40,
                             width: height / 40,

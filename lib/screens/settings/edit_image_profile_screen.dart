@@ -30,7 +30,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
     readFirebaseImageProfile().then((result) {
       listImageUri = result;
 
-      if (bacImage != '') {
+      if (bacImage.isNotEmpty) {
         indexImage = listImageUri.indexWhere((element) => element == bacImage);
       }
 
@@ -70,7 +70,7 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (bacImage != '')
+                            if (bacImage.isNotEmpty)
                               IconButton(
                                 onPressed: () => Navigator.pop(context),
                                 icon: Icon(Icons.arrow_back_ios_new_rounded,
@@ -101,11 +101,12 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                 ];
               },
               body: SizedBox(
-                  height: height,
-                  child: listImageProfile(
-                    indexImage: indexImage,
-                    listImageUri: listImageUri,
-                  )),
+                height: height,
+                child: listImageProfile(
+                  indexImage: indexImage,
+                  listImageUri: listImageUri,
+                ),
+              ),
             ),
           ),
         ),

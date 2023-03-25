@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "184301190803-tqevliq3e38nnvdetmac6p28s9ceq9ri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lancelotcompanyn.lancelot",
+            "certificate_hash": "4c1fe9c39903a246d3658a144f05dd9c77b985eb"
+          }
+        },
+        {
           "client_id": "184301190803-33kfvu66k287d3f0mod5tk49klvn0dd0.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -31,10 +39,46 @@
               "client_type": 3
             },
             {
-              "client_id": "184301190803-3f5h1pt508pdagt4pejjkvq9m3nrdpue.apps.googleusercontent.com",
+              "client_id": "184301190803-1q02j748ubvcsn4qf0fs098kkafbgmum.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.tinder"
+                "bundle_id": "com.lancelotcompanyn.lancelot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184301190803:android:cefc9453f29401a5201766",
+        "android_client_info": {
+          "package_name": "com.lancelotcomsanyn.lancelot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184301190803-33kfvu66k287d3f0mod5tk49klvn0dd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsasRpgdcsqdnM5PjnwBIyUaUBq79OK0M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184301190803-33kfvu66k287d3f0mod5tk49klvn0dd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "184301190803-1q02j748ubvcsn4qf0fs098kkafbgmum.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lancelotcompanyn.lancelot"
               }
             }
           ]

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../main.dart';
 import '../screens/auth/signin_screen.dart';
@@ -17,17 +18,17 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      FirebaseAuth.instance
+      GetIt.I<FirebaseAuth>()
           .createUserWithEmailAndPassword(
               email: email.trim(), password: password.trim())
           .then((value) async {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
-         FirebaseFirestore.instance
+        GetIt.I<FirebaseFirestore>()
             .collection('User')
-            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
             .set({
-          'uid': FirebaseAuth.instance.currentUser?.uid,
+          'uid': GetIt.I<FirebaseAuth>().currentUser?.uid,
           'name': name.trim(),
           'email': email.trim(),
           'password': password.trim(),
@@ -52,18 +53,18 @@ class FirebaseAuthMethods {
               MaterialPageRoute(builder: (context) => const Manager()));
         });
       }).onError((error, stackTrace) async {
-        await FirebaseAuth.instance
+        await GetIt.I<FirebaseAuth>()
             .createUserWithEmailAndPassword(
                 email: email.trim(), password: password.trim())
             .then((value) async {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
 
-          FirebaseFirestore.instance
+          GetIt.I<FirebaseFirestore>()
               .collection('User')
-              .doc(FirebaseAuth.instance.currentUser?.uid)
+              .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
               .set({
-            'uid': FirebaseAuth.instance.currentUser?.uid,
+            'uid': GetIt.I<FirebaseAuth>().currentUser?.uid,
             'name': name.trim(),
             'email': email.trim(),
             'password': password.trim(),
@@ -101,7 +102,7 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      FirebaseAuth.instance
+      GetIt.I<FirebaseAuth>()
           .signInWithEmailAndPassword(
               email: email.trim(), password: password.trim())
           .then((value) async {
@@ -116,7 +117,7 @@ class FirebaseAuthMethods {
               MaterialPageRoute(builder: (context) => const Manager()));
         });
       }).onError((error, stackTrace) {
-        FirebaseAuth.instance
+        GetIt.I<FirebaseAuth>()
             .signInWithEmailAndPassword(
                 email: email.trim(), password: password.trim())
             .then((value) async {
@@ -138,7 +139,7 @@ class FirebaseAuthMethods {
 
   static Future<void> signOut(BuildContext context, String uid) async {
     try {
-      FirebaseAuth.instance.signOut().then((value) {
+      GetIt.I<FirebaseAuth>().signOut().then((value) {
         Navigator.pushReplacement(
             context, FadeRouteAnimation(const SignInScreen()));
         setStateFirebase('offline', uid);

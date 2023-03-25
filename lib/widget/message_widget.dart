@@ -32,16 +32,14 @@ class MessagesItem extends StatelessWidget {
 
     return GetBuilder<GetChatDataController>(
       builder: (GetChatDataController controller) {
-        var isCheck = false;
+        bool isCheck = false;
         try {
           if (controller.lastDateCloseChat == '') isCheck = true;
           if (controller.lastDateCloseChat != '') {
             if (getDataTime(controller.lastDateCloseChat)
                     .difference(getDataTime(dataMessage))
                     .inSeconds >=
-                1) {
-              isCheck = true;
-            }
+                1) isCheck = true;
           }
         } catch (e) {}
 
@@ -230,7 +228,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
   _MessageTextFieldState(this.currentUser, this.friendId, this.token,
       this.friendName, this.notification);
 
-  void startTimer() {
+  startTimer() {
     Timer.periodic(
       const Duration(seconds: 6),
       (Timer timer) {
@@ -244,11 +242,9 @@ class _MessageTextFieldState extends State<MessageTextField> {
   void initState() {
     _controllerMessage.addListener(() {
       if (_controllerMessage.text.isNotEmpty) {
-        if (isWrite) {
-          startTimer();
-          isWrite = false;
-          putUserWrites(currentUser.uid, friendId);
-        }
+        if (!isWrite) return;
+        startTimer();
+        putUserWrites(currentUser.uid, friendId).then((i) => isWrite = false);
       }
     });
     super.initState();
@@ -320,15 +316,13 @@ class _MessageTextFieldState extends State<MessageTextField> {
                     height: width / 11,
                     width: width / 11,
                   ),
-                  onTap: () async {
-                    await sendMessage(
-                        isFirstMessage: controller.firsMessage.value,
-                        controllerMessage: _controllerMessage,
-                        friendId: friendId,
-                        token: token,
-                        notification: notification,
-                        currentUser: currentUser);
-                  },
+                  onTap: () async => await sendMessage(
+                      isFirstMessage: controller.firsMessage.value,
+                      controllerMessage: _controllerMessage,
+                      friendId: friendId,
+                      token: token,
+                      notification: notification,
+                      currentUser: currentUser),
                 ),
               ),
             ],

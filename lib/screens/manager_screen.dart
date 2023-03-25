@@ -50,29 +50,28 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> setIndexPage(String payload, String uid) async {
+  setIndexPage(String payload, String uid) {
     if (payload == 'sympathy') currentIndex = 1;
     if (payload == 'like') currentIndex = 3;
 
     if (payload == 'chat') {
       currentIndex = 2;
-      if (isLoading) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          Navigator.push(
-            context,
-            FadeRouteAnimation(
-              ChatUserScreen(
-                friendId: uid,
-                friendName: '',
-                friendImage: '',
-                userModelCurrent: userModelCurrent,
-                token: '',
-                notification: true,
-              ),
+      if (!isLoading) return;
+      Future.delayed(const Duration(milliseconds: 300), () {
+        Navigator.push(
+          context,
+          FadeRouteAnimation(
+            ChatUserScreen(
+              friendId: uid,
+              friendName: '',
+              friendImage: '',
+              userModelCurrent: userModelCurrent,
+              token: '',
+              notification: true,
             ),
-          );
-        });
-      }
+          ),
+        );
+      });
     }
 
     setState(() {});
@@ -81,9 +80,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
   Future<void> getNotificationFcm() async {
     clearAllNotification();
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        setIndexPage(message.data['type'], message.data['uid']);
-      }
+      if (message == null) return;
+      setIndexPage(message.data['type'], message.data['uid']);
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
@@ -147,32 +145,28 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.paused:
-        if (isWrite) {
-          startTimer();
-          isWrite = false;
-          setStateFirebase('offline');
-        }
+        if (!isWrite) return;
+        startTimer();
+        isWrite = false;
+        setStateFirebase('offline');
         break;
       case AppLifecycleState.resumed:
-        if (isWrite) {
-          startTimer();
-          isWrite = false;
-          setStateFirebase('online');
-        }
+        if (!isWrite) return;
+        startTimer();
+        isWrite = false;
+        setStateFirebase('online');
         break;
       case AppLifecycleState.inactive:
-        if (isWrite) {
-          startTimer();
-          isWrite = false;
-          setStateFirebase('offline');
-        }
+        if (!isWrite) return;
+        startTimer();
+        isWrite = false;
+        setStateFirebase('offline');
         break;
       case AppLifecycleState.detached:
-        if (isWrite) {
-          startTimer();
-          isWrite = false;
-          setStateFirebase('offline');
-        }
+        if (!isWrite) return;
+        startTimer();
+        isWrite = false;
+        setStateFirebase('offline');
         break;
     }
   }
@@ -191,10 +185,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
           itemBuilder: (context, index) => InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () {
-              Future.delayed(const Duration(milliseconds: 40),
-                  () => setState(() => currentIndex = index));
-            },
+            onTap: () => Future.delayed(const Duration(milliseconds: 40),
+                () => setState(() => currentIndex = index)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -254,15 +246,15 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
           child = SympathyScreen(
             userModelCurrent: userModelCurrent,
           );
-          setState(() => indexSympathy = 0);
           setValueSharedPref('indexSympathy', indexSympathy);
+          setState(() => indexSympathy = 0);
           break;
         case 2:
           child = ChatScreen(
             userModelCurrent: userModelCurrent,
           );
-          setState(() => indexChat = 0);
           setValueSharedPref('indexChat', indexChat);
+          setState(() => indexChat = 0);
           break;
         case 3:
           child = ProfileScreen(
@@ -271,8 +263,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
             idUser: '',
             userModelCurrent: userModelCurrent,
           );
-          setState(() => indexProfile = 0);
           setValueSharedPref('indexProfile', indexProfile);
+          setState(() => indexProfile = 0);
           break;
       }
       return child;

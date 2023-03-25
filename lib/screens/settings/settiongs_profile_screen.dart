@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../config/const.dart';
@@ -56,7 +57,6 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
               child: SlideAnimation(
                 duration: const Duration(milliseconds: 2200),
                 horizontalOffset: width / 2,
-                curve: Curves.ease,
                 child: FadeInAnimation(
                   curve: Curves.easeOut,
                   duration: const Duration(milliseconds: 2500),
@@ -100,9 +100,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                   height: height / 20,
                                   width: height / 20,
                                   child: IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
+                                    onPressed: () => Navigator.pop(context),
                                     icon: Icon(Icons.arrow_back_ios_new_rounded,
                                         size: height / 44),
                                     color: Colors.white,
@@ -128,16 +126,14 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                               width: height / 35,
                               path: 'images/ic_image.png',
                               padding: 2,
-                              onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  FadeRouteAnimation(
-                                    EditImageProfileScreen(
-                                      bacImage: userModel.imageBackground,
-                                    ),
+                              onTap: () => Navigator.pushReplacement(
+                                context,
+                                FadeRouteAnimation(
+                                  EditImageProfileScreen(
+                                    bacImage: userModel.imageBackground,
                                   ),
-                                );
-                              },
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -158,16 +154,14 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                   Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                        photoProfile(
-                                            uri: userModel.userImageUrl[0]),
+                                      photoProfile(
+                                          uri: userModel.listImageUri[0]),
                                       customIconButton(
                                         path: 'images/ic_edit.png',
                                         width: height / 30,
                                         height: height / 30,
-                                        onTap: () async {
-                                          updateFirstImage(
-                                              context, userModel, false);
-                                        },
+                                        onTap: () => updateFirstImage(
+                                            context, userModel, false),
                                         padding: 0,
                                       ),
                                     ],
@@ -214,14 +208,12 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                       Colors.blueAccent,
                                       Colors.purpleAccent
                                     ],
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          FadeRouteAnimation(EditProfileScreen(
-                                            isFirst: false,
-                                            userModel: userModel,
-                                          )));
-                                    }),
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        FadeRouteAnimation(EditProfileScreen(
+                                          isFirst: false,
+                                          userModel: userModel,
+                                        )))),
                                 const SizedBox()
                               ],
                             ),
@@ -276,7 +268,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           children: [
                                             animatedText(
                                                 height / 50,
-                                                userModel.userImageUrl.length
+                                                userModel.listImageUri.length
                                                     .toString(),
                                                 Colors.white.withOpacity(0.9),
                                                 750,
@@ -303,65 +295,42 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           ),
                                         ),
                                         GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                FadeRouteAnimation(
-                                                    ViewLikesScreen(
-                                                  userModelCurrent: userModel,
-                                                )));
-                                          },
+                                          onTap: () => Navigator.push(
+                                              context,
+                                              FadeRouteAnimation(
+                                                  ViewLikesScreen(
+                                                userModelCurrent: userModel,
+                                              ))),
                                           child: Column(
                                             children: [
                                               FutureBuilder(
-                                                future: FirebaseFirestore
-                                                        .instance
+                                                future:
+                                                    GetIt.I<FirebaseFirestore>()
                                                         .collection('User')
                                                         .doc(userModel.uid)
                                                         .collection('likes')
-                                                        .get(const GetOptions(
-                                                            source:
-                                                                Source.cache))
-                                                        .toString()
-                                                        .isEmpty
-                                                    ? FirebaseFirestore.instance
-                                                        .collection('User')
-                                                        .doc(userModel.uid)
-                                                        .collection('likes')
-                                                        .get(const GetOptions(
-                                                            source:
-                                                                Source.cache))
-                                                    : FirebaseFirestore.instance
-                                                        .collection('User')
-                                                        .doc(userModel.uid)
-                                                        .collection('likes')
-                                                        .get(
-                                                          const GetOptions(
-                                                              source: Source
-                                                                  .server),
-                                                        ),
+                                                        .get(),
                                                 builder: (BuildContext context,
                                                     AsyncSnapshot<QuerySnapshot>
                                                         snapshot) {
                                                   if (snapshot.hasData) {
                                                     return DelayedDisplay(
-                                                        delay: const Duration(
-                                                            milliseconds: 1000),
-                                                        child: AnimatedSwitcher(
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      500),
-                                                          transitionBuilder:
-                                                              ((child,
-                                                                  animation) {
-                                                            return ScaleTransition(
-                                                                scale:
-                                                                    animation,
-                                                                child: child);
-                                                          }),
-                                                          child: RichText(
-                                                            key: ValueKey<int>(
+                                                      delay: const Duration(
+                                                          milliseconds: 1000),
+                                                      child: AnimatedSwitcher(
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                        transitionBuilder:
+                                                            ((child,
+                                                                animation) {
+                                                          return ScaleTransition(
+                                                              scale: animation,
+                                                              child: child);
+                                                        }),
+                                                        child: RichText(
+                                                          key: ValueKey<int>(
                                                                 snapshot.data!.size),
                                                           text: TextSpan(
                                                             text: snapshot
@@ -415,7 +384,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           children: [
                                             animatedText(
                                                 height / 50,
-                                                userModel.userInterests.length
+                                                userModel.listInterests.length
                                                     .toString(),
                                                 Colors.white.withOpacity(0.9),
                                                 1350,

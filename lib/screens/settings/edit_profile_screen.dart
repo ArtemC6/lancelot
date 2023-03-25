@@ -5,6 +5,7 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
@@ -58,7 +59,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late SfRangeValues _valuesAge;
   int interestsCount = 0;
 
-  void showDatePicker() {
+  showDatePicker() {
     DatePicker.showDatePicker(context,
         theme: const DatePickerTheme(
             backgroundColor: color_black_88,
@@ -67,9 +68,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         showTitleActions: true,
         minTime: DateTime(1993),
         maxTime: DateTime(2007), onChanged: (date) {
-          setState(() {
-            _dateTimeBirthday = date;
-            _ageController.text =
+      setState(() {
+        _dateTimeBirthday = date;
+        _ageController.text =
                 (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
                     .toString();
           });
@@ -79,16 +80,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         locale: LocaleType.ru);
   }
 
-  Future<void> _uploadData() async {
+  Future<void> uploadDataUser() async {
     bool interests =
-        _selectedInterests.isNotEmpty && _selectedInterests.length <= 6;
-    bool myPol = _myPolController.text.length == 7;
-    bool name = _nameController.text.length >= 3;
-    bool searchPol = _searchPolController.text.length >= 7;
-    bool localUser = _localController.text.length >= 6;
-    bool userPhoto = modelUser.userImageUrl.isNotEmpty;
-    bool userAge = DateTime.now().year - _dateTimeBirthday.year >= 16;
-    bool ageRange = _valuesAge.start >= 16 && _valuesAge.end < 50;
+            _selectedInterests.isNotEmpty && _selectedInterests.length <= 6,
+        myPol = _myPolController.text.length == 7,
+        name = _nameController.text.length >= 3,
+        searchPol = _searchPolController.text.length >= 7,
+        localUser = _localController.text.length >= 6,
+        userPhoto = modelUser.listImageUri.isNotEmpty,
+        userAge = DateTime.now().year - _dateTimeBirthday.year >= 16,
+        ageRange = _valuesAge.start >= 16 && _valuesAge.end < 50;
 
     if (interests &&
         myPol &&
@@ -117,35 +118,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'token': await getTokenUser(),
       };
 
-      FirebaseFirestore.instance
+      GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(modelUser.uid)
           .update(json)
           .then((value) {
         if (modelUser.imageBackground != '') {
+          Map<String, dynamic> dataCash = {};
           Navigator.pushReplacement(
-              context,
-              FadeRouteAnimation(
-                ManagerScreen(
+            context,
+            FadeRouteAnimation(
+              ManagerScreen(
                 currentIndex: 3,
-                userModelCurrent: UserModel(
-                    name: '',
-                    uid: '',
-                    state: '',
-                    myCity: '',
-                    ageInt: 0,
-                    ageTime: Timestamp.now(),
-                    userPol: '',
-                    searchPol: '',
-                    searchRangeStart: 0,
-                    userImageUrl: [],
-                    userImagePath: [],
-                    imageBackground: '',
-                    userInterests: [],
-                    searchRangeEnd: 0,
-                    token: '',
-                    notification: true,
-                    description: ''),
+                userModelCurrent: UserModel.fromDocument(dataCash),
               ),
             ),
           );
@@ -158,7 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     } else {
       isError = true;
-      if (modelUser.userImageUrl.isNotEmpty) {
+      if (modelUser.listImageUri.isNotEmpty) {
         isPhoto = true;
       } else {
         isPhoto = false;
@@ -167,10 +152,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {});
   }
 
-  void settingsValue() {
+  settingsValue() {
     _nameController.text = modelUser.name;
     _supportController.text =
-    'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
+        'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
     if (modelUser.notification) {
       _notificationController.text = 'Включить';
     } else {
@@ -183,17 +168,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _descriptionController.text = modelUser.description;
     }
 
-    _ageRangController.text = modelUser.searchRangeStart == 0
+    _ageRangController.text = modelUser.rangeStart == 0
         ? ' '
-        : 'От ${modelUser.searchRangeStart.toInt()} до ${modelUser.searchRangeEnd.toInt()} лет';
+        : 'От ${modelUser.rangeStart.toInt()} до ${modelUser.rangeEnd.toInt()} лет';
 
     _ageController.text =
-    modelUser.ageInt == 0 ? ' ' : modelUser.ageInt.toString();
+        modelUser.ageInt == 0 ? ' ' : modelUser.ageInt.toString();
 
     _valuesAge = SfRangeValues(
-        modelUser.searchRangeStart == 0 ? 16 : modelUser.searchRangeStart,
-        modelUser.searchRangeEnd == 0 ? 30 : modelUser.searchRangeEnd);
-    _myPolController.text = modelUser.userPol == '' ? ' ' : modelUser.userPol;
+        modelUser.rangeStart == 0 ? 16 : modelUser.rangeStart,
+        modelUser.rangeEnd == 0 ? 30 : modelUser.rangeEnd);
+    _myPolController.text = modelUser.myPol == '' ? ' ' : modelUser.myPol;
     _localController.text = modelUser.myCity == '' ? ' ' : modelUser.myCity;
     if (modelUser.searchPol == '') {
       _searchPolController.text = ' ';
@@ -202,10 +187,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           modelUser.searchPol == 'Мужской' ? 'С парнем' : 'С девушкой';
     }
 
-    if (modelUser.userImageUrl.isNotEmpty) isPhoto = true;
+    if (modelUser.listImageUri.isNotEmpty) isPhoto = true;
 
-    _selectedInterests = modelUser.userInterests;
-    interestsCount = modelUser.userInterests.length;
+    _selectedInterests = modelUser.listInterests;
+    interestsCount = modelUser.listInterests.length;
     _dateTimeBirthday = getDataTime(modelUser.ageTime);
   }
 
@@ -238,20 +223,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           shadowColor: Colors.white30,
           color: color_black_88,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-              side: const BorderSide(
-                width: 0.8,
-                color: Colors.white30,
-              )),
+            borderRadius: BorderRadius.circular(100),
+            side: const BorderSide(
+              width: 0.8,
+              color: Colors.white30,
+            ),
+          ),
           elevation: 8,
           child: GestureDetector(
             onTap: () {
-              if (modelUser.userImageUrl.isEmpty) {
+              if (modelUser.listImageUri.isEmpty) {
                 uploadFirstImage(context, modelUser).then((uri) {
-                  if (uri != '') {
-                    modelUser.userImageUrl.add(uri);
-                    setState(() => isPhoto = true);
-                  }
+                  if (uri.isEmpty) return;
+                  modelUser.listImageUri.add(uri);
+                  setState(() => isPhoto = true);
                 });
               } else {
                 updateFirstImage(context, modelUser, true);
@@ -260,7 +245,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
-                if (modelUser.userImageUrl.isNotEmpty)
+                if (modelUser.listImageUri.isNotEmpty)
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
@@ -293,33 +278,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ),
-                      imageUrl: modelUser.userImageUrl[0],
+                      imageUrl: modelUser.listImageUri[0],
                       fit: BoxFit.cover,
                     ),
                   ),
-                if (modelUser.userImageUrl.isEmpty)
+                if (modelUser.listImageUri.isEmpty)
                   customIconButton(
                     path: 'images/ic_add.png',
                     width: height / 34,
                     height: height / 34,
                     onTap: () async {
                       uploadFirstImage(context, modelUser).then((uri) {
-                        if (uri != '') {
-                          modelUser.userImageUrl.add(uri);
-                          setState(() => isPhoto = true);
-                        }
+                        if (uri.isEmpty) return;
+                        modelUser.listImageUri.add(uri);
+                        setState(() => isPhoto = true);
                       });
                     },
                     padding: 6,
                   ),
-                if (modelUser.userImageUrl.isNotEmpty)
+                if (modelUser.listImageUri.isNotEmpty)
                   customIconButton(
                     path: 'images/ic_edit.png',
                     width: height / 32,
                     height: height / 32,
-                    onTap: () async {
-                      updateFirstImage(context, modelUser, true);
-                    },
+                    onTap: () async =>
+                        updateFirstImage(context, modelUser, true),
                     padding: 5,
                   ),
               ],
@@ -373,10 +356,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       path: 'images/ic_log_out.png',
                                       width: height / 26,
                                       height: height / 26,
-                                      onTap: () async {
-                                        FirebaseAuthMethods.signOut(
-                                            context, modelUser.uid);
-                                      },
+                                      onTap: () => FirebaseAuthMethods.signOut(
+                                          context, modelUser.uid),
                                       padding: 0,
                                     ),
                                   ),
@@ -403,9 +384,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   width: width / 3.1,
                                   darkColors: true,
                                   colorButton: listColorMulticoloured,
-                                  onTap: () {
-                                    _uploadData();
-                                  },
+                                  onTap: () => uploadDataUser(),
                                 ),
                               ),
                             ),
@@ -449,45 +428,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 hint: 'Ваш пол',
                                 length: 10,
                                 imaxLength: 1,
-                                onTap: () async {
-                                  showBottomSheetShow(
-                                      context,
-                                      'Укажите свой пол',
-                                      'Мужской',
-                                      'Женский',
-                                      _myPolController,
-                                      height);
-                                }),
+                                onTap: () async => showBottomSheetShow(
+                                    context,
+                                    'Укажите свой пол',
+                                    'Мужской',
+                                    'Женский',
+                                    _myPolController,
+                                    height)),
                             textFieldProfileSettings(
                                 nameController: _searchPolController,
                                 isLook: true,
                                 hint: 'С кем вы хотите познакомиться',
                                 length: 10,
                                 imaxLength: 1,
-                                onTap: () {
-                                  showBottomSheetShow(
-                                      context,
-                                      'Укажите с кем вы хотите познакомиться',
-                                      'С парнем',
-                                      'С девушкой',
-                                      _searchPolController,
-                                      height);
-                                }),
+                                onTap: () => showBottomSheetShow(
+                                    context,
+                                    'Укажите с кем вы хотите познакомиться',
+                                    'С парнем',
+                                    'С девушкой',
+                                    _searchPolController,
+                                    height)),
                             textFieldProfileSettings(
                                 nameController: _localController,
                                 isLook: true,
                                 hint: 'Вы проживаете',
                                 length: 10,
                                 imaxLength: 1,
-                                onTap: () {
-                                  showBottomSheetShow(
-                                      context,
-                                      'Укажите где вы проживаете',
-                                      'Бишкек',
-                                      'Каракол',
-                                      _localController,
-                                      height);
-                                }),
+                                onTap: () => showBottomSheetShow(
+                                    context,
+                                    'Укажите где вы проживаете',
+                                    'Бишкек',
+                                    'Каракол',
+                                    _localController,
+                                    height)),
                             textFieldProfileSettings(
                                 nameController: _ageRangController,
                                 isLook: true,
@@ -562,24 +535,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 hint: 'Уведомления',
                                 length: 10,
                                 imaxLength: 1,
-                                onTap: () {
-                                  showBottomSheetShow(
-                                      context,
-                                      'Укажите хотите получать уведомления',
-                                      'Включить',
-                                      'Выключить',
-                                      _notificationController,
-                                      height);
-                                }),
+                                onTap: () => showBottomSheetShow(
+                                    context,
+                                    'Укажите хотите получать уведомления',
+                                    'Включить',
+                                    'Выключить',
+                                    _notificationController,
+                                    height)),
                             textFieldProfileSettings(
                                 nameController: _supportController,
                                 isLook: true,
                                 hint: 'Техподдержка',
                                 length: 30,
                                 imaxLength: 1,
-                                onTap: () async {
-                                  launchUrlEmail('lancelotsuport@gmail.com');
-                                }),
+                                onTap: () =>
+                                    launchUrlEmail('lancelotsuport@gmail.com')),
                             Theme(
                               data: ThemeData.light(),
                               child: Card(
@@ -595,7 +565,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   padding:
                                       const EdgeInsets.only(top: 8, bottom: 8),
                                   child: MultiSelectBottomSheetField(
-                                    initialValue: modelUser.userInterests,
+                                    initialValue: modelUser.listInterests,
                                     searchHintStyle:
                                         const TextStyle(color: Colors.white),
                                     buttonText: Text(
@@ -642,10 +612,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     listType: MultiSelectListType.CHIP,
                                     searchable: true,
                                     itemsTextStyle: GoogleFonts.lato(
-                                        textStyle: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: height / 60,
-                                            letterSpacing: .6)),
+                                      textStyle: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: height / 60,
+                                          letterSpacing: .6),
+                                    ),
                                     selectedItemsTextStyle: GoogleFonts.lato(
                                         textStyle: TextStyle(
                                             color: Colors.black,
@@ -667,10 +638,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           () => _selectedInterests = values);
                                     },
                                     chipDisplay: MultiSelectChipDisplay(
-                                      onTap: (value) {
-                                        setState(() =>
-                                            _selectedInterests.remove(value));
-                                      },
+                                      onTap: (value) => setState(() =>
+                                          _selectedInterests.remove(value)),
                                     ),
                                   ),
                                 ),

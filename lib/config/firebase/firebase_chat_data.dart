@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../getx/chat_data_controller.dart';
 
@@ -12,14 +13,14 @@ class ChatDataFirebase {
     String friendId,
     GetChatDataController getChatDataController,
   ) async {
-    listenerChatData = FirebaseFirestore.instance
+    listenerChatData = GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(uid)
         .collection('messages')
         .doc(friendId)
         .snapshots()
         .listen((snapshot) {
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      final data = snapshot.data() as Map<String, dynamic>;
 
       final lastDateCloseChat = data['last_date_close_chat'];
       final lastDateOpenChat = data['last_date_open_chat'];
@@ -45,7 +46,7 @@ class ChatDataFirebase {
     });
   }
 
-  Future closeChatDataFirebase() async {
+  closeChatDataFirebase() {
     try {
       listenerChatData.cancel();
     } catch (e) {}

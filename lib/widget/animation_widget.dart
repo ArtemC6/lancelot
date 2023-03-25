@@ -65,15 +65,25 @@ class showProgressWrite extends StatelessWidget {
   }
 }
 
-Padding showCheckMessageAnimation(double height, IconData icon, Color white) {
-  return Padding(
-    padding: EdgeInsets.only(left: height / 100),
-    child: Icon(
-      icon,
-      color: white,
-      size: height / 50,
-    ),
-  );
+class showCheckMessageAnimation extends StatelessWidget {
+  const showCheckMessageAnimation(this.height, this.icon, this.white,
+      {super.key});
+
+  final double height;
+  final IconData icon;
+  final Color white;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: height / 100),
+      child: Icon(
+        icon,
+        color: white,
+        size: height / 50,
+      ),
+    );
+  }
 }
 
 class animatedText extends StatelessWidget {
@@ -144,31 +154,6 @@ class showIfNoData extends StatelessWidget {
       ),
     );
   }
-}
-
-Column showAnimationNoMessage(
-    double height, String path, AnimationController animationController) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Lottie.asset(alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-        return const SizedBox();
-      }, onLoaded: (composition) {
-        animationController
-          ..duration = composition.duration
-          ..repeat();
-      },
-          controller: animationController,
-          height: height * 0.38,
-          width: height * 0.52,
-          path),
-      SizedBox(
-        height: height * 0.04,
-      ),
-    ],
-  );
 }
 
 class showAnimationVerify extends StatelessWidget {
@@ -244,7 +229,6 @@ class loadingPhotoAnimation extends StatelessWidget {
   const loadingPhotoAnimation({
     super.key,
   });
-
 
   @override
   Widget build(BuildContext context) {

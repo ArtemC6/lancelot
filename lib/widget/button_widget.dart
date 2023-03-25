@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -361,7 +362,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                     userModelFriend.token,
                     'sympathy',
                     userModelCurrent.uid,
-                    userModelCurrent.userImageUrl[0]);
+                    userModelCurrent.listImageUri[0]);
               }
             } else {
               await deleteSympathyPartner(
@@ -390,7 +391,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
                     userModelFriend.token,
                     'sympathy',
                     userModelCurrent.uid,
-                    userModelCurrent.userImageUrl[0]);
+                    userModelCurrent.listImageUri[0]);
               }
             } else {
               await deleteSympathyPartner(
@@ -409,90 +410,52 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           width: height / 5.6,
           sizeText: height / 64,
           time: 400,
-          onTap: () {
-            Navigator.push(
-              context,
-              FadeRouteAnimation(
-                ChatUserScreen(
-                  friendId: userModelFriend.uid,
-                  friendName: userModelFriend.name,
-                  friendImage: userModelFriend.userImageUrl[0],
-                  userModelCurrent: userModelCurrent,
-                  token: userModelFriend.token,
-                  notification: userModelFriend.notification,
-                ),
+          onTap: () => Navigator.push(
+            context,
+            FadeRouteAnimation(
+              ChatUserScreen(
+                friendId: userModelFriend.uid,
+                friendName: userModelFriend.name,
+                friendImage: userModelFriend.listImageUri[0],
+                userModelCurrent: userModelCurrent,
+                token: userModelFriend.token,
+                notification: userModelFriend.notification,
               ),
-            );
-          },
+            ),
+          ),
         );
       }
     }
 
     return FutureBuilder(
-      future: FirebaseFirestore.instance
-              .collection('User')
-              .doc(userModelCurrent.uid)
-              .collection('sympathy')
-              .where('uid', isEqualTo: userModelFriend.uid)
-              .toString()
-              .isEmpty
-          ? FirebaseFirestore.instance
-              .collection('User')
-              .doc(userModelCurrent.uid)
-              .collection('sympathy')
-              .where('uid', isEqualTo: userModelFriend.uid)
-              .get(const GetOptions(source: Source.cache))
-          : FirebaseFirestore.instance
-              .collection('User')
-              .doc(userModelCurrent.uid)
-              .collection('sympathy')
-              .where('uid', isEqualTo: userModelFriend.uid)
-              .get(
-                const GetOptions(source: Source.server),
-              ),
+      future: GetIt.I<FirebaseFirestore>()
+          .collection('User')
+          .doc(userModelCurrent.uid)
+          .collection('sympathy')
+          .where('uid', isEqualTo: userModelFriend.uid)
+          .get(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshotMy) {
         return FutureBuilder(
-          future: FirebaseFirestore.instance
-                  .collection('User')
-                  .doc(userModelFriend.uid)
-                  .collection('sympathy')
-                  .where('uid', isEqualTo: userModelCurrent.uid)
-                  .get(const GetOptions(source: Source.cache))
-                  .toString()
-                  .isEmpty
-              ? FirebaseFirestore.instance
-                  .collection('User')
-                  .doc(userModelFriend.uid)
-                  .collection('sympathy')
-                  .where('uid', isEqualTo: userModelCurrent.uid)
-                  .get(const GetOptions(source: Source.cache))
-              : FirebaseFirestore.instance
-                  .collection('User')
-                  .doc(userModelFriend.uid)
-                  .collection('sympathy')
-                  .where('uid', isEqualTo: userModelCurrent.uid)
-                  .get(
-                    const GetOptions(source: Source.server),
-                  ),
+          future: GetIt.I<FirebaseFirestore>()
+              .collection('User')
+              .doc(userModelFriend.uid)
+              .collection('sympathy')
+              .where('uid', isEqualTo: userModelCurrent.uid)
+              .get(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             bool isMutuallyFriend = false, isMutuallyMy = false;
-            getState(50).then((value) {
+            getState(70).then((i) {
               isMutuallyFriend = false;
               isMutuallyMy = false;
             });
 
-            try {
-              for (int i = 0; i < snapshot.data.docs.length; i++) {
-                isMutuallyFriend =
-                    snapshot.data.docs[i]['uid'] == userModelCurrent.uid;
-                if (isMutuallyFriend) break;
-              }
-              for (int i = 0; i < snapshotMy.data.docs.length; i++) {
-                isMutuallyMy =
-                    snapshotMy.data.docs[i]['uid'] == userModelFriend.uid;
-                if (isMutuallyMy) break;
-              }
-            } catch (E) {}
+            for (var data in snapshot.data!.docs) {
+              isMutuallyFriend = data['uid'] == userModelCurrent.uid;
+            }
+
+            for (var data in snapshotMy.data!.docs) {
+              isMutuallyMy = data['uid'] == userModelFriend.uid;
+            }
 
             if (snapshotMy.hasData && snapshot.hasData) {
               return DelayedDisplay(
@@ -599,8 +562,6 @@ class homeAnimationButton extends StatelessWidget {
           endRadius: height * 0.1,
           repeatPauseDuration: const Duration(milliseconds: 500),
           duration: Duration(milliseconds: time),
-          repeat: true,
-          showTwoGlows: true,
           curve: Curves.easeOutQuad,
           child: FlutterColorsBorder(
             animationDuration: 5,

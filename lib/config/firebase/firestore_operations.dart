@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Lancelot/config/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,17 +65,16 @@ Future<CroppedFile?> _cropImage(
 Future<String> uploadFirstImage(
     BuildContext context, UserModel modelUser) async {
   String uri = '';
-  FirebaseStorage storage = FirebaseStorage.instance;
+  final storage = FirebaseStorage.instance;
   try {
     final pickedImage = await ImagePicker().pickImage(
         source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
     if (pickedImage != null) {
       await _cropImage(context, pickedImage, 38).then((croppedFile) async {
         if (croppedFile != null) {
-          final String fileName = path.basename(croppedFile.path);
-          File imageFile = File(croppedFile.path);
-
-          var task = storage.ref(fileName).putFile(imageFile);
+          final fileName = path.basename(croppedFile.path);
+          final imageFile = File(croppedFile.path);
+          final task = storage.ref(fileName).putFile(imageFile);
 
           if (task == null) return '';
           showAlertDialogLoading(context);
@@ -83,21 +82,19 @@ Future<String> uploadFirstImage(
           final snapshot = await task.whenComplete(() {});
           final urlDownload = await snapshot.ref.getDownloadURL();
 
-          modelUser.userImagePath.add(fileName);
-          modelUser.userImageUrl.add(urlDownload);
+          modelUser.listImagePath.add(fileName);
+          modelUser.listImageUri.add(urlDownload);
 
-          final docUser = FirebaseFirestore.instance
+          final docUser = GetIt.I<FirebaseFirestore>()
               .collection('User')
-              .doc(FirebaseAuth.instance.currentUser?.uid);
+              .doc(GetIt.I<FirebaseAuth>().currentUser?.uid);
 
           final json = {
-            'listImageUri': modelUser.userImageUrl,
-            'listImagePath': modelUser.userImagePath
+            'listImageUri': modelUser.listImageUri,
+            'listImagePath': modelUser.listImagePath
           };
 
-          await docUser.update(json).then((value) {
-            uri = urlDownload;
-          });
+          await docUser.update(json).then((value) => uri = urlDownload);
         }
       });
     }
@@ -114,10 +111,10 @@ Future<void> uploadImageAdd(
     if (pickedImage != null) {
       await _cropImage(context, pickedImage, 28).then((croppedFile) async {
         if (croppedFile != null) {
-          final String fileName = path.basename(croppedFile.path);
-          File imageFile = File(croppedFile.path);
+          final fileName = path.basename(croppedFile.path);
+          final imageFile = File(croppedFile.path);
           try {
-            var task =
+            final task =
                 FirebaseStorage.instance.ref(fileName).putFile(imageFile);
 
             if (task == null) return;
@@ -126,42 +123,30 @@ Future<void> uploadImageAdd(
             final snapshot = await task.whenComplete(() {});
             final urlDownload = await snapshot.ref.getDownloadURL();
 
-            userModelCurrent.userImageUrl.add(urlDownload);
-            userModelCurrent.userImagePath.add(fileName);
+            userModelCurrent.listImageUri.add(urlDownload);
+            userModelCurrent.listImagePath.add(fileName);
 
-            final docUser = FirebaseFirestore.instance
+            final docUser = GetIt.I<FirebaseFirestore>()
                 .collection('User')
                 .doc(userModelCurrent.uid);
 
             final json = {
-              'listImageUri': userModelCurrent.userImageUrl,
-              'listImagePath': userModelCurrent.userImagePath
+              'listImageUri': userModelCurrent.listImageUri,
+              'listImagePath': userModelCurrent.listImagePath
             };
 
             docUser.update(json);
 
+            Map<String, dynamic> dataCash = {};
             Navigator.pushReplacement(
-                context,
-                FadeRouteAnimation(ManagerScreen(
-                    currentIndex: 3,
-                    userModelCurrent: UserModel(
-                        name: '',
-                        uid: '',
-                        state: '',
-                        myCity: '',
-                        ageInt: 0,
-                        ageTime: Timestamp.now(),
-                        userPol: '',
-                        searchPol: '',
-                        searchRangeStart: 0,
-                        userImageUrl: [],
-                        userImagePath: [],
-                        imageBackground: '',
-                        userInterests: [],
-                        searchRangeEnd: 0,
-                        token: '',
-                        notification: true,
-                        description: ''))));
+              context,
+              FadeRouteAnimation(
+                ManagerScreen(
+                  currentIndex: 3,
+                  userModelCurrent: UserModel.fromDocument(dataCash),
+                ),
+              ),
+            );
           } on FirebaseException {
             Navigator.pop(context);
           }
@@ -183,11 +168,11 @@ Future<String> updateFirstImage(
     if (pickedImage != null) {
       await _cropImage(context, pickedImage, 38).then((croppedFile) async {
         if (croppedFile != null) {
-          final String fileName = path.basename(croppedFile.path);
-          File imageFile = File(croppedFile.path);
+          final fileName = path.basename(croppedFile.path);
+          final imageFile = File(croppedFile.path);
 
           try {
-            var task = storage.ref(fileName).putFile(imageFile);
+            final task = storage.ref(fileName).putFile(imageFile);
             if (task == null) return;
 
             showAlertDialogLoading(context);
@@ -195,20 +180,20 @@ Future<String> updateFirstImage(
             final snapshot = await task.whenComplete(() {});
             final urlDownload = await snapshot.ref.getDownloadURL();
 
-            CachedNetworkImage.evictFromCache(userModelCurrent.userImageUrl[0]);
+            CachedNetworkImage.evictFromCache(userModelCurrent.listImageUri[0]);
 
-            storage.ref(userModelCurrent.userImagePath[0]).delete();
+            storage.ref(userModelCurrent.listImagePath[0]).delete();
 
-            userModelCurrent.userImageUrl.removeAt(0);
-            userModelCurrent.userImagePath.removeAt(0);
+            userModelCurrent.listImageUri.removeAt(0);
+            userModelCurrent.listImagePath.removeAt(0);
 
             listImagePath.add(fileName);
             listImageUri.add(urlDownload);
 
-            listImagePath.addAll(userModelCurrent.userImagePath);
-            listImageUri.addAll(userModelCurrent.userImageUrl);
+            listImagePath.addAll(userModelCurrent.listImagePath);
+            listImageUri.addAll(userModelCurrent.listImageUri);
 
-            final docUser = FirebaseFirestore.instance
+            final docUser = GetIt.I<FirebaseFirestore>()
                 .collection('User')
                 .doc(userModelCurrent.uid);
 
@@ -219,54 +204,20 @@ Future<String> updateFirstImage(
 
             docUser.update(json);
             Navigator.pop(context);
+            Map<String, dynamic> dataCash = {};
             if (isScreen) {
               Navigator.pushReplacement(
                   context,
                   FadeRouteAnimation(EditProfileScreen(
                     isFirst: false,
-                    userModel: UserModel(
-                        name: '',
-                        uid: '',
-                        myCity: '',
-                        ageTime: Timestamp.now(),
-                        userPol: '',
-                        searchPol: '',
-                        searchRangeStart: 0,
-                        userImageUrl: [],
-                        userImagePath: [],
-                        imageBackground: '',
-                        userInterests: [],
-                        searchRangeEnd: 0,
-                        ageInt: 0,
-                        state: '',
-                        token: '',
-                        notification: true,
-                        description: ''),
+                    userModel: UserModel.fromDocument(dataCash),
                   )));
             } else {
               Navigator.pushReplacement(
                   context,
                   FadeRouteAnimation(ManagerScreen(
-                    currentIndex: 3,
-                    userModelCurrent: UserModel(
-                        name: '',
-                        uid: '',
-                        state: '',
-                        myCity: '',
-                        ageInt: 0,
-                        ageTime: Timestamp.now(),
-                        userPol: '',
-                        searchPol: '',
-                        searchRangeStart: 0,
-                        userImageUrl: [],
-                        userImagePath: [],
-                        imageBackground: '',
-                        userInterests: [],
-                        searchRangeEnd: 0,
-                        token: '',
-                        notification: true,
-                        description: ''),
-                  )));
+                      currentIndex: 3,
+                      userModelCurrent: UserModel.fromDocument(dataCash))));
             }
           } on FirebaseException {
             Navigator.pop(context);
@@ -281,7 +232,7 @@ Future<String> updateFirstImage(
 Future<void> createSympathy(
     String idPartner, UserModel userModelCurrent) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idPartner)
         .collection('sympathy')
@@ -291,7 +242,7 @@ Future<void> createSympathy(
       for (var document in querySnapshot.docs) {
         if (document['uid'] == userModelCurrent.uid) return;
       }
-      final docUser = FirebaseFirestore.instance
+      final docUser = GetIt.I<FirebaseFirestore>()
           .collection("User")
           .doc(idPartner)
           .collection('sympathy')
@@ -307,7 +258,7 @@ Future<void> createSympathy(
 
 Future<void> deleteSympathy(String idDoc, idUser) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection("User")
         .doc(idUser)
         .collection('sympathy')
@@ -318,7 +269,7 @@ Future<void> deleteSympathy(String idDoc, idUser) async {
 }
 
 Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
-  await FirebaseFirestore.instance
+  await GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(idPartner)
       .collection('sympathy')
@@ -326,14 +277,12 @@ Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
       .get()
       .then((querySnapshot) async {
     for (var result in querySnapshot.docs) {
-      Map<String, dynamic> data = result.data();
-      await FirebaseFirestore.instance
+      await GetIt.I<FirebaseFirestore>()
           .collection("User")
           .doc(idPartner)
           .collection('sympathy')
-          .doc(data['id_doc'])
-          .delete()
-          .then((value) {});
+          .doc(result.data()['id_doc'])
+          .delete();
     }
   });
 }
@@ -342,42 +291,26 @@ Future<void> imageRemove(
     int index, BuildContext context, UserModel userModelCurrent) async {
   try {
     FirebaseStorage.instance
-        .ref(userModelCurrent.userImagePath[index])
+        .ref(userModelCurrent.listImagePath[index])
         .delete();
-    CachedNetworkImage.evictFromCache(userModelCurrent.userImageUrl[index]);
-    userModelCurrent.userImageUrl.removeAt(index);
-    userModelCurrent.userImagePath.removeAt(index);
+    CachedNetworkImage.evictFromCache(userModelCurrent.listImageUri[index]);
+    userModelCurrent.listImageUri.removeAt(index);
+    userModelCurrent.listImagePath.removeAt(index);
 
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(userModelCurrent.uid)
         .update({
-      'listImageUri': userModelCurrent.userImageUrl,
-      'listImagePath': userModelCurrent.userImagePath
+      'listImageUri': userModelCurrent.listImageUri,
+      'listImagePath': userModelCurrent.listImagePath
     });
+    Map<String, dynamic> dataCash = {};
     Navigator.pushReplacement(
       context,
       FadeRouteAnimation(
         ManagerScreen(
           currentIndex: 3,
-          userModelCurrent: UserModel(
-              name: '',
-              uid: '',
-              state: '',
-              myCity: '',
-              ageInt: 0,
-              ageTime: Timestamp.now(),
-              userPol: '',
-              searchPol: '',
-              searchRangeStart: 0,
-              userImageUrl: [],
-              userImagePath: [],
-              imageBackground: '',
-              userInterests: [],
-              searchRangeEnd: 0,
-              token: '',
-              notification: true,
-              description: ''),
+          userModelCurrent: UserModel.fromDocument(dataCash),
         ),
       ),
     );
@@ -388,9 +321,9 @@ Future<void> imageRemove(
 
 Future<void> setStateFirebase(String state, [String? uid]) async {
   try {
-    await FirebaseFirestore.instance
+    await GetIt.I<FirebaseFirestore>()
         .collection('User')
-        .doc(uid ?? FirebaseAuth.instance.currentUser?.uid)
+        .doc(uid ?? GetIt.I<FirebaseAuth>().currentUser?.uid)
         .update({
       'state': state,
       if (state == 'offline') 'lastDateOnline': DateTime.now(),
@@ -400,7 +333,7 @@ Future<void> setStateFirebase(String state, [String? uid]) async {
 
 Future<void> deleteUserTokenFirebase(String uid) async {
   try {
-    await FirebaseFirestore.instance.collection('User').doc(uid).update({
+    await GetIt.I<FirebaseFirestore>().collection('User').doc(uid).update({
       'token': '',
     });
   } on FirebaseException {}
@@ -409,9 +342,9 @@ Future<void> deleteUserTokenFirebase(String uid) async {
 Future<void> setTokenUserFirebase() async {
   try {
     await FirebaseMessaging.instance.getToken().then((token) async {
-      await FirebaseFirestore.instance
+      await GetIt.I<FirebaseFirestore>()
           .collection('User')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
           .update({
         'token': token,
       });
@@ -423,28 +356,28 @@ Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
     String friendUri) async {
   CachedNetworkImage.evictFromCache(friendUri);
 
-  FirebaseFirestore.instance
+  GetIt.I<FirebaseFirestore>()
       .collection('User')
-      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
       .collection('messages')
       .doc(friendId)
       .delete();
 
-  FirebaseFirestore.instance
+  GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(friendId)
       .collection('messages')
-      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
       .delete();
 
-  var usersMy = FirebaseFirestore.instance
+  final usersMy = GetIt.I<FirebaseFirestore>()
       .collection('User')
-      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
       .collection('messages')
       .doc(friendId)
       .collection('chats');
 
-  WriteBatch batchMy = FirebaseFirestore.instance.batch();
+  final batchMy = GetIt.I<FirebaseFirestore>().batch();
 
   usersMy.get().then((querySnapshot) {
     for (var document in querySnapshot.docs) {
@@ -453,14 +386,14 @@ Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
     return batchMy.commit();
   });
 
-  var usersFriend = FirebaseFirestore.instance
+  final usersFriend = GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(friendId)
       .collection('messages')
-      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
       .collection('chats');
 
-  WriteBatch batchFriend = FirebaseFirestore.instance.batch();
+  final batchFriend = GetIt.I<FirebaseFirestore>().batch();
 
   usersFriend.get().then((querySnapshot) {
     for (var document in querySnapshot.docs) {
@@ -472,35 +405,19 @@ Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
 
 Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
         .update({
       'imageBackground': uri,
     }).then((value) {
+      Map<String, dynamic> dataCash = {};
       Navigator.pushReplacement(
           context,
           FadeRouteAnimation(
             ManagerScreen(
               currentIndex: 3,
-              userModelCurrent: UserModel(
-                  name: '',
-                  uid: '',
-                  state: '',
-                  myCity: '',
-                  ageInt: 0,
-                  ageTime: Timestamp.now(),
-                  userPol: '',
-                  searchPol: '',
-                  searchRangeStart: 0,
-                  userImageUrl: [],
-                  userImagePath: [],
-                  imageBackground: '',
-                  userInterests: [],
-                  searchRangeEnd: 0,
-                  token: '',
-                  notification: true,
-                  description: ''),
+              userModelCurrent: UserModel.fromDocument(dataCash),
             ),
           ));
     });
@@ -508,93 +425,51 @@ Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
 }
 
 Future<UserModel> readUserFirebase([String? idUser]) async {
-  UserModel userModel = UserModel(
-      name: '',
-      uid: '',
-      state: '',
-      myCity: '',
-      ageInt: 0,
-      ageTime: Timestamp.now(),
-      userPol: '',
-      searchPol: '',
-      searchRangeStart: 0,
-      userImageUrl: [],
-      userImagePath: [],
-      imageBackground: '',
-      userInterests: [],
-      searchRangeEnd: 0,
-      token: '',
-      notification: true,
-      description: '');
+  Map<String, dynamic> data = {};
+  UserModel userModel = UserModel.fromDocument(data);
   try {
     DocumentSnapshot<Map<String, dynamic>> query;
+    final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
     try {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
-          .doc(idUser ?? FirebaseAuth.instance.currentUser?.uid)
+          .doc(idUser ?? uid)
           .get(const GetOptions(source: Source.cache));
     } on FirebaseException {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
-          .doc(idUser ?? FirebaseAuth.instance.currentUser?.uid)
+          .doc(idUser ?? uid)
           .get(const GetOptions(source: Source.server));
     }
 
     if (!query.metadata.isFromCache) {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
-          .doc(idUser ?? FirebaseAuth.instance.currentUser?.uid)
+          .doc(idUser ?? uid)
           .get(const GetOptions(source: Source.server));
     }
 
-    Map<String, dynamic> dataCash = query.data() as Map<String, dynamic>;
+    final dataCash = query.data() as Map<String, dynamic>;
 
     try {
-      if (dataCash['myPol'] == null ||
-          dataCash['myCity'] == null ||
-          dataCash['searchPol'] == null ||
-          dataCash['rangeStart'] == null ||
-          dataCash['rangeEnd'] == null ||
-          dataCash['ageTime'] == null ||
-          dataCash['description'] == null ||
-          dataCash['notification'] == null ||
-          dataCash['imageBackground'] == null ||
-          dataCash['state'] == null ||
-          dataCash['token'] == null ||
-          dataCash['listInterests'] == null) {
-        query = await FirebaseFirestore.instance
+      if (dataCash['imageBackground'] == null ||
+          dataCash['listInterests'] == null ||
+          dataCash['listImageUri'] == null) {
+        query = await GetIt.I<FirebaseFirestore>()
             .collection('User')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(uid)
             .get(const GetOptions(source: Source.server));
       }
     } on FirebaseException {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(uid)
           .get(const GetOptions(source: Source.server));
     }
 
-    Map<String, dynamic> data = query.data() as Map<String, dynamic>;
-
-    userModel = UserModel(
-        name: data['name'],
-        uid: data['uid'],
-        ageTime: data['ageTime'],
-        userPol: data['myPol'],
-        searchPol: data['searchPol'],
-        searchRangeStart: data['rangeStart'],
-        userInterests: List<String>.from(data['listInterests']),
-        userImagePath: List<String>.from(data['listImagePath']),
-        userImageUrl: List<String>.from(data['listImageUri']),
-        searchRangeEnd: data['rangeEnd'],
-        myCity: data['myCity'],
-        imageBackground: data['imageBackground'],
-        ageInt: ageIntParse(data),
-        state: data['state'],
-        token: data['token'],
-        notification: data['notification'],
-        description: data['description']);
+    userModel = UserModel.fromDocument(query.data() as Map<String, dynamic>);
   } on FirebaseException {}
+
   return userModel;
 }
 
@@ -602,13 +477,13 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
   List<String> listDislike = [];
   QuerySnapshot<Map<String, dynamic>> query;
   try {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idUser)
         .collection('dislike')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idUser)
         .collection('dislike')
@@ -616,7 +491,7 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
   }
 
   if (query.size == 0 && query.docs.isEmpty) {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idUser)
         .collection('dislike')
@@ -632,11 +507,11 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
 
 Future deleteDislike(String idUser) async {
   try {
-    CollectionReference collection = FirebaseFirestore.instance
+    final collection = GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idUser)
         .collection('dislike');
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+    final batch = GetIt.I<FirebaseFirestore>().batch();
 
     return collection.get().then((querySnapshot) {
       for (var document in querySnapshot.docs) {
@@ -651,7 +526,7 @@ Future deleteDislike(String idUser) async {
 Future deleteMessageFirebase(String myId, String friendId, String idDoc,
     bool isLastMessage, AsyncSnapshot snapshotMy, int index) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(myId)
         .collection('messages')
@@ -660,7 +535,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
         .doc(idDoc)
         .delete();
 
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -670,7 +545,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
         .delete();
 
     if (isLastMessage) {
-      FirebaseFirestore.instance
+      GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(myId)
           .collection('messages')
@@ -681,7 +556,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
         'last_date_open_chat': DateTime.now(),
       });
 
-      FirebaseFirestore.instance
+      GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(friendId)
           .collection('messages')
@@ -701,13 +576,13 @@ Future<bool> putLike(
   try {
     QuerySnapshot<Map<String, dynamic>> query;
     try {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(userModel.uid)
           .collection('likes')
           .get(const GetOptions(source: Source.cache));
     } on FirebaseException {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(userModel.uid)
           .collection('likes')
@@ -715,7 +590,7 @@ Future<bool> putLike(
     }
 
     if (query.size == 0 && query.docs.isEmpty) {
-      query = await FirebaseFirestore.instance
+      query = await GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(userModel.uid)
           .collection('likes')
@@ -723,14 +598,12 @@ Future<bool> putLike(
     }
 
     for (var result in query.docs) {
-      if (userModelCurrent.uid == result.id) {
-        isLike = true;
-      }
+      if (userModelCurrent.uid == result.id) isLike = true;
     }
 
     if (isLikeOnTap) {
       if (!isLike) {
-        FirebaseFirestore.instance
+        GetIt.I<FirebaseFirestore>()
             .collection("User")
             .doc(userModel.uid)
             .collection('likes')
@@ -747,7 +620,7 @@ Future<bool> putLike(
               'like');
         }
       } else {
-        FirebaseFirestore.instance
+        GetIt.I<FirebaseFirestore>()
             .collection("User")
             .doc(userModel.uid)
             .collection('likes')
@@ -764,125 +637,72 @@ Future<Map> readInterestsFirebase() async {
   Map mapInterests = {};
   QuerySnapshot<Map<String, dynamic>> query;
   try {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.server));
   }
 
   if (query.size == 0) {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.server));
   }
 
   for (var document in query.docs) {
-    Map<String, dynamic> data = document.data();
-    mapInterests = data['Interests'];
+    mapInterests = document.data()['Interests'];
   }
 
   return mapInterests;
 }
 
 Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
-  UserModel userModelCurrent = UserModel(
-      name: '',
-      uid: '',
-      state: '',
-      myCity: '',
-      ageInt: 0,
-      ageTime: Timestamp.now(),
-      userPol: '',
-      searchPol: '',
-      searchRangeStart: 0,
-      userImageUrl: [],
-      userImagePath: [],
-      imageBackground: '',
-      userInterests: [],
-      searchRangeEnd: 0,
-      token: '',
-      notification: true,
-      description: '');
-
+  Map<String, dynamic> data = {};
+  UserModel userModelCurrent = UserModel.fromDocument(data);
   try {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
+    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
       DocumentSnapshot<Map<String, dynamic>> queryUser;
-
       try {
-        queryUser = await FirebaseFirestore.instance
+        queryUser = await GetIt.I<FirebaseFirestore>()
             .collection('User')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
             .get(const GetOptions(source: Source.cache));
       } on FirebaseException {
-        queryUser = await FirebaseFirestore.instance
+        queryUser = await GetIt.I<FirebaseFirestore>()
             .collection('User')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
             .get(const GetOptions(source: Source.server));
       }
 
-      Map<String, dynamic> dataCash = queryUser.data() as Map<String, dynamic>;
+      final dataCash = queryUser.data() as Map<String, dynamic>;
 
       try {
-        if (dataCash['myPol'] == null ||
-            dataCash['myCity'] == null ||
-            dataCash['searchPol'] == null ||
-            dataCash['rangeStart'] == null ||
-            dataCash['rangeEnd'] == null ||
-            dataCash['ageTime'] == null ||
-            dataCash['description'] == null ||
-            dataCash['notification'] == null ||
-            dataCash['imageBackground'] == null ||
-            dataCash['state'] == null ||
-            dataCash['token'] == null ||
+        if (dataCash['imageBackground'] == null ||
             dataCash['listInterests'] == null) {
-          queryUser = await FirebaseFirestore.instance
+          queryUser = await GetIt.I<FirebaseFirestore>()
               .collection('User')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
               .get(const GetOptions(source: Source.server));
         }
       } on FirebaseException {
-        queryUser = await FirebaseFirestore.instance
+        queryUser = await GetIt.I<FirebaseFirestore>()
             .collection('User')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
             .get(const GetOptions(source: Source.server));
       }
 
-      Map<String, dynamic> data = queryUser.data() as Map<String, dynamic>;
+      final data = queryUser.data() as Map<String, dynamic>;
 
-      if (data['myPol'] != '' &&
-          data['myCity'] != '' &&
-          data['searchPol'] != '' &&
-          data['rangeStart'] != '' &&
-          data['rangeEnd'] != '' &&
-          data['ageTime'] != '' &&
-          data['listInterests'] != '' &&
-          List<String>.from(data['listImageUri']).isNotEmpty &&
+      if (data['listInterests'] != '' &&
           List<String>.from(data['listImageUri']).isNotEmpty) {
-        userModelCurrent = UserModel(
-            name: data['name'],
-            uid: data['uid'],
-            ageTime: data['ageTime'],
-            userPol: data['myPol'],
-            searchPol: data['searchPol'],
-            searchRangeStart: data['rangeStart'],
-            userInterests: List<String>.from(data['listInterests']),
-            userImagePath: List<String>.from(data['listImagePath']),
-            userImageUrl: List<String>.from(data['listImageUri']),
-            searchRangeEnd: data['rangeEnd'],
-            myCity: data['myCity'],
-            imageBackground: data['imageBackground'],
-            ageInt: ageIntParse(data),
-            state: data['state'],
-            token: data['token'],
-            notification: data['notification'],
-            description: data['description']);
+        userModelCurrent = UserModel.fromDocument(data);
       }
     }
   } on FirebaseException {
-    FirebaseAuth.instance.signOut();
+    GetIt.I<FirebaseAuth>().signOut();
   }
 
   return userModelCurrent;
@@ -893,7 +713,7 @@ Future putUserWrites(
   String friendId,
 ) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection("User")
         .doc(friendId)
         .collection('messages')
@@ -904,7 +724,7 @@ Future putUserWrites(
 
 Future createDisLike(UserModel userModelCurrent, UserModel userModel) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection("User")
         .doc(userModelCurrent.uid)
         .collection('dislike')
@@ -915,7 +735,7 @@ Future createDisLike(UserModel userModelCurrent, UserModel userModel) async {
 
 Future createLastOpenChat(String uid, String friendId) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -928,7 +748,7 @@ Future createLastOpenChat(String uid, String friendId) async {
 
 Future createLastCloseChat(String uid, String friendId, data) async {
   try {
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -943,19 +763,19 @@ Future<List<String>> readFirebaseImageProfile() async {
   DocumentSnapshot<Map<String, dynamic>> query;
   List<String> listImages = [];
   try {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await FirebaseFirestore.instance
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.server));
   }
 
-  if (query.data()?.length == 0) {
-    query = await FirebaseFirestore.instance
+  if (query.data()!.isEmpty) {
+    query = await GetIt.I<FirebaseFirestore>()
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.server));
@@ -970,19 +790,19 @@ Future<bool> sendFcmMessage(
     String title, String message, String userToken, String type,
     [String? uid, String? uri]) async {
   try {
-    var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+    final url = Uri.parse('https://fcm.googleapis.com/fcm/send');
 
-    String keyAuth =
+    const keyAuth =
         'key=AAAAKuk0_pM:APA91bHewKAMBWy9XgTLMZ3vKV9EgDkBAF_H1lwS-XOFDudRcGu2t3kQfYP_3zmlOHxChObB1sqX9gVnIGlewtw7it-4heFSbIclpAs1L-oLYlpGH_X3Gu6SBuswrbPlgVOZehBVhn3I';
 
-    String title = 'Lancelot';
+    const title = 'Lancelot';
 
-    var header = {
+    final header = {
       "Content-Type": "application/json",
       "Authorization": keyAuth,
     };
 
-    var request = {
+    final request = {
       "notification": {
         "title": title,
         "body": message,
@@ -1030,7 +850,7 @@ Future<void> sendMessage(
     final String idDocMessage;
     final dateCurrent = DateTime.now();
 
-    if (notification && token != '') {
+    if (notification && token.isNotEmpty) {
       sendFcmMessage(
           'Lancelot',
           '${currentUser.name}: отправил вам новое сообщение',
@@ -1039,7 +859,7 @@ Future<void> sendMessage(
           currentUser.uid);
     }
 
-    final docMessage = FirebaseFirestore.instance
+    final docMessage = GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(currentUser.uid)
         .collection('messages')
@@ -1058,7 +878,7 @@ Future<void> sendMessage(
       "date": dateCurrent,
     }))
         .then((value) async {
-      final docUser = FirebaseFirestore.instance
+      final docUser = GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(currentUser.uid)
           .collection('messages')
@@ -1080,7 +900,7 @@ Future<void> sendMessage(
       }
     });
 
-    FirebaseFirestore.instance
+    GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -1094,7 +914,7 @@ Future<void> sendMessage(
       "message": messageText,
       "date": dateCurrent,
     }).then((value) async {
-      final docUser = FirebaseFirestore.instance
+      final docUser = GetIt.I<FirebaseFirestore>()
           .collection('User')
           .doc(friendId)
           .collection('messages')
@@ -1125,10 +945,10 @@ Future<void> sendMessage(
 Future<List<InterestsModel>> sortingList(UserModel userModelPartner) async {
   List<InterestsModel> listStory = [];
   await readInterestsFirebase().then((map) {
-    for (var elementMain in userModelPartner.userInterests) {
+    for (var elementMain in userModelPartner.listInterests) {
       map.forEach((key, value) {
         if (elementMain == key) {
-          if (userModelPartner.userInterests.length != listStory.length) {
+          if (userModelPartner.listInterests.length != listStory.length) {
             listStory.add(InterestsModel(name: key, id: '', uri: value));
           }
         }
@@ -1137,4 +957,37 @@ Future<List<InterestsModel>> sortingList(UserModel userModelPartner) async {
   });
 
   return listStory;
+}
+
+Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFriendFirebase(
+    String uid, String friend, int limit) async {
+  QuerySnapshot<Map<String, dynamic>> query;
+  try {
+    query = await GetIt.I<FirebaseFirestore>()
+        .collection('User')
+        .doc(uid)
+        .collection('sympathy')
+        .where('uid', isEqualTo: friend)
+        .get(const GetOptions(source: Source.cache));
+  } on FirebaseException {
+    query = await GetIt.I<FirebaseFirestore>()
+        .collection('User')
+        .doc(uid)
+        .collection('sympathy')
+        .where('uid', isEqualTo: friend)
+        .get(const GetOptions(source: Source.server));
+  }
+
+  return query;
+}
+
+Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFirebase(
+    int limit, String uid) async {
+  return await GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(uid)
+      .collection('sympathy')
+      .orderBy("time", descending: true)
+      .limit(limit)
+      .get();
 }

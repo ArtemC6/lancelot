@@ -118,19 +118,17 @@ class itemUserLike extends StatelessWidget {
 
     return ZoomTapAnimation(
       end: 0.97,
-      onTap: () {
-        Navigator.push(
-          context,
-          FadeRouteAnimation(
-            ProfileScreen(
-              userModelPartner: userModelLike,
-              isBack: true,
-              idUser: '',
-              userModelCurrent: userModelCurrent,
-            ),
+      onTap: () => Navigator.push(
+        context,
+        FadeRouteAnimation(
+          ProfileScreen(
+            userModelPartner: userModelLike,
+            isBack: true,
+            idUser: '',
+            userModelCurrent: userModelCurrent,
           ),
-        );
-      },
+        ),
+      ),
       child: Container(
         height: height / 7.3,
         padding: EdgeInsets.only(
@@ -154,7 +152,7 @@ class itemUserLike extends StatelessWidget {
                   width: height / 12,
                   height: height / 12,
                   child: photoUser(
-                    uri: userModelLike.userImageUrl[0],
+                    uri: userModelLike.listImageUri[0],
                     width: height / 12,
                     height: height / 12,
                     state: userModelLike.state,
@@ -305,7 +303,7 @@ class cardPartner extends StatelessWidget {
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                   progressIndicatorBuilder: (context, url, progress) =>
                       const loadingPhotoAnimation(),
-                  imageUrl: userModelPartner.userImageUrl[0],
+                  imageUrl: userModelPartner.listImageUri[0],
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
                   width: width),

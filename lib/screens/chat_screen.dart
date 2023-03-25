@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../config/const.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -38,7 +40,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     animationController = AnimationController(vsync: this);
     scrollController.addListener(() {
       if (!isLoadingUser) setState(() => isLoadingUser = true);
-
       if (scrollController.position.maxScrollExtent ==
           scrollController.offset) {
         setState(() => limit += 4);
@@ -82,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 icon: Icons.message,
               ),
               StreamBuilder(
-                stream: FirebaseFirestore.instance
+                stream: GetIt.I<FirebaseFirestore>()
                     .collection('User')
                     .doc(widget.userModelCurrent.uid)
                     .collection('messages')
@@ -118,87 +119,36 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     duration:
                                         const Duration(milliseconds: 2200),
                                     child: FutureBuilder(
-                                      future: FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(friendId)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                              .toString()
-                                              .isEmpty
-                                          ? FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(friendId)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                          : FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(friendId)
-                                              .get(const GetOptions(
-                                                  source: Source.server)),
-                                      builder: (context,
-                                          AsyncSnapshot asyncSnapshotUser) {
+                                      future: readUserFirebase(friendId),
+                                      builder: (context, asyncSnapshotUser) {
                                         return SizedBox(
                                           child: FutureBuilder(
-                                            future: FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(userModelCurrent.uid)
-                                                    .collection('messages')
-                                                    .doc(friendId)
-                                                    .get(const GetOptions(
-                                                        source: Source.cache))
-                                                    .toString()
-                                                    .isEmpty
-                                                ? FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(userModelCurrent.uid)
-                                                    .collection('messages')
-                                                    .doc(friendId)
-                                                    .get(const GetOptions(
-                                                        source: Source.cache))
-                                                : FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(userModelCurrent.uid)
-                                                    .collection('messages')
-                                                    .doc(friendId)
-                                                    .get(const GetOptions(
-                                                        source: Source.server)),
+                                            future: GetIt.I<FirebaseFirestore>()
+                                                .collection('User')
+                                                .doc(userModelCurrent.uid)
+                                                .collection('messages')
+                                                .doc(friendId)
+                                                .get(),
                                             builder: (context,
                                                 AsyncSnapshot snapshotChat) {
                                               if (snapshotChat.hasData &&
                                                   asyncSnapshotUser.hasData &&
                                                   snapshotFriendId.hasData) {
+                                                final user =
+                                                    asyncSnapshotUser.data!;
                                                 var timeLastMessage =
                                                         Timestamp.now(),
-                                                    lastMsg = '',
-                                                    nameUser = '',
-                                                    imageUri = '',
                                                     indexAnimation = index + 1,
-                                                    token = '',
-                                                    state = '',
                                                     dataLastWrite,
                                                     isWriteUser = false,
                                                     isLastOpenChat = false,
                                                     isNewMessage = false,
-                                                    isReadMessage = false,
-                                                    notification = false;
+                                                    isReadMessage = false;
 
                                                 try {
                                                   dataLastWrite = snapshotChat
                                                       .data['writeLastData'];
 
-                                                  lastMsg = snapshotChat
-                                                      .data['last_msg'];
-                                                  nameUser = asyncSnapshotUser
-                                                      .data['name'];
-                                                  imageUri = asyncSnapshotUser
-                                                      .data['listImageUri'][0];
-                                                  state = asyncSnapshotUser
-                                                      .data['state'];
-                                                  token = asyncSnapshotUser
-                                                      .data['token'];
-                                                  notification =
-                                                      asyncSnapshotUser
-                                                          .data['notification'];
                                                   timeLastMessage =
                                                       snapshotChat.data['date'];
                                                   isLastOpenChat = snapshotChat
@@ -217,10 +167,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                           const Duration(
                                                               seconds: 5), () {
                                                         getState(4500)
-                                                            .then((value) {
+                                                            .then((i) {
                                                           setState(() =>
-                                                              isWriteUser =
-                                                                  value);
+                                                              isWriteUser = i);
                                                         });
                                                       });
                                                       isWriteUser = true;
@@ -252,32 +201,31 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                 } catch (e) {}
 
                                                 return ZoomTapAnimation(
-                                                  onLongTap: () {
-                                                    showAlertDialogDeleteChat(
-                                                        context: context,
-                                                        friendId: friendId,
-                                                        friendName: nameUser,
-                                                        isBack: false,
-                                                        friendUri: imageUri,
-                                                        height: height);
-                                                  },
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      FadeRouteAnimation(
-                                                        ChatUserScreen(
+                                                  onLongTap: () =>
+                                                      showAlertDialogDeleteChat(
+                                                          context: context,
                                                           friendId: friendId,
-                                                          friendName: nameUser,
-                                                          friendImage: imageUri,
-                                                          userModelCurrent:
-                                                              userModelCurrent,
-                                                          token: token,
-                                                          notification:
-                                                              notification,
-                                                        ),
+                                                          friendName: user.name,
+                                                          isBack: false,
+                                                          friendUri: user
+                                                              .listImageUri[0],
+                                                          height: height),
+                                                  onTap: () => Navigator.push(
+                                                    context,
+                                                    FadeRouteAnimation(
+                                                      ChatUserScreen(
+                                                        friendId: friendId,
+                                                        friendName: user.name,
+                                                        friendImage: user
+                                                            .listImageUri[0],
+                                                        userModelCurrent:
+                                                            userModelCurrent,
+                                                        token: user.token,
+                                                        notification:
+                                                            user.notification,
                                                       ),
-                                                    );
-                                                  },
+                                                    ),
+                                                  ),
                                                   child: Container(
                                                     height: height / 6.6,
                                                     padding:
@@ -288,16 +236,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                       color: color_black_88,
                                                       shape:
                                                           RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          18),
-                                                              side:
-                                                                  const BorderSide(
-                                                                width: 0.2,
-                                                                color: Colors
-                                                                    .white10,
-                                                              )),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(18),
+                                                        side: const BorderSide(
+                                                          width: 0.2,
+                                                          color: Colors.white10,
+                                                        ),
+                                                      ),
                                                       elevation: 16,
                                                       child: Padding(
                                                         padding:
@@ -312,12 +258,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                             Expanded(
                                                               flex: 1,
                                                               child: photoUser(
-                                                                uri: imageUri,
+                                                                uri: user
+                                                                    .listImageUri[0],
                                                                 width:
                                                                     height / 11,
                                                                 height:
                                                                     height / 11,
-                                                                state: state,
+                                                                state:
+                                                                    user.state,
                                                                 padding: 0,
                                                               ),
                                                             ),
@@ -342,7 +290,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                       animatedText(
                                                                           height /
                                                                               52,
-                                                                          nameUser,
+                                                                          user
+                                                                              .name,
                                                                           Colors
                                                                               .white,
                                                                           0,
@@ -379,7 +328,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                                 const EdgeInsets.only(right: 10),
                                                                             child: animatedText(
                                                                                 height / 64,
-                                                                                lastMsg,
+                                                                                snapshotChat.data['last_msg'],
                                                                                 Colors.white.withOpacity(.3),
                                                                                 indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350,
                                                                                 2),

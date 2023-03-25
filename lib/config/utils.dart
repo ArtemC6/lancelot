@@ -29,8 +29,8 @@ Future<bool> getState(time) async =>
 Future<void> setValueSharedPref(String key, int value) async =>
     await SharedPreferences.getInstance().then((i) => i.setInt(key, value));
 
-int ageIntParse(Map<String, dynamic> data) =>
-    DateTime.now().difference(getDataTime(data['ageTime'])).inDays ~/ 365;
+int ageIntParse(Timestamp time) =>
+    DateTime.now().difference(getDataTime(time)).inDays ~/ 365;
 
 Future<void> launchUrlEmail(String uri) async {
   String? encodeQueryParameters(Map<String, String> params) {

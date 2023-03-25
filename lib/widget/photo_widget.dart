@@ -12,16 +12,13 @@ import 'dialog_widget.dart';
 
 class photoProfile extends StatelessWidget {
   final String uri;
-
   const photoProfile({Key? key, required this.uri}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return ZoomTapAnimation(
-      onTap: () {
-        showDialogZoom(uri: uri, context: context);
-      },
+      onTap: () => showDialogZoom(uri: uri, context: context),
       child: SizedBox(
         height: height * 0.15,
         width: height * 0.15,
@@ -95,12 +92,10 @@ class photoProfileGallery extends StatelessWidget {
                       curve: Curves.fastLinearToSlowEaseIn,
                       child: FadeInAnimation(
                         child: ZoomTapAnimation(
-                          onTap: () {
-                            showDialogZoom(
-                              uri: listPhoto[index],
-                              context: context,
-                            );
-                          },
+                          onTap: () => showDialogZoom(
+                            uri: listPhoto[index],
+                            context: context,
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(5),
                             child: Card(
@@ -132,8 +127,6 @@ class photoProfileGallery extends StatelessWidget {
                                 progressIndicatorBuilder:
                                     (context, url, progress) =>
                                         const loadingPhotoAnimation(),
-
-                                // loadingPhotoAnimation(height),
                                 imageUrl: listPhoto[index],
                               ),
                             ),
@@ -154,7 +147,6 @@ class photoProfileGallery extends StatelessWidget {
 
 class photoProfileSettingsGallery extends StatelessWidget {
   final UserModel userModel;
-
   const photoProfileSettingsGallery(this.userModel, {super.key});
 
   @override
@@ -188,9 +180,9 @@ class photoProfileSettingsGallery extends StatelessWidget {
                       child: FadeInAnimation(
                         child: ZoomTapAnimation(
                           onTap: () {
-                            if (userModel.userImageUrl.length > index) {
+                            if (userModel.listImageUri.length > index) {
                               showDialogZoom(
-                                uri: userModel.userImageUrl[index],
+                                uri: userModel.listImageUri[index],
                                 context: context,
                               );
                             }
@@ -210,7 +202,7 @@ class photoProfileSettingsGallery extends StatelessWidget {
                               child: Stack(
                                 alignment: Alignment.bottomRight,
                                 children: [
-                                  if (userModel.userImageUrl.length > index)
+                                  if (userModel.listImageUri.length > index)
                                     CachedNetworkImage(
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
@@ -229,14 +221,12 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                       progressIndicatorBuilder:
                                           (context, url, progress) =>
                                               const loadingPhotoAnimation(),
-                                      imageUrl: userModel.userImageUrl[index],
+                                      imageUrl: userModel.listImageUri[index],
                                     ),
                                   if (0 == index)
                                     GestureDetector(
-                                      onTap: () {
-                                        updateFirstImage(
-                                            context, userModel, false);
-                                      },
+                                      onTap: () => updateFirstImage(
+                                          context, userModel, false),
                                       child: Padding(
                                         padding: const EdgeInsets.all(4),
                                         child: Image.asset(
@@ -246,27 +236,24 @@ class photoProfileSettingsGallery extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  if (userModel.userImageUrl.length > index &&
+                                  if (userModel.listImageUri.length > index &&
                                       index != 0)
                                     customIconButton(
                                         padding: 2,
                                         width: height / 30,
                                         height: height / 30,
                                         path: 'images/ic_remove.png',
-                                        onTap: () {
-                                          imageRemove(
-                                              index, context, userModel);
-                                        }),
-                                  if (userModel.userImageUrl.length <= index &&
-                                      userModel.userImageUrl.isNotEmpty)
+                                        onTap: () => imageRemove(
+                                            index, context, userModel)),
+                                  if (userModel.listImageUri.length <= index &&
+                                      userModel.listImageUri.isNotEmpty)
                                     customIconButton(
                                       padding: 6,
                                       width: height / 36,
                                       height: height / 36,
                                       path: 'images/ic_add.png',
-                                      onTap: () {
-                                        uploadImageAdd(context, userModel);
-                                      },
+                                      onTap: () =>
+                                          uploadImageAdd(context, userModel),
                                     ),
                                 ],
                               ),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
@@ -30,12 +31,10 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     animationController = AnimationController(vsync: this);
-    FirebaseAuth.instance.currentUser?.reload().then((value) {
-      FirebaseAuth.instance.currentUser!.sendEmailVerification();
-    });
-    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      checkEmailVerify();
-    });
+    GetIt.I<FirebaseAuth>().currentUser?.reload().then(
+        (i) => GetIt.I<FirebaseAuth>().currentUser!.sendEmailVerification());
+    timer =
+        Timer.periodic(const Duration(seconds: 5), (i) => checkEmailVerify());
   }
 
   @override
@@ -46,22 +45,20 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
   }
 
   Future sendEmail() async {
-    FirebaseAuth.instance.currentUser?.reload().then((value) {
+    GetIt.I<FirebaseAuth>().currentUser?.reload().then((value) {
       setState(() => isEmail = false);
-      FirebaseAuth.instance.currentUser!.sendEmailVerification();
+      GetIt.I<FirebaseAuth>().currentUser!.sendEmailVerification();
       Future.delayed(const Duration(milliseconds: 8000), () {
         checkEmailVerify();
-        setState(() {
-          isEmail = true;
-          isDescriptionEmailTime = true;
-        });
+        isDescriptionEmailTime = true;
+        setState(() => isEmail = true);
       });
     });
   }
 
   Future checkEmailVerify() async {
-    FirebaseAuth.instance.currentUser?.reload().then((value) {
-      if (FirebaseAuth.instance.currentUser!.emailVerified) {
+    GetIt.I<FirebaseAuth>().currentUser?.reload().then((value) {
+      if (GetIt.I<FirebaseAuth>().currentUser!.emailVerified) {
         animationController.dispose();
         timer.cancel();
         Navigator.of(context).pushReplacement(
@@ -95,7 +92,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 child: Text(
                   maxLines: 3,
                   textAlign: TextAlign.center,
-                  'Письмо с подтверждением было отправлено на вашу электронную почту ${FirebaseAuth.instance.currentUser!.email}',
+                  'Письмо с подтверждением было отправлено на вашу электронную почту ${GetIt.I<FirebaseAuth>().currentUser!.email}',
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(
                         color: Colors.white,
@@ -107,9 +104,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
             ),
             if (!isDescriptionEmail && isDescriptionEmailTime)
               ZoomTapAnimation(
-                onTap: () {
-                  setState(() => isDescriptionEmail = true);
-                },
+                onTap: () => setState(() => isDescriptionEmail = true),
                 child: Padding(
                   padding: EdgeInsets.only(
                       bottom: height / 16,
@@ -130,16 +125,14 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
               padding: EdgeInsets.only(bottom: height / 32),
               child: isEmail
                   ? buttonUniversal(
-                      text: 'Отправить повторно',
+                text: 'Отправить повторно',
                       darkColors: true,
                       colorButton: listColorMulticoloured,
                       height: height / 18,
                       width: width / 1.5,
                       sizeText: height / 62,
                       time: 400,
-                      onTap: () {
-                        sendEmail();
-                      },
+                      onTap: () => sendEmail(),
                     )
                   : buttonUniversalNoState(
                       text: 'Отправить повторно',
@@ -164,16 +157,16 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 time: 400,
                 onTap: () async {
                   try {
-                    if (FirebaseAuth.instance.currentUser?.uid != null) {
-                      await FirebaseFirestore.instance
+                    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
+                      await GetIt.I<FirebaseFirestore>()
                           .collection("User")
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
                           .delete();
-                      await FirebaseAuth.instance.currentUser!.delete();
+                      await GetIt.I<FirebaseAuth>().currentUser!.delete();
                     }
-                    await FirebaseAuth.instance.signOut();
+                    await GetIt.I<FirebaseAuth>().signOut();
                   } catch (e) {
-                    await FirebaseAuth.instance.signOut();
+                    await GetIt.I<FirebaseAuth>().signOut();
                   }
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const Manager()));

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Lancelot/screens/auth/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase_auth.dart';
@@ -29,7 +30,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
+    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const Manager()));
     }
@@ -239,9 +240,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             icon: Icons.account_circle_sharp,
                             isPassword: false,
                             length: 10,
-                            onSubmitted: (String onTap) {
-                              sigUpTap(context);
-                            },
+                            onSubmitted: (String onTap) => sigUpTap(context),
                           ),
                           textFieldAuth(
                             controller: emailController,
@@ -249,9 +248,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             icon: Icons.email_outlined,
                             isPassword: false,
                             length: 35,
-                            onSubmitted: (String onTap) {
-                              sigUpTap(context);
-                            },
+                            onSubmitted: (String onTap) => sigUpTap(context),
                           ),
                           textFieldAuth(
                             controller: passwordController,
@@ -259,9 +256,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             icon: Icons.lock_open_outlined,
                             isPassword: true,
                             length: 20,
-                            onSubmitted: (String onTap) {
-                              sigUpTap(context);
-                            },
+                            onSubmitted: (String onTap) => sigUpTap(context),
                           ),
                           Container(
                               padding: EdgeInsets.only(
@@ -277,16 +272,13 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               signStart
-                                  ? buttonAuthAnimation(
-                                      'Зарегистрироваться', width / 1.4, 350,
-                                      () {
-                                      sigUpTap(context);
-                                    })
+                                  ? buttonAuthAnimation('Зарегистрироваться',
+                                      width / 1.4, 350, () => sigUpTap(context))
                                   : buttonAuth(
-                                      'Зарегистрироваться', width / 1.4, 500,
-                                      () {
-                                      sigUpTap(context);
-                                    }),
+                                      'Зарегистрироваться',
+                                      width / 1.4,
+                                      500,
+                                      () => sigUpTap(context)),
                             ],
                           ),
                         ],
@@ -297,12 +289,14 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          buttonAuth('Войти в аккаунт', width / 1.4, 0, () {
-                            Navigator.push(
-                              context,
-                              FadeRouteAnimation(const SignInScreen()),
-                            );
-                          }),
+                          buttonAuth(
+                              'Войти в аккаунт',
+                              width / 1.4,
+                              0,
+                              () => Navigator.push(
+                                    context,
+                                    FadeRouteAnimation(const SignInScreen()),
+                                  )),
                           SizedBox(height: height * .05),
                         ],
                       ),

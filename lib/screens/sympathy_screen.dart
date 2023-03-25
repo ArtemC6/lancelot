@@ -34,7 +34,7 @@ class _SympathyScreenState extends State<SympathyScreen>
     with TickerProviderStateMixin {
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
-
+  final Map<String, dynamic> data = {};
   int limit = 5;
   bool isLoadingUser = false;
   late final AnimationController animationController;
@@ -93,31 +93,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                 icon: Icons.favorite,
               ),
               FutureBuilder(
-                future: FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('sympathy')
-                        .orderBy("time", descending: true)
-                        .limit(limit)
-                        .get(const GetOptions(source: Source.cache))
-                        .toString()
-                        .isEmpty
-                    ? FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('sympathy')
-                        .orderBy("time", descending: true)
-                        .limit(limit)
-                        .get(const GetOptions(source: Source.cache))
-                    : FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('sympathy')
-                        .orderBy("time", descending: true)
-                        .limit(limit)
-                        .get(
-                          const GetOptions(source: Source.server),
-                        ),
+                future: readSympathyFirebase(limit, userModelCurrent.uid),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
@@ -133,20 +109,12 @@ class _SympathyScreenState extends State<SympathyScreen>
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             if (index < snapshot.data.docs.length) {
-                              var name = '',
-                                  age = 0,
-                                  indexAnimation = index + 1,
-                                  imageUri = '',
-                                  idDoc = '',
-                                  city = '',
-                                  state = '',
-                                  uid = '',
-                                  isMutuallyMy = false,
-                                  token = '';
-                              try {
-                                uid = snapshot.data.docs[index]['uid'];
-                                idDoc = snapshot.data.docs[index]['id_doc'];
-                              } catch (E) {}
+                              int aIndex = index + 1,
+                                  timeAnim =
+                                      aIndex * 300 < 1000 ? aIndex * 300 : 300;
+                              bool isMySym = false;
+                              String uid = snapshot.data.docs[index]['uid'],
+                                  idDoc = snapshot.data.docs[index]['id_doc'];
                               return AnimationConfiguration.staggeredList(
                                 position: index,
                                 delay: const Duration(milliseconds: 400),
@@ -158,140 +126,41 @@ class _SympathyScreenState extends State<SympathyScreen>
                                     duration:
                                         const Duration(milliseconds: 3200),
                                     child: FutureBuilder(
-                                      future: FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(uid)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                              .toString()
-                                              .isEmpty
-                                          ? FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(uid)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                          : FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(uid)
-                                              .get(
-                                                const GetOptions(
-                                                    source: Source.server),
-                                              ),
-                                      builder: (context,
-                                          AsyncSnapshot asyncSnapshotUser) {
-                                        if (asyncSnapshotUser.hasData) {
-                                          try {
-                                            name =
-                                                asyncSnapshotUser.data['name'];
-                                            age = DateTime.now()
-                                                    .difference(getDataTime(
-                                                        asyncSnapshotUser
-                                                            .data['ageTime']))
-                                                    .inDays ~/
-                                                365;
-
-                                            state =
-                                                asyncSnapshotUser.data['state'];
-                                            city = asyncSnapshotUser
-                                                .data['myCity'];
-                                            imageUri = asyncSnapshotUser
-                                                .data['listImageUri'][0];
-                                            token =
-                                                asyncSnapshotUser.data['token'];
-                                          } catch (E) {}
-
+                                      future: readUserFirebase(uid),
+                                      builder: (context, userFriend) {
+                                        if (userFriend.hasData) {
+                                          final friend = userFriend.data!;
                                           return FutureBuilder(
-                                            future: FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(uid)
-                                                    .collection('sympathy')
-                                                    .where('uid',
-                                                        isEqualTo:
-                                                            userModelCurrent
-                                                                .uid)
-                                                    .get(const GetOptions(
-                                                        source: Source.cache))
-                                                    .toString()
-                                                    .isEmpty
-                                                ? FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(uid)
-                                                    .collection('sympathy')
-                                                    .where('uid',
-                                                        isEqualTo:
-                                                            userModelCurrent
-                                                                .uid)
-                                                    .get(const GetOptions(
-                                                        source: Source.cache))
-                                                : FirebaseFirestore.instance
-                                                    .collection('User')
-                                                    .doc(uid)
-                                                    .collection('sympathy')
-                                                    .where('uid',
-                                                        isEqualTo:
-                                                            userModelCurrent
-                                                                .uid)
-                                                    .get(
-                                                      const GetOptions(
-                                                          source:
-                                                              Source.server),
-                                                    ),
-                                            builder: (context,
-                                                AsyncSnapshot asyncSnapshot) {
-                                              if (asyncSnapshot.hasData) {
-                                                getState(100).then((value) =>
-                                                    isMutuallyMy = false);
+                                            future: readSympathyFriendFirebase(
+                                                uid,
+                                                userModelCurrent.uid,
+                                                limit),
+                                            builder: (context, snap) {
+                                              if (snap.hasData) {
+                                                getState(100).then(
+                                                    (i) => isMySym = false);
 
-                                                try {
-                                                  for (int i = 0;
-                                                      i <
-                                                          asyncSnapshot
-                                                              .data.docs.length;
-                                                      i++) {
-                                                    isMutuallyMy = asyncSnapshot
-                                                            .data
-                                                            .docs[i]['uid'] ==
-                                                        userModelCurrent.uid;
-                                                    if (isMutuallyMy) break;
-                                                  }
-                                                } catch (E) {}
-
+                                                for (var data
+                                                    in snap.data!.docs) {
+                                                  isMySym = data['uid'] ==
+                                                      userModelCurrent.uid;
+                                                }
                                                 return GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      FadeRouteAnimation(
-                                                        ProfileScreen(
-                                                          userModelPartner: UserModel(
-                                                              name: '',
-                                                              uid: '',
-                                                              myCity: '',
-                                                              ageTime: Timestamp
-                                                                  .now(),
-                                                              userPol: '',
-                                                              searchPol: '',
-                                                              searchRangeStart:
-                                                                  0,
-                                                              userImageUrl: [],
-                                                              userImagePath: [],
-                                                              imageBackground:
-                                                                  '',
-                                                              userInterests: [],
-                                                              searchRangeEnd: 0,
-                                                              ageInt: 0,
-                                                              state: '',
-                                                              token: '',
-                                                              notification:
-                                                                  true,
-                                                              description: ''),
-                                                          isBack: true,
-                                                          idUser: uid,
-                                                          userModelCurrent:
-                                                              userModelCurrent,
-                                                        ),
+                                                  onTap: () => Navigator.push(
+                                                    context,
+                                                    FadeRouteAnimation(
+                                                      ProfileScreen(
+                                                        userModelPartner:
+                                                            UserModel
+                                                                .fromDocument(
+                                                                    data),
+                                                        isBack: true,
+                                                        idUser: uid,
+                                                        userModelCurrent:
+                                                            userModelCurrent,
                                                       ),
-                                                    );
-                                                  },
+                                                    ),
+                                                  ),
                                                   child: Container(
                                                     height: height / 4.5,
                                                     padding: EdgeInsets.all(
@@ -321,12 +190,14 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                           children: [
                                                             Flexible(
                                                               child: photoUser(
-                                                                uri: imageUri,
+                                                                uri: friend
+                                                                    .listImageUri[0],
                                                                 width: height /
                                                                     8.2,
                                                                 height: height /
                                                                     8.2,
-                                                                state: state,
+                                                                state: friend
+                                                                    .state,
                                                                 padding: 2.2,
                                                               ),
                                                             ),
@@ -350,27 +221,23 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             EdgeInsets.only(bottom: height / 72),
                                                                         child:
                                                                             DelayedDisplay(
-                                                                          delay:
-                                                                              Duration(milliseconds: indexAnimation * 350 < 2000 ? indexAnimation * 350 : 350),
+                                                                              delay:
+                                                                              Duration(milliseconds: timeAnim),
                                                                           child:
                                                                               Column(
                                                                             crossAxisAlignment:
                                                                                 CrossAxisAlignment.start,
                                                                             children: [
-                                                                              RichText(
-                                                                                text: TextSpan(
-                                                                                  text: '${name.trim()}, $age',
-                                                                                  style: GoogleFonts.lato(
-                                                                                    textStyle: TextStyle(color: Colors.white, fontSize: height / 49, letterSpacing: .9),
-                                                                                  ),
+                                                                              Text(
+                                                                                '${friend.name.trim()}, ${friend.ageInt}',
+                                                                                style: GoogleFonts.lato(
+                                                                                  textStyle: TextStyle(color: Colors.white, fontSize: height / 49, letterSpacing: .9),
                                                                                 ),
                                                                               ),
-                                                                              RichText(
-                                                                                text: TextSpan(
-                                                                                  text: city,
-                                                                                  style: GoogleFonts.lato(
-                                                                                    textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 67, letterSpacing: .5),
-                                                                                  ),
+                                                                              Text(
+                                                                                friend.myCity,
+                                                                                style: GoogleFonts.lato(
+                                                                                  textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 67, letterSpacing: .5),
                                                                                 ),
                                                                               ),
                                                                             ],
@@ -391,10 +258,10 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             GestureDetector(
                                                                           onTap:
                                                                               () async {
-                                                                            deleteSympathy(idDoc,
+                                                                                deleteSympathy(idDoc,
                                                                                 userModelCurrent.uid);
                                                                             setState(() {});
-                                                                            await CachedNetworkImage.evictFromCache(imageUri);
+                                                                            await CachedNetworkImage.evictFromCache(friend.listImageUri[0]);
                                                                           },
                                                                           child:
                                                                               Icon(
@@ -411,7 +278,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                         MainAxisAlignment
                                                                             .spaceAround,
                                                                     children: [
-                                                                      if (!isMutuallyMy)
+                                                                      if (!isMySym)
                                                                         buttonUniversalNoState(
                                                                           text:
                                                                               'Принять симпатию',
@@ -427,20 +294,19 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                               width / 2.6,
                                                                           sizeText:
                                                                               width / 35,
-                                                                          time: indexAnimation * 300 < 1000
-                                                                              ? indexAnimation * 300
-                                                                              : 300,
+                                                                          time:
+                                                                              timeAnim,
                                                                           onTap:
                                                                               () {
                                                                             createSympathy(uid, userModelCurrent).then((value) async {
                                                                               setState(() {});
-                                                                              if (token.isNotEmpty && asyncSnapshotUser.data['notification']) {
-                                                                                await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', token, 'sympathy', userModelCurrent.uid, userModelCurrent.userImageUrl[0]);
+                                                                              if (friend.token.isNotEmpty && friend.notification) {
+                                                                                await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', friend.token, 'sympathy', userModelCurrent.uid, userModelCurrent.listImageUri[0]);
                                                                               }
                                                                             });
                                                                           },
                                                                         ),
-                                                                      if (isMutuallyMy)
+                                                                      if (isMySym)
                                                                         buttonUniversal(
                                                                           text:
                                                                               'У вас взаимно',
@@ -454,15 +320,10 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                               width / 3.2,
                                                                           sizeText:
                                                                               width / 34.5,
-                                                                          time: indexAnimation * 300 < 1000
-                                                                              ? indexAnimation * 300
-                                                                              : 300,
-                                                                          onTap:
-                                                                              () {
-                                                                            deleteSympathyPartner(uid, userModelCurrent.uid).then((value) {
-                                                                              setState(() {});
-                                                                            });
-                                                                          },
+                                                                          time:
+                                                                              timeAnim,
+                                                                          onTap: () =>
+                                                                              deleteSympathyPartner(uid, userModelCurrent.uid).then((i) => setState(() {})),
                                                                         ),
                                                                       DropShadow(
                                                                         blurRadius:
@@ -473,21 +334,19 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             1,
                                                                         child:
                                                                             ZoomTapAnimation(
-                                                                          onTap:
-                                                                              () {
-                                                                            Navigator.of(context).push(
-                                                                              MaterialPageRoute(
-                                                                                builder: (context) => ChatUserScreen(
-                                                                                  friendId: uid,
-                                                                                  friendName: name,
-                                                                                  friendImage: imageUri,
-                                                                                  userModelCurrent: userModelCurrent,
-                                                                                  token: token,
-                                                                                  notification: asyncSnapshotUser.data['notification'],
-                                                                                ),
+                                                                          onTap: () =>
+                                                                              Navigator.of(context).push(
+                                                                            MaterialPageRoute(
+                                                                              builder: (context) => ChatUserScreen(
+                                                                                friendId: uid,
+                                                                                friendName: friend.name,
+                                                                                friendImage: friend.listImageUri[0],
+                                                                                userModelCurrent: userModelCurrent,
+                                                                                token: friend.token,
+                                                                                notification: friend.notification,
                                                                               ),
-                                                                            );
-                                                                          },
+                                                                            ),
+                                                                          ),
                                                                           child:
                                                                               Padding(
                                                                             padding: EdgeInsets.only(

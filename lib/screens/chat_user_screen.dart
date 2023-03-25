@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colors_border/flutter_colors_border.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -151,14 +152,13 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     if (friendName.isEmpty && friendImage.isEmpty && token.isEmpty) {
       await readUserFirebase(friendId).then((user) {
         friendName = user.name;
-        friendImage = user.userImageUrl[0];
+        friendImage = user.listImageUri[0];
         token = user.token;
         notification = user.notification;
       });
     }
 
-    await getDataChat();
-    setState(() => isLoading = true);
+    await getDataChat().then((i) => setState(() => isLoading = true));
   }
 
   Future getDataChat() async {
@@ -303,7 +303,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                     ),
                     Expanded(
                       child: StreamBuilder(
-                        stream: FirebaseFirestore.instance
+                        stream: GetIt.I<FirebaseFirestore>()
                             .collection("User")
                             .doc(userModelCurrent.uid)
                             .collection('messages')
@@ -334,21 +334,6 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                       itemBuilder: (context, index) {
                                         if (index <
                                             snapshotMy.data.docs.length) {
-                                          var idDoc = '',
-                                              message = '',
-                                              date = Timestamp.now(),
-                                              isMe = false;
-                                          try {
-                                            idDoc = snapshotMy.data.docs[index]
-                                                ['idDoc'];
-                                            message = snapshotMy
-                                                .data.docs[index]['message'];
-                                            date = snapshotMy.data.docs[index]
-                                                ['date'];
-                                            isMe = snapshotMy.data.docs[index]
-                                                    ['senderId'] ==
-                                                userModelCurrent.uid;
-                                          } catch (E) {}
                                           return AnimationConfiguration
                                               .staggeredList(
                                             position: index,
@@ -365,13 +350,13 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                     milliseconds: 2200),
                                                 child: GestureDetector(
                                                   onLongPress: () async {
-                                                    bool isLastMessage = false;
+                                                    bool isLastMes = false;
                                                     int indexRevers = index == 0
                                                         ? lengthDoc
                                                         : index;
                                                     if (indexRevers ==
                                                         lengthDoc) {
-                                                      isLastMessage = true;
+                                                      isLastMes = true;
                                                     }
 
                                                     showAlertDialogDeleteMessage(
@@ -380,16 +365,21 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                         myId: userModelCurrent
                                                             .uid,
                                                         friendName: friendName,
-                                                        idDoc: idDoc,
+                                                        idDoc: snapshotMy.data
+                                                                .docs[index]
+                                                            ['idDoc'],
                                                         snapshotMy: snapshotMy,
                                                         index: index + 1,
                                                         isLastMessage:
-                                                            isLastMessage);
+                                                            isLastMes);
                                                   },
                                                   child: MessagesItem(
-                                                    message,
-                                                    isMe,
-                                                    date,
+                                                    snapshotMy.data.docs[index]
+                                                        ['message'],
+                                                    snapshotMy.data.docs[index]
+                                                        ['senderId'],
+                                                    snapshotMy.data.docs[index]
+                                                        ['date'],
                                                     friendImage,
                                                     friendId,
                                                     userModelCurrent,
@@ -549,10 +539,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                               curve: Curves.easeOut,
                               duration: const Duration(milliseconds: 2000),
                               child: ZoomTapAnimation(
-                                onTap: () async {
-                                  setBackgroundChat(
-                                      listAnimationChatBac[index]);
-                                },
+                                onTap: () => setBackgroundChat(
+                                    listAnimationChatBac[index]),
                                 end: 0.990,
                                 child: Padding(
                                   padding:

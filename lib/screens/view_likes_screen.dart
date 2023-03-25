@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:get_it/get_it.dart';
 
 import '../config/const.dart';
-import '../config/utils.dart';
+import '../config/firebase/firestore_operations.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/card_widget.dart';
@@ -80,28 +81,12 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
                 icon: Icons.favorite_outlined,
               ),
               FutureBuilder(
-                future: FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('likes')
-                        .limit(limit)
-                        .get(const GetOptions(source: Source.cache))
-                        .toString()
-                        .isEmpty
-                    ? FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('likes')
-                        .limit(limit)
-                        .get(const GetOptions(source: Source.cache))
-                    : FirebaseFirestore.instance
-                        .collection('User')
-                        .doc(userModelCurrent.uid)
-                        .collection('likes')
-                        .limit(limit)
-                        .get(
-                          const GetOptions(source: Source.server),
-                        ),
+                future: GetIt.I<FirebaseFirestore>()
+                    .collection('User')
+                    .doc(userModelCurrent.uid)
+                    .collection('likes')
+                    .limit(limit)
+                    .get(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
@@ -113,7 +98,6 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
                       return AnimationLimiter(
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
                           itemCount: snapshot.data.docs.length + 1,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -131,95 +115,15 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
                                     duration:
                                         const Duration(milliseconds: 3200),
                                     child: FutureBuilder(
-                                      future: FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(snapshot.data.docs[index].id)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                              .toString()
-                                              .isEmpty
-                                          ? FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(snapshot.data.docs[index].id)
-                                              .get(const GetOptions(
-                                                  source: Source.cache))
-                                          : FirebaseFirestore.instance
-                                              .collection('User')
-                                              .doc(snapshot.data.docs[index].id)
-                                              .get(
-                                                const GetOptions(
-                                                    source: Source.server),
-                                              ),
-                                      builder: (context,
-                                          AsyncSnapshot<DocumentSnapshot>
-                                              snapshot) {
-                                        if (snapshot.hasData) {
-                                          UserModel userFriend = UserModel(
-                                              name: '',
-                                              uid: '',
-                                              state: '',
-                                              description: '',
-                                              myCity: '',
-                                              ageInt: 0,
-                                              ageTime: Timestamp.now(),
-                                              token: '',
-                                              notification: true,
-                                              userPol: '',
-                                              searchPol: '',
-                                              searchRangeStart: 0,
-                                              userImageUrl: [],
-                                              userImagePath: [],
-                                              imageBackground: '',
-                                              userInterests: [],
-                                              searchRangeEnd: 0);
-
-                                          try {
-                                            if (List<String>.from(snapshot
-                                                        .data!['listImageUri'])
-                                                    .isNotEmpty ||
-                                                snapshot.data![
-                                                        'imageBackground'] !=
-                                                    '') {
-                                              userFriend = UserModel(
-                                                  name: snapshot.data!['name'],
-                                                  uid: snapshot.data!['uid'],
-                                                  ageTime:
-                                                      snapshot.data!['ageTime'],
-                                                  userPol:
-                                                      snapshot.data!['myPol'],
-                                                  searchPol: snapshot
-                                                      .data!['searchPol'],
-                                                  searchRangeStart: snapshot
-                                                      .data!['rangeStart'],
-                                                  userInterests: List<String>.from(snapshot
-                                                      .data!['listInterests']),
-                                                  userImagePath: List<String>.from(snapshot
-                                                      .data!['listImagePath']),
-                                                  userImageUrl: List<String>.from(snapshot
-                                                      .data!['listImageUri']),
-                                                  searchRangeEnd: snapshot
-                                                      .data!['rangeEnd'],
-                                                  myCity:
-                                                      snapshot.data!['myCity'],
-                                                  imageBackground: snapshot
-                                                      .data!['imageBackground'],
-                                                  ageInt:
-                                                      DateTime.now().difference(getDataTime(snapshot.data!['ageTime'])).inDays ~/
-                                                          365,
-                                                  state: snapshot.data!['state'],
-                                                  token: snapshot.data!['token'],
-                                                  notification: snapshot.data!['notification'],
-                                                  description: snapshot.data!['description']);
-                                            }
-                                          } catch (e) {}
-
-                                          if (userFriend
-                                                  .userImageUrl.isNotEmpty ||
-                                              userFriend.imageBackground !=
-                                                  '' ||
-                                              userFriend.uid != '') {
+                                      future: readUserFirebase(
+                                          snapshot.data.docs[index].id),
+                                      builder: (context, user) {
+                                        if (user.hasData) {
+                                          final friend = user.data!;
+                                          if (friend
+                                              .imageBackground.isNotEmpty) {
                                             return itemUserLike(
-                                                userFriend,
+                                                friend,
                                                 userModelCurrent,
                                                 indexAnimation);
                                           }

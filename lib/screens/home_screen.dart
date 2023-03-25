@@ -5,6 +5,7 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:get_it/get_it.dart';
 
 import '../config/const.dart';
 import '../config/firebase/firestore_operations.dart';
@@ -49,51 +50,31 @@ class _HomeScreen extends State<HomeScreen>
     if (userModelPartner.length > 2) userModelPartner.clear();
 
     if (isReadDislike) {
-      await readDislikeFirebase(userModelCurrent.uid).then((list) {
-        listDisLike.addAll(list);
-      });
+      await readDislikeFirebase(userModelCurrent.uid)
+          .then((list) => listDisLike.addAll(list));
     }
 
-    await FirebaseFirestore.instance
+    await GetIt.I<FirebaseFirestore>()
         .collection('User')
         .where('myPol', isEqualTo: userModelCurrent.searchPol)
         .limit(limit)
         .get()
         .then((QuerySnapshot querySnapshot) async {
       for (var document in querySnapshot.docs) {
-        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-        if (userModelCurrent.searchRangeStart <= ageIntParse(data) &&
-            userModelCurrent.searchRangeEnd >= ageIntParse(data) &&
+        final data = document.data() as Map<String, dynamic>;
+        if (userModelCurrent.rangeStart <= ageIntParse(data['ageTime']) &&
+            userModelCurrent.rangeEnd >= ageIntParse(data['ageTime']) &&
             data['uid'] != userModelCurrent.uid) {
           bool isDislike = true;
           await Future.forEach(listDisLike, (idUser) {
             if (idUser == data['uid']) isDislike = false;
           }).then((value) async {
-            if (isDislike) {
-              userModelPartner.add(UserModel(
-                  name: data['name'],
-                  uid: data['uid'],
-                  ageTime: Timestamp.now(),
-                  userPol: data['myPol'],
-                  searchPol: data['searchPol'],
-                  searchRangeStart: data['searchRangeStart'],
-                  userInterests: List<String>.from(data['listInterests']),
-                  userImagePath: List<String>.from(data['listImageUri']),
-                  userImageUrl: List<String>.from(data['listImageUri']),
-                  searchRangeEnd: data['searchRangeEnd'],
-                  myCity: data['myCity'],
-                  imageBackground: data['imageBackground'],
-                  ageInt: ageIntParse(data),
-                  state: data['state'],
-                  token: data['token'],
-                  notification: data['notification'],
-                  description: data['description']));
-            }
+            if (!isDislike) return;
+            userModelPartner.add(UserModel.fromDocument(data));
           });
         }
       }
     }).then((value) {
-      userModelPartner.toSet();
       if (userModelPartner.isEmpty) {
         count++;
         if (count >= 8) {
@@ -173,21 +154,18 @@ class _HomeScreen extends State<HomeScreen>
                                   if (index < userModelPartner.length) {
                                     return cardPartner(
                                       userModelPartner: userModelPartner[index],
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          FadeRouteAnimation(
-                                            ProfileScreen(
-                                              userModelPartner:
-                                              userModelPartner[index],
-                                              isBack: true,
-                                              idUser: '',
-                                              userModelCurrent:
-                                              userModelCurrent,
-                                            ),
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        FadeRouteAnimation(
+                                          ProfileScreen(
+                                            userModelPartner:
+                                                userModelPartner[index],
+                                            isBack: true,
+                                            idUser: '',
+                                            userModelCurrent: userModelCurrent,
                                           ),
-                                        );
-                                      },
+                                        ),
+                                      ),
                                     );
                                   } else {
                                     if (isWrite) {
@@ -240,7 +218,7 @@ class _HomeScreen extends State<HomeScreen>
                                         userModelPartner[index]);
                                     CachedNetworkImage.evictFromCache(
                                         userModelPartner[index]
-                                            .userImageUrl[0]);
+                                            .listImageUri[0]);
                                   }
 
                                   if (orientation.toString() ==
@@ -261,11 +239,11 @@ class _HomeScreen extends State<HomeScreen>
                                           userModelPartner[index].token,
                                           'sympathy',
                                           userModelCurrent.uid,
-                                          userModelCurrent.userImageUrl[0]);
+                                          userModelCurrent.listImageUri[0]);
                                     }
                                     CachedNetworkImage.evictFromCache(
                                         userModelPartner[index]
-                                            .userImageUrl[0]);
+                                            .listImageUri[0]);
                                   }
                                   isLook = false;
                                   setState(() {});
@@ -319,12 +297,10 @@ class _HomeScreen extends State<HomeScreen>
                                   width: height / 5,
                                   darkColors: true,
                                   colorButton: listColorMulticoloured,
-                                  onTap: () {
-                                    readFirebase(
-                                      3,
-                                      true,
-                                    );
-                                  },
+                                  onTap: () => readFirebase(
+                                    3,
+                                    true,
+                                  ),
                                 ),
                               ),
                             ),
@@ -337,17 +313,13 @@ class _HomeScreen extends State<HomeScreen>
                               icon: Icons.close,
                               colors: Colors.white,
                               time: 2000,
-                              onTap: () {
-                                controllerCard.triggerLeft();
-                              },
+                              onTap: () => controllerCard.triggerLeft(),
                             ),
                             homeAnimationButton(
                               icon: Icons.favorite,
                               colors: color_red,
                               time: 2700,
-                              onTap: () {
-                                controllerCard.triggerRight();
-                              },
+                              onTap: () => controllerCard.triggerRight(),
                             ),
                           ],
                         ),
@@ -359,8 +331,7 @@ class _HomeScreen extends State<HomeScreen>
           ),
         ),
       );
-    } else {
-      return const loadingCustom();
     }
+    return const loadingCustom();
   }
 }

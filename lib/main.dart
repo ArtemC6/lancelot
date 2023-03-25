@@ -12,15 +12,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
+import 'package:get_it/get_it.dart';
 
 import 'config/const.dart';
 import 'config/firebase/firestore_operations.dart';
 import 'model/user_model.dart';
 
-void main() async {
+Future main() async {
+  final getIt = GetIt.I;
   CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  getIt.registerSingleton(FirebaseFirestore.instance);
+  getIt.registerSingleton(FirebaseAuth.instance);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -71,9 +75,8 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
   void initState() {
     readFirebaseIsAccountFull(context).then((userModel) {
       bool isEmptyImageBackground = false, isEmptyDataUser = false;
-
       if (userModel.uid.isNotEmpty) {
-        if (userModel.userInterests.isNotEmpty &&
+        if (userModel.listInterests.isNotEmpty &&
             userModel.myCity.isNotEmpty &&
             userModel.searchPol.isNotEmpty) {
           isEmptyDataUser = true;
@@ -92,8 +95,9 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
     bool isEmptyDataUser,
     bool isEmptyImageBackground,
   ) async {
-    if (FirebaseAuth.instance.currentUser?.uid != null) {
-      if (FirebaseAuth.instance.currentUser.emailVerified) {
+    Map<String, dynamic> data = {};
+    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
+      if (GetIt.I<FirebaseAuth>().currentUser.emailVerified) {
         if (isEmptyDataUser) {
           if (isEmptyImageBackground) {
             Navigator.pushReplacement(
@@ -121,24 +125,7 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
             FadeRouteAnimation(
               EditProfileScreen(
                 isFirst: true,
-                userModel: UserModel(
-                    name: '',
-                    uid: '',
-                    myCity: '',
-                    ageTime: Timestamp.now(),
-                    ageInt: 0,
-                    userPol: '',
-                    searchPol: '',
-                    searchRangeStart: 0,
-                    userImageUrl: [],
-                    userImagePath: [],
-                    imageBackground: '',
-                    userInterests: [],
-                    searchRangeEnd: 0,
-                    state: '',
-                    token: '',
-                    notification: true,
-                    description: ''),
+                userModel: UserModel.fromDocument(data),
               ),
             ),
           );

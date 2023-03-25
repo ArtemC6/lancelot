@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -60,18 +59,13 @@ showAlertDialogDeleteMessage(
     required int index,
     required bool isLastMessage}) {
   Widget cancelButton = TextButton(
-    child: const Text("Отмена"),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  );
+      child: const Text("Отмена"), onPressed: () => Navigator.pop(context));
 
   Widget continueButton = TextButton(
     child: const Text("Удалить"),
     onPressed: () async {
       deleteMessageFirebase(
           myId, friendId, idDoc, isLastMessage, snapshotMy, index);
-
       Navigator.pop(context);
     },
   );
@@ -144,9 +138,7 @@ showAlertDialogDeleteChat(
     required double height}) {
   Widget cancelButton = TextButton(
     child: animatedText(height / 62, 'Отмена', Colors.blueAccent, 400, 1),
-    onPressed: () {
-      Navigator.pop(context);
-    },
+    onPressed: () => Navigator.pop(context),
   );
 
   Widget continueButton = TextButton(
@@ -154,29 +146,13 @@ showAlertDialogDeleteChat(
     onPressed: () {
       deleteChatFirebase(friendId, isBack, context, friendUri);
       Navigator.pop(context);
+      Map<String, dynamic> data = {};
       Navigator.push(
         context,
         FadeRouteAnimation(
           ManagerScreen(
             currentIndex: 2,
-            userModelCurrent: UserModel(
-                name: '',
-                uid: '',
-                state: '',
-                myCity: '',
-                ageInt: 0,
-                ageTime: Timestamp.now(),
-                userPol: '',
-                searchPol: '',
-                searchRangeStart: 0,
-                userImageUrl: [],
-                userImagePath: [],
-                imageBackground: '',
-                userInterests: [],
-                searchRangeEnd: 0,
-                token: '',
-                notification: true,
-                description: ''),
+            userModelCurrent: UserModel.fromDocument(data),
           ),
         ),
       );
