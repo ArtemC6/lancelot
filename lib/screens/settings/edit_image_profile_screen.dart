@@ -19,7 +19,7 @@ class EditImageProfileScreen extends StatefulWidget {
 
 class _EditImageProfileScreen extends State<EditImageProfileScreen> {
   bool isLoading = false;
-  final String bacImage;
+  String bacImage;
   List<String> listImageUri = [];
   int indexImage = 100;
 

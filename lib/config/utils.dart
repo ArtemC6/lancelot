@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,7 +24,7 @@ String filterDate(lastDateOnline) {
   return time;
 }
 
-Future<bool> getState(time) async =>
+Future<bool> getFuture(time) async =>
     await Future.delayed(Duration(milliseconds: time));
 
 Future<void> setValueSharedPref(String key, int value) async =>
@@ -55,4 +56,12 @@ Future<void> clearAllNotification() async {
   try {
     await const MethodChannel('clear_all_notifications').invokeMethod('clear');
   } catch (e) {}
+}
+
+StateMachineController getRiveController(Artboard art,
+    {stateMachineName = "State Machine 1"}) {
+  StateMachineController? controller =
+      StateMachineController.fromArtboard(art, stateMachineName);
+  art.addController(controller!);
+  return controller;
 }

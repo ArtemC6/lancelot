@@ -444,7 +444,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
               .get(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             bool isMutuallyFriend = false, isMutuallyMy = false;
-            getState(70).then((i) {
+            getFuture(70).then((i) {
               isMutuallyFriend = false;
               isMutuallyMy = false;
             });

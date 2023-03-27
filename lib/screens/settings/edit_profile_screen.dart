@@ -44,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   _EditProfileScreenState(this.isFirst, this.modelUser);
 
   bool isLoading = false, isError = false, isPhoto = true;
-  final TextEditingController _ageController = TextEditingController(),
+  final _ageController = TextEditingController(),
       _myPolController = TextEditingController(),
       _nameController = TextEditingController(),
       _searchPolController = TextEditingController(),
@@ -54,8 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _notificationController = TextEditingController(),
       _descriptionController = TextEditingController();
 
-  var _selectedInterests = [];
-  var _dateTimeBirthday = DateTime.now();
+  var _selectedInterests = [], _dateTimeBirthday = DateTime.now();
   late SfRangeValues _valuesAge;
   int interestsCount = 0;
 
@@ -68,16 +67,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         showTitleActions: true,
         minTime: DateTime(1993),
         maxTime: DateTime(2007), onChanged: (date) {
-      setState(() {
-        _dateTimeBirthday = date;
-        _ageController.text =
-                (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
-                    .toString();
-          });
-        },
-        onConfirm: (date) {},
-        currentTime: getDataTime(modelUser.ageTime),
-        locale: LocaleType.ru);
+      _ageController.text =
+          (DateTime.now().difference(_dateTimeBirthday).inDays ~/ 365)
+              .toString();
+      setState(() => _dateTimeBirthday = date);
+    }, currentTime: getDataTime(modelUser.ageTime), locale: LocaleType.ru);
   }
 
   Future<void> uploadDataUser() async {
@@ -233,11 +227,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: GestureDetector(
             onTap: () {
               if (modelUser.listImageUri.isEmpty) {
-                uploadFirstImage(context, modelUser).then((uri) {
-                  if (uri.isEmpty) return;
-                  modelUser.listImageUri.add(uri);
-                  setState(() => isPhoto = true);
-                });
+                uploadFirstImage(context, modelUser)
+                    .then((uri) => setState(() => isPhoto = true));
               } else {
                 updateFirstImage(context, modelUser, true);
               }
@@ -288,11 +279,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     width: height / 34,
                     height: height / 34,
                     onTap: () async {
-                      uploadFirstImage(context, modelUser).then((uri) {
-                        if (uri.isEmpty) return;
-                        modelUser.listImageUri.add(uri);
-                        setState(() => isPhoto = true);
-                      });
+                      uploadFirstImage(context, modelUser)
+                          .then((uri) => setState(() => isPhoto = true));
                     },
                     padding: 6,
                   ),
@@ -629,14 +617,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         500,
                                         1),
                                     items: items,
-                                    onSelectionChanged: (value) {
-                                      setState(
-                                          () => interestsCount = value.length);
-                                    },
-                                    onConfirm: (values) {
-                                      setState(
-                                          () => _selectedInterests = values);
-                                    },
+                                    onSelectionChanged: (i) => setState(
+                                        () => interestsCount = i.length),
+                                    onConfirm: (i) =>
+                                        setState(() => _selectedInterests = i),
                                     chipDisplay: MultiSelectChipDisplay(
                                       onTap: (value) => setState(() =>
                                           _selectedInterests.remove(value)),

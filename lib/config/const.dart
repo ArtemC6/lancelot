@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 
+import '../model/rive_model.dart';
+
 const color_blue_90 = Color(0xff192028);
 const color_black_88 = Color(0xff212428);
 const color_red = Color(0xFFFC0465);
@@ -85,6 +87,19 @@ const List<String> listAnimationChatBac = [
   'images/animation_chat_bac_5.json',
   'images/animation_chat_bac_4.json',
   'images/animation_chat_bac_6.json',
+];
+
+List<RiveAsset> bottomNav = [
+  RiveAsset("images/rive/animation_rive_icons",
+      art: "HOME", stateMachineName: "HOME_interactivity", title: "Chat"),
+  RiveAsset("images/rive/animation_rive_icons",
+      art: "BELL",
+      stateMachineName: "BELL_Interactivity",
+      title: "Notifications"),
+  RiveAsset("images/rive/animation_rive_icons",
+      art: "CHAT", stateMachineName: "CHAT_Interactivity", title: "Chat"),
+  RiveAsset("images/rive/animation_rive_icons",
+      art: "USER", stateMachineName: "USER_Interactivity", title: "Profile"),
 ];
 
 final items = interestsList

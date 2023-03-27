@@ -4,6 +4,7 @@ import 'package:Lancelot/screens/profile_screen.dart';
 import 'package:Lancelot/screens/sympathy_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/const.dart';
@@ -36,11 +37,13 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       indexChat = 0,
       indexProfile = 0;
 
+  late SMIBool? input;
+
   UserModel userModelCurrent;
 
   _ManagerScreen(this.currentIndex, this.userModelCurrent);
 
-  void startTimer() {
+  startTimer() {
     Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
@@ -173,61 +176,69 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    SizedBox bottomNavigationBar() {
-      return SizedBox(
-        height: width * .150,
-        child: ListView.builder(
-          itemCount: 4,
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: width * .024),
-          itemBuilder: (context, index) => InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () => Future.delayed(const Duration(milliseconds: 40),
-                () => setState(() => currentIndex = index)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(height: width * .014),
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Icon(listOfIcons[index],
-                        size: width * .076, color: Colors.white),
-                    if (index == 1 && currentIndex != 1)
-                      if (indexSympathy > 0)
-                        showAnimationBottomNotification(
-                            indexNotification: indexSympathy),
-                    if (index == 2 && currentIndex != 2)
-                      if (indexChat > 0)
-                        showAnimationBottomNotification(
-                            indexNotification: indexChat),
-                    if (index == 3 && currentIndex != 3)
-                      if (indexProfile > 0)
-                        showAnimationBottomNotification(
-                            indexNotification: indexProfile),
-                  ],
-                ),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 1500),
-                  curve: Curves.fastLinearToSlowEaseIn,
-                  margin: EdgeInsets.only(
-                    top: index == currentIndex ? 0 : width * .029,
-                    right: width * .0422,
-                    left: width * .0422,
-                  ),
-                  width: width * .153,
-                  height: index == currentIndex ? width * .014 : 0,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+    bottomNavigationBar() {
+      return Padding(
+        padding: EdgeInsets.only(
+            left: width / 34,
+            right: width / 34,
+            bottom: height / 64,
+            top: width / 60),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(
+            bottomNav.length,
+            (index) => GestureDetector(
+              onTap: () {
+                getFuture(10).then((i) {
+                  bottomNav[index].input!.change(true);
+                  getFuture(1200)
+                      .then((i) => bottomNav[index].input!.change(false));
+                  setState(() => currentIndex = index);
+                });
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: width / 9.9,
+                    width: width / 9.9,
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        if (index == 1 && currentIndex != 1)
+                          if (indexSympathy > 0)
+                            showAnimationBottomNotification(
+                                indexNotification: indexSympathy),
+                        if (index == 2 && currentIndex != 2)
+                          if (indexChat > 0)
+                            showAnimationBottomNotification(
+                                indexNotification: indexChat),
+                        if (index == 3 && currentIndex != 3)
+                          if (indexProfile > 0)
+                            showAnimationBottomNotification(
+                                indexNotification: indexProfile),
+                        Opacity(
+                          opacity: 1,
+                          child: RiveAnimation.asset(
+                            bottomNav[index].src,
+                            artboard: bottomNav[index].art,
+                            onInit: (art) {
+                              final controller = getRiveController(art,
+                                  stateMachineName:
+                                      bottomNav[index].stateMachineName);
+                              bottomNav[index].input =
+                                  controller.findSMI("active") as SMIBool;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -275,8 +286,7 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
           backgroundColor: color_black_88,
           bottomNavigationBar: bottomNavigationBar(),
           body: SafeArea(
-            top: false,
-              child: SizedBox.expand(child: childEmployee())));
+              top: false, child: SizedBox.expand(child: childEmployee())));
     }
 
     return const loadingCustom();

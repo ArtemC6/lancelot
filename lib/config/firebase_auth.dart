@@ -1,3 +1,4 @@
+import 'package:Lancelot/config/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +49,8 @@ class FirebaseAuthMethods {
           'notification': true,
         });
 
-        Future.delayed(const Duration(milliseconds: 1740), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const Manager()));
-        });
+        getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) async {
         await GetIt.I<FirebaseAuth>()
             .createUserWithEmailAndPassword(
@@ -84,10 +83,8 @@ class FirebaseAuthMethods {
             'notification': true,
           });
 
-          Future.delayed(const Duration(milliseconds: 1740), () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Manager()));
-          });
+          getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
         });
@@ -112,10 +109,8 @@ class FirebaseAuthMethods {
         setStateFirebase('online');
         setTokenUserFirebase();
 
-        Future.delayed(const Duration(milliseconds: 1740), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const Manager()));
-        });
+        getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) {
         GetIt.I<FirebaseAuth>()
             .signInWithEmailAndPassword(
@@ -126,10 +121,8 @@ class FirebaseAuthMethods {
 
           setStateFirebase('online');
           setTokenUserFirebase();
-          Future.delayed(const Duration(milliseconds: 1740), () {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Manager()));
-          });
+          getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
         });

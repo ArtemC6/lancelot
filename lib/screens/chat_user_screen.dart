@@ -334,6 +334,18 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                       itemBuilder: (context, index) {
                                         if (index <
                                             snapshotMy.data.docs.length) {
+                                          var message = '',
+                                              date = Timestamp.now(),
+                                              isMe = false;
+                                          try {
+                                            message = snapshotMy
+                                                .data.docs[index]['message'];
+                                            date = snapshotMy.data.docs[index]
+                                                ['date'];
+                                            isMe = snapshotMy.data.docs[index]
+                                                    ['senderId'] ==
+                                                userModelCurrent.uid;
+                                          } catch (E) {}
                                           return AnimationConfiguration
                                               .staggeredList(
                                             position: index,
@@ -358,7 +370,6 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                         lengthDoc) {
                                                       isLastMes = true;
                                                     }
-
                                                     showAlertDialogDeleteMessage(
                                                         context: context,
                                                         friendId: friendId,
@@ -366,20 +377,17 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                             .uid,
                                                         friendName: friendName,
                                                         idDoc: snapshotMy.data
-                                                                .docs[index]
-                                                            ['idDoc'],
+                                                            .docs[index]
+                                                        ['idDoc'],
                                                         snapshotMy: snapshotMy,
                                                         index: index + 1,
                                                         isLastMessage:
-                                                            isLastMes);
+                                                        isLastMes);
                                                   },
                                                   child: MessagesItem(
-                                                    snapshotMy.data.docs[index]
-                                                        ['message'],
-                                                    snapshotMy.data.docs[index]
-                                                        ['senderId'],
-                                                    snapshotMy.data.docs[index]
-                                                        ['date'],
+                                                    message,
+                                                    isMe,
+                                                    date,
                                                     friendImage,
                                                     friendId,
                                                     userModelCurrent,

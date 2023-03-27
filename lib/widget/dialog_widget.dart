@@ -233,7 +233,7 @@ showAlertDialogLoading(BuildContext context) {
     ),
     dismissable: false,
     context,
-    future: Future.delayed(const Duration(seconds: 4)),
+    future: Future.delayed(const Duration(seconds: 10)),
   );
 }
 

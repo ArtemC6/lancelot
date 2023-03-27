@@ -173,31 +173,27 @@ class itemUserLike extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            RichText(
-                              text: TextSpan(
-                                text:
-                                    '${userModelLike.name}, ${userModelLike.ageInt}',
-                                style: GoogleFonts.lato(
-                                  textStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: height / 56,
-                                      letterSpacing: .5),
-                                ),
+                            Text(
+                              maxLines: 1,
+                              '${userModelLike.name}, ${userModelLike.ageInt}',
+                              style: GoogleFonts.lato(
+                                textStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: height / 56,
+                                    letterSpacing: .5),
                               ),
                             ),
                             const SizedBox(
                               height: 3,
                             ),
-                            RichText(
+                            Text(
                               maxLines: 1,
-                              text: TextSpan(
-                                text: userModelLike.myCity,
-                                style: GoogleFonts.lato(
-                                  textStyle: TextStyle(
-                                      color: Colors.white.withOpacity(.6),
-                                      fontSize: height / 67,
-                                      letterSpacing: .5),
-                                ),
+                              userModelLike.myCity,
+                              style: GoogleFonts.lato(
+                                textStyle: TextStyle(
+                                    color: Colors.white.withOpacity(.6),
+                                    fontSize: height / 67,
+                                    letterSpacing: .5),
                               ),
                             ),
                           ],

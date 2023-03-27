@@ -163,15 +163,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                     dataLastWrite))
                                                             .inSeconds <
                                                         6) {
-                                                      Future.delayed(
-                                                          const Duration(
-                                                              seconds: 5), () {
-                                                        getState(4500)
-                                                            .then((i) {
-                                                          setState(() =>
-                                                              isWriteUser = i);
-                                                        });
-                                                      });
+                                                      getFuture(5000).then(
+                                                          (i) => setState(() =>
+                                                              isWriteUser = i));
                                                       isWriteUser = true;
                                                       if (isLastOpenChat) {
                                                         isNewMessage = true;

@@ -137,7 +137,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                 limit),
                                             builder: (context, snap) {
                                               if (snap.hasData) {
-                                                getState(100).then(
+                                                getFuture(70).then(
                                                     (i) => isMySym = false);
 
                                                 for (var data
@@ -256,12 +256,12 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             Alignment.topRight,
                                                                         child:
                                                                             GestureDetector(
-                                                                          onTap:
-                                                                              () async {
-                                                                                deleteSympathy(idDoc,
+                                                                              onTap:
+                                                                              () {
+                                                                            deleteSympathy(idDoc,
                                                                                 userModelCurrent.uid);
                                                                             setState(() {});
-                                                                            await CachedNetworkImage.evictFromCache(friend.listImageUri[0]);
+                                                                            CachedNetworkImage.evictFromCache(friend.listImageUri[0]);
                                                                           },
                                                                           child:
                                                                               Icon(
@@ -298,10 +298,10 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                               timeAnim,
                                                                           onTap:
                                                                               () {
-                                                                            createSympathy(uid, userModelCurrent).then((value) async {
+                                                                                createSympathy(uid, userModelCurrent).then((i) {
                                                                               setState(() {});
                                                                               if (friend.token.isNotEmpty && friend.notification) {
-                                                                                await sendFcmMessage('Lancelot', 'У вас взаимная симпатия', friend.token, 'sympathy', userModelCurrent.uid, userModelCurrent.listImageUri[0]);
+                                                                                sendFcmMessage('Lancelot', 'У вас взаимная симпатия', friend.token, 'sympathy', userModelCurrent.uid, userModelCurrent.listImageUri[0]);
                                                                               }
                                                                             });
                                                                           },

@@ -62,50 +62,43 @@ Future<CroppedFile?> _cropImage(
   return croppedFileCurrent;
 }
 
-Future<String> uploadFirstImage(
-    BuildContext context, UserModel modelUser) async {
-  String uri = '';
+Future uploadFirstImage(BuildContext context, UserModel modelUser) async {
   final storage = FirebaseStorage.instance;
-  try {
-    final pickedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
-    if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 38).then((croppedFile) async {
-        if (croppedFile != null) {
-          final fileName = path.basename(croppedFile.path);
-          final imageFile = File(croppedFile.path);
-          final task = storage.ref(fileName).putFile(imageFile);
+  final pickedImage = await ImagePicker()
+      .pickImage(source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
+  if (pickedImage != null) {
+    await _cropImage(context, pickedImage, 38).then((croppedFile) async {
+      if (croppedFile != null) {
+        final fileName = path.basename(croppedFile.path);
+        final imageFile = File(croppedFile.path);
+        final task = storage.ref(fileName).putFile(imageFile);
 
-          if (task == null) return '';
-          showAlertDialogLoading(context);
+        if (task == null) return '';
+        showAlertDialogLoading(context);
 
-          final snapshot = await task.whenComplete(() {});
-          final urlDownload = await snapshot.ref.getDownloadURL();
+        final snapshot = await task.whenComplete(() {});
+        final urlDownload = await snapshot.ref.getDownloadURL();
 
-          modelUser.listImagePath.add(fileName);
-          modelUser.listImageUri.add(urlDownload);
+        modelUser.listImagePath.add(fileName);
+        modelUser.listImageUri.add(urlDownload);
 
-          final docUser = GetIt.I<FirebaseFirestore>()
-              .collection('User')
-              .doc(GetIt.I<FirebaseAuth>().currentUser?.uid);
+        final docUser = GetIt.I<FirebaseFirestore>()
+            .collection('User')
+            .doc(GetIt.I<FirebaseAuth>().currentUser?.uid);
 
-          final json = {
-            'listImageUri': modelUser.listImageUri,
-            'listImagePath': modelUser.listImagePath
-          };
+        final json = {
+          'listImageUri': modelUser.listImageUri,
+          'listImagePath': modelUser.listImagePath
+        };
 
-          await docUser.update(json).then((value) => uri = urlDownload);
-        }
-      });
-    }
-  } catch (err) {}
-
-  return uri;
+        await docUser.update(json);
+      }
+    });
+  }
 }
 
 Future<void> uploadImageAdd(
     BuildContext context, UserModel userModelCurrent) async {
-  try {
     final pickedImage = await ImagePicker().pickImage(
         source: ImageSource.gallery, imageQuality: 28, maxWidth: 1920);
     if (pickedImage != null) {
@@ -153,85 +146,78 @@ Future<void> uploadImageAdd(
         }
       });
     }
-  } catch (err) {}
 }
 
-Future<String> updateFirstImage(
+Future updateFirstImage(
     BuildContext context, UserModel userModelCurrent, bool isScreen) async {
   List<String> listImageUri = [], listImagePath = [];
-  String uri = '';
-  FirebaseStorage storage = FirebaseStorage.instance;
-  final picker = ImagePicker();
-  try {
-    final pickedImage = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
-    if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 38).then((croppedFile) async {
-        if (croppedFile != null) {
-          final fileName = path.basename(croppedFile.path);
-          final imageFile = File(croppedFile.path);
+  final storage = FirebaseStorage.instance, picker = ImagePicker();
+  final pickedImage = await picker.pickImage(
+      source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
+  if (pickedImage != null) {
+    await _cropImage(context, pickedImage, 38).then((croppedFile) async {
+      if (croppedFile != null) {
+        final fileName = path.basename(croppedFile.path);
+        final imageFile = File(croppedFile.path);
 
-          try {
-            final task = storage.ref(fileName).putFile(imageFile);
-            if (task == null) return;
+        try {
+          final task = storage.ref(fileName).putFile(imageFile);
+          if (task == null) return;
 
-            showAlertDialogLoading(context);
+          showAlertDialogLoading(context);
 
-            final snapshot = await task.whenComplete(() {});
-            final urlDownload = await snapshot.ref.getDownloadURL();
+          final snapshot = await task.whenComplete(() {});
+          final urlDownload = await snapshot.ref.getDownloadURL();
 
-            CachedNetworkImage.evictFromCache(userModelCurrent.listImageUri[0]);
+          CachedNetworkImage.evictFromCache(userModelCurrent.listImageUri[0]);
 
-            storage.ref(userModelCurrent.listImagePath[0]).delete();
+          storage.ref(userModelCurrent.listImagePath[0]).delete();
 
-            userModelCurrent.listImageUri.removeAt(0);
-            userModelCurrent.listImagePath.removeAt(0);
+          userModelCurrent.listImageUri.removeAt(0);
+          userModelCurrent.listImagePath.removeAt(0);
 
-            listImagePath.add(fileName);
-            listImageUri.add(urlDownload);
+          listImagePath.add(fileName);
+          listImageUri.add(urlDownload);
 
-            listImagePath.addAll(userModelCurrent.listImagePath);
-            listImageUri.addAll(userModelCurrent.listImageUri);
+          listImagePath.addAll(userModelCurrent.listImagePath);
+          listImageUri.addAll(userModelCurrent.listImageUri);
 
-            final docUser = GetIt.I<FirebaseFirestore>()
-                .collection('User')
-                .doc(userModelCurrent.uid);
+          final docUser = GetIt.I<FirebaseFirestore>()
+              .collection('User')
+              .doc(userModelCurrent.uid);
 
-            final json = {
-              'listImageUri': listImageUri,
-              'listImagePath': listImagePath
-            };
+          final json = {
+            'listImageUri': listImageUri,
+            'listImagePath': listImagePath
+          };
 
-            docUser.update(json);
-            Navigator.pop(context);
-            Map<String, dynamic> dataCash = {};
-            if (isScreen) {
-              Navigator.pushReplacement(
-                  context,
-                  FadeRouteAnimation(EditProfileScreen(
-                    isFirst: false,
-                    userModel: UserModel.fromDocument(dataCash),
-                  )));
-            } else {
-              Navigator.pushReplacement(
-                  context,
-                  FadeRouteAnimation(ManagerScreen(
-                      currentIndex: 3,
-                      userModelCurrent: UserModel.fromDocument(dataCash))));
-            }
-          } on FirebaseException {
-            Navigator.pop(context);
+          docUser.update(json);
+          Navigator.pop(context);
+          Map<String, dynamic> dataCash = {};
+          if (isScreen) {
+            Navigator.pushReplacement(
+                context,
+                FadeRouteAnimation(EditProfileScreen(
+                  isFirst: false,
+                  userModel: UserModel.fromDocument(dataCash),
+                )));
+          } else {
+            Navigator.pushReplacement(
+                context,
+                FadeRouteAnimation(ManagerScreen(
+                    currentIndex: 3,
+                    userModelCurrent: UserModel.fromDocument(dataCash))));
           }
+        } on FirebaseException {
+          Navigator.pop(context);
         }
-      });
+      }
+    });
     }
-  } catch (err) {}
-  return uri;
 }
 
 Future<void> createSympathy(
     String idPartner, UserModel userModelCurrent) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idPartner)
@@ -253,7 +239,6 @@ Future<void> createSympathy(
         'time': DateTime.now(),
       });
     });
-  } on FirebaseException {}
 }
 
 Future<void> deleteSympathy(String idDoc, idUser) async {
@@ -319,43 +304,36 @@ Future<void> imageRemove(
   }
 }
 
-Future<void> setStateFirebase(String state, [String? uid]) async {
-  try {
+Future setStateFirebase(String state, [String? uid]) async {
+  await GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(uid ?? GetIt.I<FirebaseAuth>().currentUser?.uid)
+      .update({
+    'state': state,
+    if (state == 'offline') 'lastDateOnline': DateTime.now(),
+  });
+}
+
+Future deleteUserTokenFirebase(String uid) async {
+  await GetIt.I<FirebaseFirestore>().collection('User').doc(uid).update({
+    'token': '',
+  });
+}
+
+Future setTokenUserFirebase() async {
+  await FirebaseMessaging.instance.getToken().then((token) async {
     await GetIt.I<FirebaseFirestore>()
         .collection('User')
-        .doc(uid ?? GetIt.I<FirebaseAuth>().currentUser?.uid)
+        .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
         .update({
-      'state': state,
-      if (state == 'offline') 'lastDateOnline': DateTime.now(),
+      'token': token,
     });
-  } on FirebaseException {}
-}
-
-Future<void> deleteUserTokenFirebase(String uid) async {
-  try {
-    await GetIt.I<FirebaseFirestore>().collection('User').doc(uid).update({
-      'token': '',
-    });
-  } on FirebaseException {}
-}
-
-Future<void> setTokenUserFirebase() async {
-  try {
-    await FirebaseMessaging.instance.getToken().then((token) async {
-      await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
-          .update({
-        'token': token,
-      });
-    });
-  } on FirebaseException {}
+  });
 }
 
 Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
     String friendUri) async {
   CachedNetworkImage.evictFromCache(friendUri);
-
   GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
@@ -404,7 +382,6 @@ Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
 }
 
 Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
@@ -421,13 +398,11 @@ Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
             ),
           ));
     });
-  } on FirebaseException {}
 }
 
 Future<UserModel> readUserFirebase([String? idUser]) async {
   Map<String, dynamic> data = {};
   UserModel userModel = UserModel.fromDocument(data);
-  try {
     DocumentSnapshot<Map<String, dynamic>> query;
     final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
     try {
@@ -468,7 +443,6 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
     }
 
     userModel = UserModel.fromDocument(query.data() as Map<String, dynamic>);
-  } on FirebaseException {}
 
   return userModel;
 }
@@ -506,7 +480,6 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
 }
 
 Future deleteDislike(String idUser) async {
-  try {
     final collection = GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(idUser)
@@ -520,12 +493,10 @@ Future deleteDislike(String idUser) async {
 
       return batch.commit();
     });
-  } on FirebaseException {}
 }
 
 Future deleteMessageFirebase(String myId, String friendId, String idDoc,
     bool isLastMessage, AsyncSnapshot snapshotMy, int index) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(myId)
@@ -567,13 +538,11 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
         'last_date_open_chat': DateTime.now(),
       });
     }
-  } on FirebaseException {}
 }
 
 Future<bool> putLike(
     UserModel userModelCurrent, UserModel userModel, bool isLikeOnTap) async {
   bool isLike = false;
-  try {
     QuerySnapshot<Map<String, dynamic>> query;
     try {
       query = await GetIt.I<FirebaseFirestore>()
@@ -628,7 +597,6 @@ Future<bool> putLike(
             .delete();
       }
     }
-  } on FirebaseException {}
 
   return Future.value(!isLike);
 }
@@ -708,33 +676,27 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
   return userModelCurrent;
 }
 
-Future putUserWrites(
+putUserWrites(
   String currentId,
   String friendId,
-) async {
-  try {
+) =>
     GetIt.I<FirebaseFirestore>()
         .collection("User")
         .doc(friendId)
         .collection('messages')
         .doc(currentId)
         .update({'writeLastData': DateTime.now()});
-  } on FirebaseException {}
-}
 
 Future createDisLike(UserModel userModelCurrent, UserModel userModel) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection("User")
         .doc(userModelCurrent.uid)
         .collection('dislike')
         .doc(userModel.uid)
         .set({});
-  } on FirebaseException {}
 }
 
 Future createLastOpenChat(String uid, String friendId) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
@@ -743,11 +705,9 @@ Future createLastOpenChat(String uid, String friendId) async {
         .update({
       'last_date_open_chat': DateTime.now(),
     });
-  } on FirebaseException {}
 }
 
 Future createLastCloseChat(String uid, String friendId, data) async {
-  try {
     GetIt.I<FirebaseFirestore>()
         .collection('User')
         .doc(friendId)
@@ -756,7 +716,6 @@ Future createLastCloseChat(String uid, String friendId, data) async {
         .update({
       'last_date_close_chat': data,
     });
-  } on FirebaseException {}
 }
 
 Future<List<String>> readFirebaseImageProfile() async {
@@ -830,11 +789,7 @@ Future<bool> sendFcmMessage(
 }
 
 Future<String> getTokenUser() async {
-  String token = '';
-  try {
-    token = await FirebaseMessaging.instance.getToken() ?? '';
-  } on FirebaseException {}
-  return token;
+  return await FirebaseMessaging.instance.getToken() ?? '';
 }
 
 Future<void> sendMessage(

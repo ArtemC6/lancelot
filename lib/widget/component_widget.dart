@@ -452,7 +452,7 @@ class _topPanelChatState extends State<topPanelChat> {
                           .difference(getDataTime(controller.writeLastData))
                           .inSeconds <
                       3) {
-                    getState(3500).then((value) {
+                    getFuture(3500).then((value) {
                       setState(() => isWriteUser = value);
                     });
                     isWriteUser = true;
@@ -652,14 +652,16 @@ class showAnimationBottomNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return DelayedDisplay(
       delay: const Duration(milliseconds: 650),
       child: Container(
         alignment: Alignment.center,
-        width: 15,
-        height: 15,
+        width: width / 26,
+        height: width / 26,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(100),
             color: Colors.deepPurpleAccent),
         child:
             animatedText(9.0, indexNotification.toString(), Colors.white, 0, 1),
