@@ -383,21 +383,21 @@ Future deleteChatFirebase(String friendId, bool isBack, BuildContext context,
 
 Future<void> uploadImagePhotoProfile(String uri, BuildContext context) async {
     GetIt.I<FirebaseFirestore>()
-        .collection('User')
-        .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
-        .update({
-      'imageBackground': uri,
-    }).then((value) {
-      Map<String, dynamic> dataCash = {};
-      Navigator.pushReplacement(
-          context,
-          FadeRouteAnimation(
-            ManagerScreen(
-              currentIndex: 3,
-              userModelCurrent: UserModel.fromDocument(dataCash),
-            ),
-          ));
-    });
+      .collection('User')
+      .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
+      .update({
+    'imageBackground': uri,
+  }).then((i) {
+    Map<String, dynamic> dataCash = {};
+    Navigator.pushReplacement(
+        context,
+        FadeRouteAnimation(
+          ManagerScreen(
+            currentIndex: 3,
+            userModelCurrent: UserModel.fromDocument(dataCash),
+          ),
+        ));
+  });
 }
 
 Future<UserModel> readUserFirebase([String? idUser]) async {

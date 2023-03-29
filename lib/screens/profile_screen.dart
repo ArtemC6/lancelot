@@ -73,6 +73,7 @@ class _ProfileScreen extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     if (isLoading) {
       return Scaffold(
@@ -91,16 +92,13 @@ class _ProfileScreen extends State<ProfileScreen> {
                     curve: Curves.easeOut,
                     duration: const Duration(milliseconds: 3000),
                     child: Stack(
-                      alignment:
-                          isProprietor ? Alignment.topRight : Alignment.topLeft,
                       children: [
                         Positioned(
                           child: SizedBox(
                             height: height * .28,
                             width: width,
                             child: CachedNetworkImage(
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                              matchTextDirection: true,
                               fit: BoxFit.cover,
                               imageUrl: userModelPartner.imageBackground,
                             ),
@@ -108,6 +106,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                         if (isBack)
                           Positioned(
+                            width: width,
                             height: height / 10,
                             child: Container(
                               alignment: Alignment.bottomLeft,
@@ -118,7 +117,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(14),
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius:
+                                    BorderRadius.circular(14),
                                     border: Border.all(
                                       color: Colors.white38,
                                       width: 1,
@@ -133,9 +133,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                                       height: height / 20,
                                       width: height / 20,
                                       child: IconButton(
-                                        onPressed: () => Navigator.pop(context),
+                                        onPressed: () =>
+                                            Navigator.pop(context),
                                         icon: Icon(
-                                            Icons.arrow_back_ios_new_rounded,
+                                            Icons
+                                                .arrow_back_ios_new_rounded,
                                             size: height / 44),
                                         color: Colors.white,
                                       ),
@@ -147,6 +149,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                           ),
                         if (isProprietor)
                           Positioned(
+                            width: width,
                             height: height / 9,
                             child: Container(
                               alignment: Alignment.bottomRight,
@@ -157,7 +160,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(15),
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius:
+                                    BorderRadius.circular(15),
                                     border: Border.all(
                                       color: Colors.white54,
                                       width: 1,
@@ -176,9 +180,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                                             context,
                                             FadeRouteAnimation(
                                                 ProfileSettingScreen(
-                                              userModel: userModelPartner,
-                                              listInterests: listStory,
-                                            ))),
+                                                  userModel:
+                                                  userModelPartner,
+                                                  listInterests: listStory,
+                                                ))),
                                         icon: Icon(Icons.settings,
                                             size: height / 36),
                                         color: Colors.white,
@@ -407,7 +412,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                 context,
                                                 FadeRouteAnimation(
                                                     ViewLikesScreen(
-                                                  userModelCurrent:
+                                                      userModelCurrent:
+                                                      userModelCurrent,
+                                                  userModelLike:
                                                       userModelPartner,
                                                 ))),
                                             child: Column(

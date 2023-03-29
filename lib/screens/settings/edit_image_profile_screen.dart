@@ -1,37 +1,44 @@
+import 'package:Lancelot/screens/settings/settiongs_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/const.dart';
 import '../../config/firebase/firestore_operations.dart';
+import '../../model/interests_model.dart';
+import '../../model/user_model.dart';
 import '../../widget/animation_widget.dart';
 import '../../widget/button_widget.dart';
 import '../../widget/component_widget.dart';
 
 class EditImageProfileScreen extends StatefulWidget {
-  final String bacImage;
+  final UserModel userModel;
+  final List<InterestsModel> listInterests;
 
-  const EditImageProfileScreen({Key? key, required this.bacImage})
+  const EditImageProfileScreen(
+      {Key? key, required this.userModel, required this.listInterests})
       : super(key: key);
 
   @override
   State<EditImageProfileScreen> createState() =>
-      _EditImageProfileScreen(bacImage);
+      _EditImageProfileScreen(userModel, listInterests);
 }
 
 class _EditImageProfileScreen extends State<EditImageProfileScreen> {
   bool isLoading = false;
-  String bacImage;
   List<String> listImageUri = [];
+  final UserModel userModel;
+  final List<InterestsModel> listInterests;
   int indexImage = 100;
 
-  _EditImageProfileScreen(this.bacImage);
+  _EditImageProfileScreen(this.userModel, this.listInterests);
 
   @override
   void initState() {
     readFirebaseImageProfile().then((result) {
       listImageUri = result;
 
-      if (bacImage.isNotEmpty) {
-        indexImage = listImageUri.indexWhere((element) => element == bacImage);
+      if (userModel.imageBackground.isNotEmpty) {
+        indexImage = listImageUri
+            .indexWhere((element) => element == userModel.imageBackground);
       }
 
       setState(() => isLoading = true);
@@ -70,9 +77,17 @@ class _EditImageProfileScreen extends State<EditImageProfileScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (bacImage.isNotEmpty)
+                            if (userModel.imageBackground.isNotEmpty)
                               IconButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () => Navigator.pushReplacement(
+                                  context,
+                                  FadeRouteAnimation(
+                                    ProfileSettingScreen(
+                                      userModel: userModel,
+                                      listInterests: listInterests,
+                                    ),
+                                  ),
+                                ),
                                 icon: Icon(Icons.arrow_back_ios_new_rounded,
                                     size: height / 40),
                                 color: Colors.white,

@@ -107,9 +107,12 @@ class itemUserLike extends StatelessWidget {
   final UserModel userModelCurrent, userModelLike;
   final int indexAnimation;
 
-  const itemUserLike(
-      this.userModelLike, this.userModelCurrent, this.indexAnimation,
-      {super.key});
+  const itemUserLike({
+    Key? key,
+    required this.userModelCurrent,
+    required this.userModelLike,
+    required this.indexAnimation,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

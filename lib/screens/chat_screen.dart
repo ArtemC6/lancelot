@@ -44,14 +44,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           scrollController.offset) {
         setState(() => limit += 4);
 
-        Future.delayed(const Duration(milliseconds: 600), () {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent -
-                MediaQuery.of(context).size.height / 10.5,
-            duration: const Duration(milliseconds: 1500),
-            curve: Curves.fastOutSlowIn,
-          );
-        });
+        getFuture(600).then((i) => scrollController.animateTo(
+              scrollController.position.maxScrollExtent -
+                  MediaQuery.of(context).size.height / 10.5,
+              duration: const Duration(milliseconds: 1500),
+              curve: Curves.fastOutSlowIn,
+            ));
       }
     });
     super.initState();

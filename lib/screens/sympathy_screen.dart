@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:Lancelot/screens/profile_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,14 +50,13 @@ class _SympathyScreenState extends State<SympathyScreen>
           scrollController.offset) {
         setState(() => limit += 3);
 
-        Future.delayed(const Duration(milliseconds: 600), () {
-          scrollController.animateTo(
+        getFuture(600).then((i) => scrollController.animateTo(
             scrollController.position.maxScrollExtent -
                 MediaQuery.of(context).size.height / 7,
             duration: const Duration(milliseconds: 1500),
             curve: Curves.fastOutSlowIn,
-          );
-        });
+          ),
+        );
       }
     });
 
@@ -140,9 +137,8 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                 getFuture(70).then(
                                                     (i) => isMySym = false);
 
-                                                for (var data
-                                                    in snap.data!.docs) {
-                                                  isMySym = data['uid'] ==
+                                                for (var i in snap.data!.docs) {
+                                                  isMySym = i['uid'] ==
                                                       userModelCurrent.uid;
                                                 }
                                                 return GestureDetector(

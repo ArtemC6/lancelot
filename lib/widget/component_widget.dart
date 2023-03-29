@@ -76,8 +76,7 @@ class slideInterests extends StatelessWidget {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
                                   child: CachedNetworkImage(
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
+                                    matchTextDirection: true,
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
                                       height: height / 12,
@@ -202,8 +201,7 @@ class slideInterestsSettings extends StatelessWidget {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
                                       child: CachedNetworkImage(
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
+                                        matchTextDirection: true,
                                         imageBuilder:
                                             (context, imageProvider) =>
                                                 Container(
@@ -738,8 +736,7 @@ class listImageProfile extends StatelessWidget {
                             ),
                             elevation: 6,
                             child: CachedNetworkImage(
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+                              matchTextDirection: true,
                               imageBuilder: (context, imageProvider) =>
                                   Container(
                                 decoration: BoxDecoration(

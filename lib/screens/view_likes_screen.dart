@@ -5,27 +5,29 @@ import 'package:get_it/get_it.dart';
 
 import '../config/const.dart';
 import '../config/firebase/firestore_operations.dart';
+import '../config/utils.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/card_widget.dart';
 import '../widget/component_widget.dart';
 
 class ViewLikesScreen extends StatefulWidget {
-  final UserModel userModelCurrent;
+  final UserModel userModelCurrent, userModelLike;
 
-  const ViewLikesScreen({Key? key, required this.userModelCurrent})
+  const ViewLikesScreen(
+      {Key? key, required this.userModelCurrent, required this.userModelLike})
       : super(key: key);
 
   @override
   State<ViewLikesScreen> createState() =>
-      _ViewLikesScreenState(userModelCurrent);
+      _ViewLikesScreenState(userModelCurrent, userModelLike);
 }
 
 class _ViewLikesScreenState extends State<ViewLikesScreen>
     with TickerProviderStateMixin {
-  final UserModel userModelCurrent;
+  final UserModel userModelCurrent, userModelLike;
 
-  _ViewLikesScreenState(this.userModelCurrent);
+  _ViewLikesScreenState(this.userModelCurrent, this.userModelLike);
 
   List<String> listLike = [];
   bool isLoadingNewUser = false;
@@ -42,14 +44,14 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
           scrollController.offset) {
         setState(() => limit += 6);
 
-        Future.delayed(const Duration(milliseconds: 600), () {
-          scrollController.animateTo(
+        getFuture(600).then(
+          (i) => scrollController.animateTo(
             scrollController.position.maxScrollExtent -
                 MediaQuery.of(context).size.height / 7,
             duration: const Duration(milliseconds: 1500),
             curve: Curves.fastOutSlowIn,
-          );
-        });
+          ),
+        );
       }
     });
 
@@ -83,7 +85,7 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
               FutureBuilder(
                 future: GetIt.I<FirebaseFirestore>()
                     .collection('User')
-                    .doc(userModelCurrent.uid)
+                    .doc(userModelLike.uid)
                     .collection('likes')
                     .limit(limit)
                     .get(),
@@ -123,9 +125,10 @@ class _ViewLikesScreenState extends State<ViewLikesScreen>
                                           if (friend
                                               .imageBackground.isNotEmpty) {
                                             return itemUserLike(
-                                                friend,
-                                                userModelCurrent,
-                                                indexAnimation);
+                                                userModelLike: friend,
+                                                userModelCurrent:
+                                                    userModelCurrent,
+                                                indexAnimation: indexAnimation);
                                           }
 
                                           return const SizedBox();

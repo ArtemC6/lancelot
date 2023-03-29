@@ -17,6 +17,7 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import '../config/const.dart';
 import '../config/firebase/firebase_chat_data.dart';
 import '../config/firebase/firestore_operations.dart';
+import '../config/utils.dart';
 import '../getx/chat_data_controller.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
@@ -77,14 +78,12 @@ class _ChatUserScreenState extends State<ChatUserScreen>
           scrollController.offset) {
         setState(() => limit += 10);
 
-        Future.delayed(const Duration(milliseconds: 600), () {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent -
-                MediaQuery.of(context).size.height / 6,
-            duration: const Duration(milliseconds: 1500),
-            curve: Curves.fastOutSlowIn,
-          );
-        });
+        getFuture(600).then((i) => scrollController.animateTo(
+              scrollController.position.maxScrollExtent -
+                  MediaQuery.of(context).size.height / 6,
+              duration: const Duration(milliseconds: 1500),
+              curve: Curves.fastOutSlowIn,
+            ));
       }
     });
 
@@ -92,7 +91,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     createLastCloseChat(userModelCurrent.uid, widget.friendId, '');
   }
 
-  void startTimer() {
+   startTimer() {
     Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {

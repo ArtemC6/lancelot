@@ -113,8 +113,9 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
             Navigator.pushReplacement(
               context,
               FadeRouteAnimation(
-                const EditImageProfileScreen(
-                  bacImage: '',
+                EditImageProfileScreen(
+                  userModel: UserModel.fromDocument(data),
+                  listInterests: const [],
                 ),
               ),
             );

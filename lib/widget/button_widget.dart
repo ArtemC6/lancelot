@@ -434,7 +434,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           .collection('sympathy')
           .where('uid', isEqualTo: userModelFriend.uid)
           .get(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshotMy) {
+      builder: (context, snapshotMy) {
         return FutureBuilder(
           future: GetIt.I<FirebaseFirestore>()
               .collection('User')
@@ -442,22 +442,22 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
               .collection('sympathy')
               .where('uid', isEqualTo: userModelCurrent.uid)
               .get(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            bool isMutuallyFriend = false, isMutuallyMy = false;
-            getFuture(70).then((i) {
-              isMutuallyFriend = false;
-              isMutuallyMy = false;
-            });
-
-            for (var data in snapshot.data!.docs) {
-              isMutuallyFriend = data['uid'] == userModelCurrent.uid;
-            }
-
-            for (var data in snapshotMy.data!.docs) {
-              isMutuallyMy = data['uid'] == userModelFriend.uid;
-            }
-
+          builder: (context, snapshot) {
             if (snapshotMy.hasData && snapshot.hasData) {
+              bool isMutuallyFriend = false, isMutuallyMy = false;
+              getFuture(70).then((i) {
+                isMutuallyFriend = false;
+                isMutuallyMy = false;
+              });
+
+              for (var data in snapshot.data!.docs) {
+                isMutuallyFriend = data['uid'] == userModelCurrent.uid;
+              }
+
+              for (var data in snapshotMy.data!.docs) {
+                isMutuallyMy = data['uid'] == userModelFriend.uid;
+              }
+
               return DelayedDisplay(
                   delay: const Duration(milliseconds: 400),
                   child: buttonLogic(isMutuallyMy, isMutuallyFriend, context));

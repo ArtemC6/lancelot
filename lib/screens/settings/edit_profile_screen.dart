@@ -131,8 +131,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         } else {
           Navigator.pushReplacement(
               context,
-              FadeRouteAnimation(
-                  EditImageProfileScreen(bacImage: modelUser.imageBackground)));
+              FadeRouteAnimation(EditImageProfileScreen(
+                userModel: modelUser,
+                listInterests: const [],
+              )));
         }
       });
     } else {

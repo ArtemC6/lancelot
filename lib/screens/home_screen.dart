@@ -5,11 +5,13 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
 import '../config/const.dart';
 import '../config/firebase/firestore_operations.dart';
 import '../config/utils.dart';
+import '../getx/sympathy_cart_controller.dart';
 import '../model/user_model.dart';
 import '../widget/animation_widget.dart';
 import '../widget/button_widget.dart';
@@ -28,14 +30,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late CardController controllerCard;
-  double colorIndex = 0;
+
   int limit = 0, count = 0;
-  bool isLike = false,
-      isLook = false,
-      isLoading = false,
-      isReadDislike = false,
-      isWrite = false,
-      isEmptyUser = false;
+  bool isLoading = false, isWrite = false, isEmptyUser = false;
   List<UserModel> userModelPartner = [];
   List<String> listDisLike = [];
   final UserModel userModelCurrent;
@@ -74,7 +71,7 @@ class _HomeScreen extends State<HomeScreen>
           });
         }
       }
-    }).then((value) {
+    }).then((i) {
       if (userModelPartner.isEmpty) {
         count++;
         if (count >= 8) {
@@ -121,6 +118,7 @@ class _HomeScreen extends State<HomeScreen>
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final sympathyCar = Get.put(GetSympathyCartController());
 
     if (isLoading) {
       return Scaffold(
@@ -186,25 +184,23 @@ class _HomeScreen extends State<HomeScreen>
                                     int incline = int.parse(align.x
                                         .toStringAsFixed(1)
                                         .substring(1, 2));
-                                    if (incline <= 10 && incline > 3) {
-                                      colorIndex = double.parse('0.$incline');
-                                      isLike = true;
-                                      isLook = true;
+                                    if (incline <= 10) {
+                                      sympathyCar
+                                          .setIndex(double.parse('0.$incline'));
+                                      sympathyCar.setLike(true);
                                     } else {
-                                      isLook = false;
+                                      sympathyCar.setIndex(0);
                                     }
                                   } else if (align.x > 0) {
-                                    if (align.y.toDouble() < 1 &&
-                                        align.y.toDouble() > 0.3) {
-                                      colorIndex =
-                                          double.parse('0.${align.x.toInt()}');
-                                      isLook = true;
-                                      isLike = false;
+                                    if (align.y.toDouble() < 1) {
+                                      sympathyCar.setIndex(
+                                          double.parse('0.${align.x.toInt()}'));
+
+                                      sympathyCar.setLike(false);
                                     } else {
-                                      isLook = false;
+                                      sympathyCar.setIndex(0);
                                     }
                                   }
-                                  setState(() {});
                                 },
                                 swipeCompleteCallback:
                                     (CardSwipeOrientation orientation,
@@ -245,39 +241,49 @@ class _HomeScreen extends State<HomeScreen>
                                         userModelPartner[index]
                                             .listImageUri[0]);
                                   }
-                                  isLook = false;
-                                  setState(() {});
+                                  sympathyCar.setIndex(0);
                                 },
                               ),
                             ),
-                            if (isLook && !isLike)
-                              Container(
-                                height: height / 2.9,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image:
-                                        const AssetImage('images/ic_heart.png'),
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.white.withOpacity(colorIndex),
-                                      BlendMode.modulate,
+                            // if (isLook && !isLike)
+                            GetBuilder(builder:
+                                (GetSympathyCartController controller) {
+                              print(controller.colorIndex);
+                              if (controller.colorIndex >= 0.2) {
+                                if (!controller.isLike) {
+                                  return Container(
+                                    height: height / 2.9,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: const AssetImage(
+                                            'images/ic_heart.png'),
+                                        colorFilter: ColorFilter.mode(
+                                          Colors.white.withOpacity(
+                                              controller.colorIndex),
+                                          BlendMode.modulate,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            if (isLook && isLike)
-                              Container(
-                                height: height / 2.9,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: const AssetImage(
-                                        'images/ic_remove.png'),
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.white.withOpacity(colorIndex),
-                                      BlendMode.modulate,
+                                  );
+                                } else {
+                                  return Container(
+                                    height: height / 2.9,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: const AssetImage(
+                                            'images/ic_remove.png'),
+                                        colorFilter: ColorFilter.mode(
+                                          Colors.white.withOpacity(
+                                              controller.colorIndex),
+                                          BlendMode.modulate,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
+                                  );
+                                }
+                              }
+                              return const SizedBox();
+                            }),
                           ],
                         ),
                       if (isEmptyUser)

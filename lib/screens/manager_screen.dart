@@ -88,8 +88,8 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
+      final notification = message.notification,
+          android = message.notification?.android;
       if (notification != null && android != null) {
         if (message.data['type'] == 'sympathy') indexSympathy++;
         if (message.data['type'] == 'chat') indexChat++;
@@ -102,9 +102,9 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       }
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      final notification = message.notification,
+          android = message.notification?.android;
       if (notification != null && android != null) {
         setIndexPage(message.data['type'], message.data['uid']);
       }

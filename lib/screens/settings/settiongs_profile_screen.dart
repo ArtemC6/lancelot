@@ -130,7 +130,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 context,
                                 FadeRouteAnimation(
                                   EditImageProfileScreen(
-                                    bacImage: userModel.imageBackground,
+                                    userModel: userModel,
+                                    listInterests: listInterests,
                                   ),
                                 ),
                               ),
@@ -299,7 +300,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                               context,
                                               FadeRouteAnimation(
                                                   ViewLikesScreen(
-                                                userModelCurrent: userModel,
+                                                    userModelCurrent: userModel,
+                                                userModelLike: userModel,
                                               ))),
                                           child: Column(
                                             children: [
@@ -310,9 +312,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                                         .doc(userModel.uid)
                                                         .collection('likes')
                                                         .get(),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<QuerySnapshot>
-                                                        snapshot) {
+                                                builder: (context, snapshot) {
                                                   if (snapshot.hasData) {
                                                     return DelayedDisplay(
                                                       delay: const Duration(
