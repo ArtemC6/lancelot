@@ -20,29 +20,36 @@ class ChatDataFirebase {
         .doc(friendId)
         .snapshots()
         .listen((snapshot) {
-      final data = snapshot.data() as Map<String, dynamic>;
+      try {
+        final data = snapshot.data() as Map<String, dynamic>;
 
-      final lastDateCloseChat = data['last_date_close_chat'];
-      final lastDateOpenChat = data['last_date_open_chat'];
-      final writeLastData = data['writeLastData'];
-      final lastMsg = data['lastMsg'];
-      final dateTime = data['date'];
+        final lastDateCloseChat = data['last_date_close_chat'];
+        final lastDateOpenChat = data['last_date_open_chat'];
+        final writeLastData = data['writeLastData'];
+        final lastMsg = data['lastMsg'];
+        final dateTime = data['date'];
 
-      if (lastDateCloseChat != null) {
-        getChatDataController
-            .setLastDateCloseChat(data['last_date_close_chat']);
-      }
+        if (lastDateCloseChat != null) {
+          getChatDataController
+              .setLastDateCloseChat(data['last_date_close_chat']);
+        }
 
-      if (lastDateOpenChat != null) {
-        getChatDataController.setLastDateOpenChat(data['last_date_open_chat']);
-      }
+        if (lastDateOpenChat != null) {
+          getChatDataController
+              .setLastDateOpenChat(data['last_date_open_chat']);
+        }
 
-      if (writeLastData != null) {
-        getChatDataController.setWriteLastData(data['writeLastData']);
-      }
+        if (writeLastData != null) {
+          getChatDataController.setWriteLastData(data['writeLastData']);
+        }
 
-      if (lastMsg != null) getChatDataController.setLastMsg(data['lastMsg']);
-      if (dateTime != null) getChatDataController.setDataTime(data['date']);
+        if (lastMsg != null) {
+          getChatDataController.setLastMsg(data['lastMsg']);
+        }
+        if (dateTime != null) {
+          getChatDataController.setDataTime(data['date']);
+        }
+      } catch (e) {}
     });
   }
 

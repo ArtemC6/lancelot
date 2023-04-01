@@ -105,7 +105,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
     userValidatorSigUp();
   }
 
-  void userValidatorSigUp() {
+   userValidatorSigUp() {
     bool passwordValid = false, nameValid = false, emailValid = false;
 
     nameController.addListener(() {
@@ -154,7 +154,7 @@ class _SignUpScreen extends State<SignUpScreen> with TickerProviderStateMixin {
     });
   }
 
-  void sigUpTap(BuildContext context) {
+  sigUpTap(context) {
     FirebaseAuthMethods.signUpWithEmail(
         email: emailController.text,
         password: passwordController.text,

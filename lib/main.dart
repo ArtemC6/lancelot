@@ -31,12 +31,11 @@ Future main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    ),
-  );
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    statusBarColor: Colors.transparent,
+    statusBarBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
+  ));
 
   runApp(const MyApp());
 }
@@ -80,7 +79,7 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
             userModel.myCity.isNotEmpty &&
             userModel.searchPol.isNotEmpty) {
           isEmptyDataUser = true;
-          if (userModel.imageBackground != '') {
+          if (userModel.imageBackground.isNotEmpty) {
             isEmptyImageBackground = true;
             userModelCurrent = userModel;
           }

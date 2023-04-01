@@ -2,13 +2,17 @@ import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ndialog/ndialog.dart';
 
 import '../config/const.dart';
 import '../config/firebase/firestore_operations.dart';
+import '../main.dart';
 import '../model/user_model.dart';
 import '../screens/manager_screen.dart';
 import 'animation_widget.dart';
@@ -132,6 +136,7 @@ showAlertDialogDeleteMessage(
 showAlertDialogDeleteChat(
     {required BuildContext context,
     required String friendId,
+    required String uidUser,
     required String friendName,
     required bool isBack,
     required String friendUri,
@@ -144,7 +149,7 @@ showAlertDialogDeleteChat(
   Widget continueButton = TextButton(
     child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () {
-      deleteChatFirebase(friendId, isBack, context, friendUri);
+      deleteChatFirebase(friendId, uidUser, friendUri);
       Navigator.pop(context);
       Map<String, dynamic> data = {};
       Navigator.push(
@@ -164,7 +169,7 @@ showAlertDialogDeleteChat(
     context: context,
     builder: (context) {
       return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2.2, sigmaY: 2.2),
+        filter: ImageFilter.blur(sigmaX: 2.3, sigmaY: 2.3),
         child: AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -173,7 +178,7 @@ showAlertDialogDeleteChat(
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                filter: ImageFilter.blur(sigmaX: 2.8, sigmaY: 2.8),
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -218,11 +223,93 @@ showAlertDialogDeleteChat(
   );
 }
 
+showAlertDialogDeleteAccount(
+    {required context, required double height, required UserModel userModel}) {
+  final cancelButton = TextButton(
+    child: animatedText(height / 62, 'Отмена', Colors.blueAccent, 400, 1),
+    onPressed: () => Navigator.pop(context),
+  );
+
+  final continueButton = TextButton(
+    child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
+    onPressed: () async {
+      try {
+        final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
+        if (uid != null) {
+          await deleteAccountData(userModel);
+          GetIt.I<FirebaseFirestore>().collection("User").doc(uid).delete();
+          await GetIt.I<FirebaseAuth>().currentUser!.delete();
+        }
+        await GetIt.I<FirebaseAuth>().signOut();
+      } catch (e) {
+        await GetIt.I<FirebaseAuth>().signOut();
+      }
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Manager()));
+    },
+  );
+
+  showDialog(
+    barrierColor: const Color(0x01000000),
+    context: context,
+    builder: (context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+        child: AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: Colors.transparent,
+          actions: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2.8, sigmaY: 2.8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(width: 0.8, color: Colors.white38),
+                      borderRadius: BorderRadius.circular(18)),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: height / 36,
+                            bottom: 32,
+                            left: height / 42,
+                            right: height / 42),
+                        child: animatedText(height / 48, 'Удалить аккаунт',
+                            Colors.white, 350, 1),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: height / 42,
+                            left: height / 42,
+                            right: height / 42),
+                        child: Row(
+                          children: [
+                            Expanded(child: cancelButton),
+                            Expanded(child: continueButton),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 showAlertDialogLoading(BuildContext context) {
   CustomProgressDialog.future(
     loadingWidget: Center(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        filter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
         child: Lottie.asset(
           'images/animation_loader.json',
           width: MediaQuery.of(context).size.width * 0.58,
@@ -254,64 +341,52 @@ showAlertDialogSuccess(BuildContext context) {
   );
 }
 
-Future<dynamic> showBottomSheetShow(context, title, select_1, select_2,
-    TextEditingController controller, double height) {
+showBottomSheetShow(
+    context, title, select_1, select_2, controller, double height) {
   return showFlexibleBottomSheet(
+    bottomSheetColor: Colors.transparent,
     duration: const Duration(milliseconds: 800),
-    decoration: const BoxDecoration(
-        color: color_black_88,
-        borderRadius: BorderRadius.all(Radius.circular(16))),
-    bottomSheetColor: color_black_88,
-    initHeight: 0.345,
+    initHeight: 0.32,
+    maxHeight: 0.32,
     context: context,
     builder: (
-      BuildContext context,
-      ScrollController scrollController,
-      double bottomSheetOffset,
+      context,
+      scrollController,
+      bottomSheetOffset,
     ) {
-      return StatefulBuilder(builder: (context, setState) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Card(
-            shadowColor: Colors.white30,
-            color: color_black_88,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-                side: const BorderSide(
-                  width: 0.8,
-                  color: Colors.white38,
-                )),
-            elevation: 16,
-            child: Theme(
-              data: ThemeData.light(),
-              child: ExpansionTile(
-                key: GlobalKey(),
-                initiallyExpanded: true,
-                maintainState: true,
-                title: animatedText(height / 56, title, Colors.white, 0, 2),
-                children: [
-                  ListTile(
-                    title: animatedText(
-                        height / 57, select_1, Colors.white, 550, 1),
-                    onTap: () {
-                      setState(() => controller.text = select_1);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    title: animatedText(
-                        height / 57, select_2, Colors.white, 550, 1),
-                    onTap: () {
-                      setState(() => controller.text = select_2);
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
+      return ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      EdgeInsets.only(top: height / 80, bottom: height / 72),
+                  child: animatedText(height / 56, title, Colors.white, 500, 2),
+                ),
+                ListTile(
+                  title:
+                      animatedText(height / 57, select_1, Colors.white, 550, 1),
+                  onTap: () {
+                    controller.text = select_1;
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title:
+                      animatedText(height / 57, select_2, Colors.white, 550, 1),
+                  onTap: () {
+                    controller.text = select_2;
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
           ),
-        );
-      });
+        ),
+      );
     },
   );
 }

@@ -80,6 +80,13 @@ const List<Color> listColorMulticoloured = [
   Colors.orangeAccent
 ];
 
+const List<IconData> listOfIcons = [
+  Icons.home_rounded,
+  Icons.favorite_rounded,
+  Icons.message,
+  Icons.person_rounded,
+];
+
 const List<String> listAnimationChatBac = [
   'images/animation_chat_bac_1.json',
   'images/animation_chat_bac_2.json',
@@ -106,9 +113,3 @@ final items = interestsList
     .map((interests) => MultiSelectItem<String>(interests, interests))
     .toList();
 
-const List<IconData> listOfIcons = [
-  Icons.home_rounded,
-  Icons.favorite_rounded,
-  Icons.message,
-  Icons.person_rounded,
-];

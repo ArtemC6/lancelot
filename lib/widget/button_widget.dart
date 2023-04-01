@@ -102,7 +102,7 @@ class buttonAuthAnimation extends StatelessWidget {
   }
 }
 
-ZoomTapAnimation buttonUniversal({
+ buttonUniversal({
   required text,
   required colorButton,
   required height,
@@ -306,7 +306,6 @@ class buttonProfileUser extends StatefulWidget {
     this.userModelCurrent,
     this.userModel, {
     super.key,
-    Key,
   });
 
   @override
@@ -519,13 +518,11 @@ class buttonLike extends StatelessWidget {
               ),
             );
           },
-          onTap: (isLiked) {
-            return putLike(
-              userModelCurrent,
-              userModelFriend,
-              true,
-            );
-          },
+          onTap: (isLiked) => putLike(
+            userModelCurrent,
+            userModelFriend,
+            true,
+          ),
         ),
       ),
     );
@@ -555,7 +552,7 @@ class homeAnimationButton extends StatelessWidget {
       onTap: onTap,
       end: 0.88,
       child: SizedBox(
-        height: height * 0.22,
+        height: height * 0.23,
         width: width / 2,
         child: AvatarGlow(
           glowColor: Colors.blueAccent,
@@ -571,17 +568,17 @@ class homeAnimationButton extends StatelessWidget {
               Colors.deepPurpleAccent,
               Colors.pinkAccent,
             ],
-            size: Size(height * 0.15, height * 0.15),
-            boardRadius: 100,
+            size: Size(height * 0.162, height * 0.162),
+            boardRadius: 120,
             borderWidth: 1,
             child: Container(
-              height: height * 0.16,
-              width: height * 0.16,
+              height: height * 0.17,
+              width: height * 0.17,
               decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(99)),
+                  BoxDecoration(borderRadius: BorderRadius.circular(120)),
               child: SizedBox(
-                height: height * 0.7,
-                width: height * 0.7,
+                height: height * 0.9,
+                width: height * 0.9,
                 child: Animator<double>(
                   duration: const Duration(milliseconds: 2000),
                   cycles: 0,
@@ -589,7 +586,7 @@ class homeAnimationButton extends StatelessWidget {
                   tween: Tween<double>(begin: 20.0, end: 25.0),
                   builder: (context, animatorState, child) => Icon(
                     icon,
-                    size: animatorState.value * 2.3,
+                    size: animatorState.value * 2.6,
                     color: colors,
                   ),
                 ),

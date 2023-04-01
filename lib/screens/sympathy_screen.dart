@@ -142,21 +142,25 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                       userModelCurrent.uid;
                                                 }
                                                 return GestureDetector(
-                                                  onTap: () => Navigator.push(
-                                                    context,
-                                                    FadeRouteAnimation(
-                                                      ProfileScreen(
-                                                        userModelPartner:
-                                                            UserModel
-                                                                .fromDocument(
-                                                                    data),
-                                                        isBack: true,
-                                                        idUser: uid,
-                                                        userModelCurrent:
-                                                            userModelCurrent,
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  onTap: () {
+                                                    if (uid.isNotEmpty) {
+                                                      Navigator.push(
+                                                        context,
+                                                        FadeRouteAnimation(
+                                                          ProfileScreen(
+                                                            userModelPartner:
+                                                                UserModel
+                                                                    .fromDocument(
+                                                                        data),
+                                                            isBack: true,
+                                                            idUser: uid,
+                                                            userModelCurrent:
+                                                                userModelCurrent,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
                                                   child: Container(
                                                     height: height / 4.5,
                                                     padding: EdgeInsets.all(
@@ -330,19 +334,23 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                             1,
                                                                         child:
                                                                             ZoomTapAnimation(
-                                                                          onTap: () =>
+                                                                          onTap:
+                                                                              () {
+                                                                            if (uid.isNotEmpty) {
                                                                               Navigator.of(context).push(
-                                                                            MaterialPageRoute(
-                                                                              builder: (context) => ChatUserScreen(
-                                                                                friendId: uid,
-                                                                                friendName: friend.name,
-                                                                                friendImage: friend.listImageUri[0],
-                                                                                userModelCurrent: userModelCurrent,
-                                                                                token: friend.token,
-                                                                                notification: friend.notification,
-                                                                              ),
-                                                                            ),
-                                                                          ),
+                                                                                MaterialPageRoute(
+                                                                                  builder: (context) => ChatUserScreen(
+                                                                                    friendId: uid,
+                                                                                    friendName: friend.name,
+                                                                                    friendImage: friend.listImageUri[0],
+                                                                                    userModelCurrent: userModelCurrent,
+                                                                                    token: friend.token,
+                                                                                    notification: friend.notification,
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            }
+                                                                          },
                                                                           child:
                                                                               Padding(
                                                                             padding: EdgeInsets.only(

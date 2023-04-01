@@ -5,6 +5,7 @@ import '../config/utils.dart';
 class UserModel {
   final String name;
   final String uid;
+  final String email;
   final String myPol;
   final String searchPol;
   final String myCity;
@@ -24,6 +25,7 @@ class UserModel {
   UserModel(
       {required this.name,
       required this.uid,
+      required this.email,
       required this.state,
       required this.description,
       required this.myCity,
@@ -44,10 +46,11 @@ class UserModel {
     return UserModel(
         name: doc['name'] ?? '',
         uid: doc['uid'] ?? '',
+        email: doc['email'] ?? '',
         state: doc['state'] ?? '',
         description: doc['description'] ?? '',
         myCity: doc['myCity'] ?? '',
-        ageInt: ageIntParse(doc['ageTime'] ?? Timestamp.now()) ?? 0,
+        ageInt: ageIntParse(doc['ageTime'] ?? Timestamp.now()),
         ageTime: doc['ageTime'] ?? Timestamp.now(),
         token: doc['token'] ?? '',
         notification: doc['notification'] ?? false,

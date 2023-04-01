@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,8 +31,7 @@ class EditProfileScreen extends StatefulWidget {
   final bool isFirst;
   final UserModel userModel;
 
-  const EditProfileScreen(
-      {super.key, required this.isFirst, required this.userModel});
+  const EditProfileScreen({super.key, required this.isFirst, required this.userModel});
 
   @override
   State<EditProfileScreen> createState() =>
@@ -52,6 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _localController = TextEditingController(),
       _supportController = TextEditingController(),
       _notificationController = TextEditingController(),
+      _deleteAccountController = TextEditingController(),
       _descriptionController = TextEditingController();
 
   var _selectedInterests = [], _dateTimeBirthday = DateTime.now();
@@ -60,10 +62,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   showDatePicker() {
     DatePicker.showDatePicker(context,
-        theme: const DatePickerTheme(
-            backgroundColor: color_black_88,
-            cancelStyle: TextStyle(color: Colors.white),
-            itemStyle: TextStyle(color: Colors.white)),
+        theme: DatePickerTheme(
+            backgroundColor: Colors.black.withOpacity(0.40),
+            cancelStyle: const TextStyle(color: Colors.white),
+            itemStyle: const TextStyle(color: Colors.white)),
         showTitleActions: true,
         minTime: DateTime(1993),
         maxTime: DateTime(2007), onChanged: (date) {
@@ -76,7 +78,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> uploadDataUser() async {
     bool interests =
-            _selectedInterests.isNotEmpty && _selectedInterests.length <= 6,
+        _selectedInterests.isNotEmpty && _selectedInterests.length <= 6,
         myPol = _myPolController.text.length == 7,
         name = _nameController.text.length >= 3,
         searchPol = _searchPolController.text.length >= 7,
@@ -102,13 +104,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'name': _nameController.text.trim(),
         'description': _descriptionController.text.trim(),
         'searchPol':
-            _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
+        _searchPolController.text == 'С парнем' ? 'Мужской' : 'Женский',
         'ageTime': _dateTimeBirthday,
         'rangeStart': _valuesAge.start,
         'rangeEnd': _valuesAge.end,
         'myCity': _localController.text,
         'notification':
-            _notificationController.text == 'Включить' ? true : false,
+        _notificationController.text == 'Включить' ? true : false,
         'token': await getTokenUser(),
       };
 
@@ -117,7 +119,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .doc(modelUser.uid)
           .update(json)
           .then((value) {
-        if (modelUser.imageBackground != '') {
+        if (modelUser.imageBackground.isNotEmpty) {
           Map<String, dynamic> dataCash = {};
           Navigator.pushReplacement(
             context,
@@ -151,14 +153,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   settingsValue() {
     _nameController.text = modelUser.name;
     _supportController.text =
-        'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
+    'Если у вас возникла проблема или есть предложения по улучшению вы можете обратиться';
     if (modelUser.notification) {
       _notificationController.text = 'Включить';
     } else {
       _notificationController.text = 'Вюключить';
     }
 
-    if (modelUser.description == '') {
+    if (modelUser.description.isEmpty) {
       _descriptionController.text = ' ';
     } else {
       _descriptionController.text = modelUser.description;
@@ -176,7 +178,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         modelUser.rangeEnd == 0 ? 30 : modelUser.rangeEnd);
     _myPolController.text = modelUser.myPol == '' ? ' ' : modelUser.myPol;
     _localController.text = modelUser.myCity == '' ? ' ' : modelUser.myCity;
-    if (modelUser.searchPol == '') {
+
+    if (modelUser.searchPol.isEmpty) {
       _searchPolController.text = ' ';
     } else {
       _searchPolController.text =
@@ -185,13 +188,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (modelUser.listImageUri.isNotEmpty) isPhoto = true;
 
+    _deleteAccountController.text = modelUser.email;
     _selectedInterests = modelUser.listInterests;
     interestsCount = modelUser.listInterests.length;
     _dateTimeBirthday = getDataTime(modelUser.ageTime);
   }
 
   Future readFirebase() async {
-    if (modelUser.uid == '') {
+    if (modelUser.uid.isEmpty) {
       await readUserFirebase().then((user) => modelUser = user);
     }
 
@@ -211,30 +215,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    SizedBox imageProfileSettings(double height, BuildContext context) {
-      return SizedBox(
-        height: width / 2.8,
-        width: width / 2.8,
-        child: Card(
-          shadowColor: Colors.white30,
-          color: color_black_88,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-            side: const BorderSide(
-              width: 0.8,
-              color: Colors.white30,
+    imageProfileSettings(double height, context) {
+      return GestureDetector(
+        onTap: () {
+          if (modelUser.listImageUri.isEmpty) {
+            uploadFirstImage(context, modelUser)
+                .then((uri) => setState(() => isPhoto = true));
+          } else {
+            updateFirstImage(context, modelUser, true);
+          }
+        },
+        child: SizedBox(
+          height: width / 2.8,
+          width: width / 2.8,
+          child: Card(
+            shadowColor: Colors.white30,
+            color: color_black_88,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+              side: const BorderSide(
+                width: 0.8,
+                color: Colors.white30,
+              ),
             ),
-          ),
-          elevation: 8,
-          child: GestureDetector(
-            onTap: () {
-              if (modelUser.listImageUri.isEmpty) {
-                uploadFirstImage(context, modelUser)
-                    .then((uri) => setState(() => isPhoto = true));
-              } else {
-                updateFirstImage(context, modelUser, true);
-              }
-            },
+            elevation: 8,
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -246,31 +250,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: CachedNetworkImage(
                       imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
-                          borderRadius:
+                              borderRadius:
                               const BorderRadius.all(Radius.circular(100)),
-                          image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
-                              alignment: Alignment.topCenter),
-                        ),
-                      ),
+                              image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.topCenter),
+                            ),
+                          ),
                       progressIndicatorBuilder: (context, url, progress) =>
                           Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Shimmer(
-                            child: SizedBox(
-                              height: width / 2.8,
-                              width: width / 2.8,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 0.8,
-                                value: progress.progress,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Shimmer(
+                                child: SizedBox(
+                                  height: width / 2.8,
+                                  width: width / 2.8,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 0.8,
+                                    value: progress.progress,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
                       imageUrl: modelUser.listImageUri[0],
                       fit: BoxFit.cover,
                     ),
@@ -280,10 +284,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     path: 'images/ic_add.png',
                     width: height / 34,
                     height: height / 34,
-                    onTap: () async {
-                      uploadFirstImage(context, modelUser)
-                          .then((uri) => setState(() => isPhoto = true));
-                    },
+                    onTap: () => uploadFirstImage(context, modelUser)
+                        .then((uri) => setState(() => isPhoto = true)),
                     padding: 6,
                   ),
                 if (modelUser.listImageUri.isNotEmpty)
@@ -329,7 +331,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               padding: EdgeInsets.only(top: height / 70),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   if (!isFirst)
                                     IconButton(
@@ -341,7 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                   Padding(
                                     padding:
-                                        EdgeInsets.only(right: height / 66),
+                                    EdgeInsets.only(right: height / 66),
                                     child: customIconButton(
                                       path: 'images/ic_log_out.png',
                                       width: height / 26,
@@ -461,55 +463,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   showFlexibleBottomSheet(
                                       duration:
                                           const Duration(milliseconds: 700),
-                                      decoration: const BoxDecoration(
-                                          color: color_black_88,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(16))),
                                       bottomSheetColor: Colors.transparent,
-                                      initHeight: 0.28,
+                                      initHeight: 0.32,
+                                      maxHeight: 0.32,
                                       context: context,
                                       builder: (
-                                        BuildContext context,
-                                        ScrollController scrollController,
-                                        double bottomSheetOffset,
+                                        context,
+                                        scrollController,
+                                        bottomSheetOffset,
                                       ) {
-                                        return StatefulBuilder(
-                                            builder: (context, setState) {
-                                          return SizedBox(
-                                            height: 300,
-                                            width: width,
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: 20,
-                                                        bottom: height / 18),
-                                                    child: animatedText(
-                                                        height / 57,
-                                                        'От ${_valuesAge.start} до ${_valuesAge.end} лет',
-                                                        Colors.white,
-                                                        450,
-                                                        1)),
-                                                SfRangeSlider(
-                                                  activeColor: Colors.blue,
-                                                  min: 16,
-                                                  max: 30,
-                                                  values: _valuesAge,
-                                                  stepSize: 1,
-                                                  enableTooltip: true,
-                                                  onChanged:
-                                                      (SfRangeValues values) {
-                                                    setState(() {
-                                                      _valuesAge = values;
-                                                      _ageRangController.text =
-                                                          'От ${_valuesAge.start} до ${_valuesAge.end} лет';
-                                                    });
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        });
+                                        return ClipRRect(
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 4, sigmaY: 4),
+                                            child: StatefulBuilder(
+                                                builder: (context, setState) {
+                                              return Column(
+                                                children: [
+                                                  Padding(
+                                                      padding: EdgeInsets.only(
+                                                          top: height / 32,
+                                                          bottom: height / 20),
+                                                      child: animatedText(
+                                                          height / 57,
+                                                          'От ${_valuesAge.start} до ${_valuesAge.end} лет',
+                                                          Colors.white,
+                                                          450,
+                                                          1)),
+                                                  SfRangeSlider(
+                                                    activeColor: Colors.blue,
+                                                    min: 16,
+                                                    max: 30,
+                                                    values: _valuesAge,
+                                                    stepSize: 1,
+                                                    enableTooltip: true,
+                                                    onChanged:
+                                                        (SfRangeValues values) {
+                                                      setState(() {
+                                                        _valuesAge = values;
+                                                        _ageRangController
+                                                                .text =
+                                                            'От ${_valuesAge.start} до ${_valuesAge.end} лет';
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            }),
+                                          ),
+                                        );
                                       });
                                 }),
                             textFieldProfileSettings(
@@ -540,6 +542,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 imaxLength: 1,
                                 onTap: () =>
                                     launchUrlEmail('lancelotsuport@gmail.com')),
+                            textFieldProfileSettings(
+                                nameController: _deleteAccountController,
+                                isLook: true,
+                                hint: 'Удаление аккаунта',
+                                length: 34,
+                                imaxLength: 1,
+                                onTap: () => showAlertDialogDeleteAccount(
+                                    height: height,
+                                    context: context,
+                                    userModel: modelUser)),
                             Theme(
                               data: ThemeData.light(),
                               child: Card(
@@ -553,7 +565,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 elevation: 10,
                                 child: Container(
                                   padding:
-                                      const EdgeInsets.only(top: 8, bottom: 8),
+                                      const EdgeInsets.only(top: 12, bottom: 8),
                                   child: MultiSelectBottomSheetField(
                                     initialValue: modelUser.listInterests,
                                     searchHintStyle:
@@ -597,7 +609,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     searchHint: 'Поиск',
                                     searchTextStyle:
-                                        const TextStyle(color: Colors.white),
+                                    const TextStyle(color: Colors.white),
                                     initialChildSize: 0.4,
                                     listType: MultiSelectListType.CHIP,
                                     searchable: true,
@@ -620,7 +632,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         1),
                                     items: items,
                                     onSelectionChanged: (i) => setState(
-                                        () => interestsCount = i.length),
+                                            () => interestsCount = i.length),
                                     onConfirm: (i) =>
                                         setState(() => _selectedInterests = i),
                                     chipDisplay: MultiSelectChipDisplay(

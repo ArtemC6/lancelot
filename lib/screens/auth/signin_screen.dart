@@ -134,7 +134,7 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
     });
   }
 
-  sigInTap(BuildContext context) {
+  sigInTap(context) {
     FirebaseAuthMethods.loginWithEmail(
         email: emailController.text,
         password: passwordController.text,

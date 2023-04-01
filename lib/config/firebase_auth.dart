@@ -11,6 +11,9 @@ import 'const.dart';
 import 'firebase/firestore_operations.dart';
 
 class FirebaseAuthMethods {
+  static final auth = GetIt.I<FirebaseAuth>();
+  static final init = GetIt.I<FirebaseFirestore>();
+
   static Future<void> signUpWithEmail({
     required String email,
     required String password,
@@ -19,17 +22,14 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      GetIt.I<FirebaseAuth>()
+      auth
           .createUserWithEmailAndPassword(
               email: email.trim(), password: password.trim())
           .then((value) async {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
-        GetIt.I<FirebaseFirestore>()
-            .collection('User')
-            .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
-            .set({
-          'uid': GetIt.I<FirebaseAuth>().currentUser?.uid,
+        init.collection('User').doc(auth.currentUser?.uid).set({
+          'uid': auth.currentUser?.uid,
           'name': name.trim(),
           'email': email.trim(),
           'password': password.trim(),
@@ -48,22 +48,18 @@ class FirebaseAuthMethods {
           'listImageUri': [],
           'notification': true,
         });
-
-        getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+        getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) async {
-        await GetIt.I<FirebaseAuth>()
+        await auth
             .createUserWithEmailAndPassword(
                 email: email.trim(), password: password.trim())
             .then((value) async {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
 
-          GetIt.I<FirebaseFirestore>()
-              .collection('User')
-              .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
-              .set({
-            'uid': GetIt.I<FirebaseAuth>().currentUser?.uid,
+          init.collection('User').doc(auth.currentUser?.uid).set({
+            'uid': auth.currentUser?.uid,
             'name': name.trim(),
             'email': email.trim(),
             'password': password.trim(),
@@ -83,7 +79,7 @@ class FirebaseAuthMethods {
             'notification': true,
           });
 
-          getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+          getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
@@ -99,9 +95,9 @@ class FirebaseAuthMethods {
   }) async {
     try {
       showAlertDialogLoading(context);
-      GetIt.I<FirebaseAuth>()
+      auth
           .signInWithEmailAndPassword(
-              email: email.trim(), password: password.trim())
+          email: email.trim(), password: password.trim())
           .then((value) async {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
@@ -109,19 +105,19 @@ class FirebaseAuthMethods {
         setStateFirebase('online');
         setTokenUserFirebase();
 
-        getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+        getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) {
-        GetIt.I<FirebaseAuth>()
+        auth
             .signInWithEmailAndPassword(
-                email: email.trim(), password: password.trim())
+            email: email.trim(), password: password.trim())
             .then((value) async {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
 
           setStateFirebase('online');
           setTokenUserFirebase();
-          getFuture(1740).then((i) => Navigator.of(context).pushReplacement(
+          getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
@@ -132,7 +128,7 @@ class FirebaseAuthMethods {
 
   static Future<void> signOut(BuildContext context, String uid) async {
     try {
-      GetIt.I<FirebaseAuth>().signOut().then((value) {
+      auth.signOut().then((i) {
         Navigator.pushReplacement(
             context, FadeRouteAnimation(const SignInScreen()));
         setStateFirebase('offline', uid);

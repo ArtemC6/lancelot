@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../getx/sympathy_cart_controller.dart';
 import 'const.dart';
 
 DateTime getDataTime(Timestamp startDate) => startDate.toDate();
@@ -64,4 +66,23 @@ StateMachineController getRiveController(Artboard art,
       StateMachineController.fromArtboard(art, stateMachineName);
   art.addController(controller!);
   return controller;
+}
+
+setColorCard(Alignment align, GetSympathyCartController sympathyCar) {
+  if (align.x < 0) {
+    int incline = int.parse(align.x.toStringAsFixed(1).substring(1, 2));
+    if (incline <= 10) {
+      sympathyCar.setIndex(double.parse('0.$incline'));
+      sympathyCar.setLike(true);
+    } else {
+      sympathyCar.setIndex(0);
+    }
+  } else if (align.x > 0) {
+    if (align.y.toDouble() < 1) {
+      sympathyCar.setIndex(double.parse('0.${align.x.toInt()}'));
+      sympathyCar.setLike(false);
+    } else {
+      sympathyCar.setIndex(0);
+    }
+  }
 }

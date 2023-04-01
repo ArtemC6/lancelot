@@ -26,13 +26,15 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
       isDescriptionEmail = false,
       isDescriptionEmailTime = false;
   late Timer timer;
+  final auth = GetIt.I<FirebaseAuth>();
 
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(vsync: this);
-    GetIt.I<FirebaseAuth>().currentUser?.reload().then(
-        (i) => GetIt.I<FirebaseAuth>().currentUser!.sendEmailVerification());
+    auth.currentUser
+        ?.reload()
+        .then((i) => auth.currentUser!.sendEmailVerification());
     timer =
         Timer.periodic(const Duration(seconds: 5), (i) => checkEmailVerify());
   }
@@ -44,10 +46,10 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future sendEmail() async {
-    GetIt.I<FirebaseAuth>().currentUser?.reload().then((value) {
+  sendEmail() {
+    auth.currentUser?.reload().then((value) {
       setState(() => isEmail = false);
-      GetIt.I<FirebaseAuth>().currentUser!.sendEmailVerification();
+      auth.currentUser!.sendEmailVerification();
       Future.delayed(const Duration(milliseconds: 8000), () {
         checkEmailVerify();
         isDescriptionEmailTime = true;
@@ -56,9 +58,9 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
     });
   }
 
-  Future checkEmailVerify() async {
-    GetIt.I<FirebaseAuth>().currentUser?.reload().then((value) {
-      if (GetIt.I<FirebaseAuth>().currentUser!.emailVerified) {
+  checkEmailVerify() {
+    auth.currentUser?.reload().then((value) {
+      if (auth.currentUser!.emailVerified) {
         animationController.dispose();
         timer.cancel();
         Navigator.of(context).pushReplacement(
@@ -157,16 +159,17 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                 time: 400,
                 onTap: () async {
                   try {
-                    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
+                    final uid = auth.currentUser?.uid;
+                    if (uid != null) {
                       await GetIt.I<FirebaseFirestore>()
                           .collection("User")
-                          .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
+                          .doc(uid)
                           .delete();
-                      await GetIt.I<FirebaseAuth>().currentUser!.delete();
+                      await auth.currentUser!.delete();
                     }
-                    await GetIt.I<FirebaseAuth>().signOut();
+                    await auth.signOut();
                   } catch (e) {
-                    await GetIt.I<FirebaseAuth>().signOut();
+                    await auth.signOut();
                   }
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const Manager()));

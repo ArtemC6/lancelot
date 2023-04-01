@@ -30,7 +30,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late CardController controllerCard;
-
   int limit = 0, count = 0;
   bool isLoading = false, isWrite = false, isEmptyUser = false;
   List<UserModel> userModelPartner = [];
@@ -134,13 +133,13 @@ class _HomeScreen extends State<HomeScreen>
                 child: FadeInAnimation(
                   duration: const Duration(seconds: 4),
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       if (!isEmptyUser)
                         Stack(
                           alignment: Alignment.center,
                           children: [
                             SizedBox(
-                              height: height * 0.67,
+                              height: height * 0.65,
                               child: TinderSwapCard(
                                 animDuration: 1000,
                                 totalNum: userModelPartner.length + 1,
@@ -168,7 +167,7 @@ class _HomeScreen extends State<HomeScreen>
                                   } else {
                                     if (isWrite) {
                                       isWrite = false;
-                                      readFirebase(6, false);
+                                      readFirebase(8, false);
                                     }
 
                                     return const cardLoadingHome(
@@ -180,27 +179,7 @@ class _HomeScreen extends State<HomeScreen>
                                     CardController(),
                                 swipeUpdateCallback: (DragUpdateDetails details,
                                     Alignment align) {
-                                  if (align.x < 0) {
-                                    int incline = int.parse(align.x
-                                        .toStringAsFixed(1)
-                                        .substring(1, 2));
-                                    if (incline <= 10) {
-                                      sympathyCar
-                                          .setIndex(double.parse('0.$incline'));
-                                      sympathyCar.setLike(true);
-                                    } else {
-                                      sympathyCar.setIndex(0);
-                                    }
-                                  } else if (align.x > 0) {
-                                    if (align.y.toDouble() < 1) {
-                                      sympathyCar.setIndex(
-                                          double.parse('0.${align.x.toInt()}'));
-
-                                      sympathyCar.setLike(false);
-                                    } else {
-                                      sympathyCar.setIndex(0);
-                                    }
-                                  }
+                                  setColorCard(align, sympathyCar);
                                 },
                                 swipeCompleteCallback:
                                     (CardSwipeOrientation orientation,
@@ -225,7 +204,8 @@ class _HomeScreen extends State<HomeScreen>
                                     createDisLike(userModelCurrent,
                                         userModelPartner[index]);
 
-                                    createSympathy(userModelPartner[index].uid,
+                                    await createSympathy(
+                                        userModelPartner[index].uid,
                                         userModelCurrent);
                                     if (userModelPartner[index].token != '' &&
                                         userModelPartner[index].notification) {
@@ -245,10 +225,8 @@ class _HomeScreen extends State<HomeScreen>
                                 },
                               ),
                             ),
-                            // if (isLook && !isLike)
                             GetBuilder(builder:
                                 (GetSympathyCartController controller) {
-                              print(controller.colorIndex);
                               if (controller.colorIndex >= 0.2) {
                                 if (!controller.isLike) {
                                   return Container(
@@ -314,7 +292,7 @@ class _HomeScreen extends State<HomeScreen>
                         ),
                       if (!isEmptyUser)
                         Row(
-                          children: <Widget>[
+                          children: [
                             homeAnimationButton(
                               icon: Icons.close,
                               colors: Colors.white,

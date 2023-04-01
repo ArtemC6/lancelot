@@ -53,12 +53,11 @@ class _ChatUserScreenState extends State<ChatUserScreen>
       token,
       chatBackground = 'images/animation_chat_bac_2.json';
 
-  bool notification;
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
   int limit = 20;
   double chatBlur = 0, chatBlackout = 1, chatBlackoutFinal = 0.2;
-  bool isLoading = false, isWrite = true;
+  bool isLoading = false, isWrite = true, notification;
   final getChatDataController = Get.put(GetChatDataController());
 
   _ChatUserScreenState(this.friendId, this.friendName, this.friendImage,
@@ -273,7 +272,8 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                     friendName: friendName,
                                     isBack: true,
                                     friendUri: friendImage,
-                                    height: height);
+                                    height: height,
+                                    uidUser: userModelCurrent.uid);
                               } else if (value == 1) {
                                 showBottomSheetChat(context, height, width);
                               }
@@ -360,7 +360,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
                                                 duration: const Duration(
                                                     milliseconds: 2200),
                                                 child: GestureDetector(
-                                                  onLongPress: () async {
+                                                  onLongPress: () {
                                                     bool isLastMes = false;
                                                     int indexRevers = index == 0
                                                         ? lengthDoc
@@ -454,126 +454,130 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     return const loadingCustom();
   }
 
-  Future<dynamic> showBottomSheetChat(
-      BuildContext context, double height, double width) {
+  showBottomSheetChat(context, double height, double width) {
     return showFlexibleBottomSheet(
       bottomSheetColor: Colors.transparent,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1300),
       context: context,
       builder: (
-        BuildContext context,
-        ScrollController scrollController,
-        double bottomSheetOffset,
+        context,
+        scrollController,
+        bottomSheetOffset,
       ) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Container(
-            height: height / 2.6,
-            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(top: 2, left: 8),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                          width: width / 4.2,
-                          child: animatedText(
-                              height / 62, 'Размытие', Colors.white, 0, 1)),
-                      Container(
-                        width: width / 1.5,
-                        padding: const EdgeInsets.only(right: 8, left: 4),
-                        child: SfSlider(
-                          activeColor: Colors.blue,
-                          min: 0,
-                          max: 20,
-                          value: chatBlur,
-                          stepSize: 1,
-                          enableTooltip: false,
-                          onChanged: (dynamic value) {
-                            setState(() => chatBlur = value);
-                            setBlur(value);
-                          },
-                        ),
+        return ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+            child: StatefulBuilder(builder: (context, setState) {
+              return Container(
+                height: height / 2.6,
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(top: 2, left: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: width / 4.2,
+                              child: animatedText(
+                                  height / 62, 'Размытие', Colors.white, 0, 1)),
+                          Container(
+                            width: width / 1.5,
+                            padding: const EdgeInsets.only(right: 8, left: 4),
+                            child: SfSlider(
+                              activeColor: Colors.blue,
+                              min: 0,
+                              max: 20,
+                              value: chatBlur,
+                              stepSize: 1,
+                              enableTooltip: false,
+                              onChanged: (dynamic value) {
+                                setState(() => chatBlur = value);
+                                setBlur(value);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(bottom: 10, left: 8),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: width / 4.2,
-                        child: animatedText(
-                            height / 62, 'Затемнение', Colors.white, 0, 1),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 10, left: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: width / 4.2,
+                            child: animatedText(
+                                height / 62, 'Затемнение', Colors.white, 0, 1),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(right: 8, left: 4),
+                            width: width / 1.5,
+                            child: SfSlider(
+                              activeColor: Colors.blue,
+                              min: 0,
+                              max: 10,
+                              value: chatBlackout,
+                              stepSize: 1,
+                              enableTooltip: false,
+                              onChanged: (dynamic value) {
+                                setState(() => chatBlackout = value);
+                                setBlackout(value);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.only(right: 8, left: 4),
-                        width: width / 1.5,
-                        child: SfSlider(
-                          activeColor: Colors.blue,
-                          min: 0,
-                          max: 10,
-                          value: chatBlackout,
-                          stepSize: 1,
-                          enableTooltip: false,
-                          onChanged: (dynamic value) {
-                            setState(() => chatBlackout = value);
-                            setBlackout(value);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: height / 5.5,
-                  child: AnimationLimiter(
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.only(right: 20),
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: listAnimationChatBac.length,
-                      itemBuilder: (context, index) {
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          delay: const Duration(milliseconds: 450),
-                          child: SlideAnimation(
-                            duration: const Duration(milliseconds: 1500),
-                            horizontalOffset: 160,
-                            child: FadeInAnimation(
-                              curve: Curves.easeOut,
-                              duration: const Duration(milliseconds: 2000),
-                              child: ZoomTapAnimation(
-                                onTap: () => setBackgroundChat(
-                                    listAnimationChatBac[index]),
-                                end: 0.990,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 10, right: 4),
-                                  child: FlutterColorsBorder(
-                                    animationDuration: 5,
-                                    colors: listColorsAnimation,
-                                    size: Size(height / 10, height / 5.65),
-                                    boardRadius: 0,
-                                    borderWidth: 0.6,
-                                    child: Lottie.asset(
+                    ),
+                    SizedBox(
+                      height: height / 5.5,
+                      child: AnimationLimiter(
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.only(right: 20),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: listAnimationChatBac.length,
+                          itemBuilder: (context, index) {
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              delay: const Duration(milliseconds: 450),
+                              child: SlideAnimation(
+                                duration: const Duration(milliseconds: 1500),
+                                horizontalOffset: 160,
+                                child: FadeInAnimation(
+                                  curve: Curves.easeOut,
+                                  duration: const Duration(milliseconds: 2000),
+                                  child: ZoomTapAnimation(
+                                    onTap: () => setBackgroundChat(
                                         listAnimationChatBac[index]),
+                                    end: 0.990,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 4),
+                                      child: FlutterColorsBorder(
+                                        animationDuration: 5,
+                                        colors: listColorsAnimation,
+                                        size: Size(height / 10, height / 5.65),
+                                        boardRadius: 0,
+                                        borderWidth: 0.6,
+                                        child: Lottie.asset(
+                                            listAnimationChatBac[index]),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        });
+              );
+            }),
+          ),
+        );
       },
     );
   }

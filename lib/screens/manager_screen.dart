@@ -38,7 +38,6 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
       indexProfile = 0;
 
   late SMIBool? input;
-
   UserModel userModelCurrent;
 
   _ManagerScreen(this.currentIndex, this.userModelCurrent);
