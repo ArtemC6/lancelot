@@ -64,7 +64,7 @@ class _HomeScreen extends State<HomeScreen>
           bool isDislike = true;
           await Future.forEach(listDisLike, (idUser) {
             if (idUser == data['uid']) isDislike = false;
-          }).then((value) async {
+          }).then((i) async {
             if (!isDislike) return;
             userModelPartner.add(UserModel.fromDocument(data));
           });
@@ -141,7 +141,7 @@ class _HomeScreen extends State<HomeScreen>
                             SizedBox(
                               height: height * 0.65,
                               child: TinderSwapCard(
-                                animDuration: 1000,
+                                animDuration: 900,
                                 totalNum: userModelPartner.length + 1,
                                 maxWidth: width * 0.98,
                                 maxHeight: height * 0.49,

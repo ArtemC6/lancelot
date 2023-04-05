@@ -31,7 +31,6 @@ class FirebaseAuthMethods {
         init.collection('User').doc(auth.currentUser?.uid).set({
           'uid': auth.currentUser?.uid,
           'name': name.trim(),
-          'email': email.trim(),
           'password': password.trim(),
           'myPol': '',
           'imageBackground': '',
@@ -114,7 +113,6 @@ class FirebaseAuthMethods {
             .then((value) async {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
-
           setStateFirebase('online');
           setTokenUserFirebase();
           getFuture(1720).then((i) => Navigator.of(context).pushReplacement(

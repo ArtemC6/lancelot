@@ -36,11 +36,10 @@ class _SignInScreen extends State<SignInScreen> with TickerProviderStateMixin {
     }
 
     controller1 = AnimationController(
-      vsync: this,
-      duration: const Duration(
-        seconds: 5,
-      ),
-    );
+        vsync: this,
+        duration: const Duration(
+          seconds: 5,
+        ));
     animation1 = Tween<double>(begin: .1, end: .15).animate(
       CurvedAnimation(
         parent: controller1,

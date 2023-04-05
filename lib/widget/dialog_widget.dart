@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -12,12 +11,13 @@ import 'package:ndialog/ndialog.dart';
 
 import '../config/const.dart';
 import '../config/firebase/firestore_operations.dart';
+import '../config/utils.dart';
 import '../main.dart';
 import '../model/user_model.dart';
 import '../screens/manager_screen.dart';
 import 'animation_widget.dart';
 
-void showDialogZoom({required String uri, required BuildContext context}) {
+showDialogZoom({required String uri, required BuildContext context}) {
   ZoomDialog(
     zoomScale: 5,
     child: SizedBox(
@@ -62,12 +62,12 @@ showAlertDialogDeleteMessage(
     required AsyncSnapshot snapshotMy,
     required int index,
     required bool isLastMessage}) {
-  Widget cancelButton = TextButton(
+  final cancelButton = TextButton(
       child: const Text("Отмена"), onPressed: () => Navigator.pop(context));
 
-  Widget continueButton = TextButton(
+  final continueButton = TextButton(
     child: const Text("Удалить"),
-    onPressed: () async {
+    onPressed: () {
       deleteMessageFirebase(
           myId, friendId, idDoc, isLastMessage, snapshotMy, index);
       Navigator.pop(context);
@@ -83,7 +83,7 @@ showAlertDialogDeleteMessage(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: color_black_88,
-          actions: <Widget>[
+          actions: [
             Column(
               children: [
                 Padding(
@@ -115,8 +115,7 @@ showAlertDialogDeleteMessage(
                   ),
                   value: true,
                   onChanged: (newValue) {},
-                  controlAffinity:
-                      ListTileControlAffinity.leading, //  <-- leading Checkbox
+                  controlAffinity: ListTileControlAffinity.leading,
                 ),
                 Row(
                   children: [
@@ -141,12 +140,12 @@ showAlertDialogDeleteChat(
     required bool isBack,
     required String friendUri,
     required double height}) {
-  Widget cancelButton = TextButton(
+  final cancelButton = TextButton(
     child: animatedText(height / 62, 'Отмена', Colors.blueAccent, 400, 1),
     onPressed: () => Navigator.pop(context),
   );
 
-  Widget continueButton = TextButton(
+  final continueButton = TextButton(
     child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () {
       deleteChatFirebase(friendId, uidUser, friendUri);
@@ -225,6 +224,8 @@ showAlertDialogDeleteChat(
 
 showAlertDialogDeleteAccount(
     {required context, required double height, required UserModel userModel}) {
+  final auth = GetIt.I<FirebaseAuth>();
+
   final cancelButton = TextButton(
     child: animatedText(height / 62, 'Отмена', Colors.blueAccent, 400, 1),
     onPressed: () => Navigator.pop(context),
@@ -234,18 +235,19 @@ showAlertDialogDeleteAccount(
     child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () async {
       try {
-        final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
-        if (uid != null) {
-          await deleteAccountData(userModel);
-          GetIt.I<FirebaseFirestore>().collection("User").doc(uid).delete();
-          await GetIt.I<FirebaseAuth>().currentUser!.delete();
-        }
-        await GetIt.I<FirebaseAuth>().signOut();
+        if (auth.currentUser?.uid == null) return;
+        showAlertDialogLoading(context);
+        await deleteAccountData(userModel);
+        await auth.currentUser?.delete();
+        await auth.signOut();
       } catch (e) {
-        await GetIt.I<FirebaseAuth>().signOut();
+        await auth.currentUser?.delete();
+        await auth.signOut();
       }
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Manager()));
+      Navigator.pop(context);
+      showAlertDialogSuccess(context);
+      getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Manager())));
     },
   );
 
@@ -320,7 +322,7 @@ showAlertDialogLoading(BuildContext context) {
     ),
     dismissable: false,
     context,
-    future: Future.delayed(const Duration(seconds: 10)),
+    future: Future.delayed(const Duration(seconds: 16)),
   );
 }
 

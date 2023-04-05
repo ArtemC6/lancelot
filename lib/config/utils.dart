@@ -60,17 +60,15 @@ Future<void> clearAllNotification() async {
   } catch (e) {}
 }
 
-StateMachineController getRiveController(Artboard art,
-    {stateMachineName = "State Machine 1"}) {
-  StateMachineController? controller =
-      StateMachineController.fromArtboard(art, stateMachineName);
+getRiveController(Artboard art, {stateMachineName = "State Machine 1"}) {
+  final controller = StateMachineController.fromArtboard(art, stateMachineName);
   art.addController(controller!);
   return controller;
 }
 
 setColorCard(Alignment align, GetSympathyCartController sympathyCar) {
   if (align.x < 0) {
-    int incline = int.parse(align.x.toStringAsFixed(1).substring(1, 2));
+    final incline = int.parse(align.x.toStringAsFixed(1).substring(1, 2));
     if (incline <= 10) {
       sympathyCar.setIndex(double.parse('0.$incline'));
       sympathyCar.setLike(true);

@@ -73,7 +73,6 @@ class _ProfileScreen extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     if (isLoading) {
       return Scaffold(
@@ -212,7 +211,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ZoomTapAnimation(
                                       child: Container(
                                         margin:
-                                            EdgeInsets.only(right: height / 38),
+                                            EdgeInsets.only(right: height / 42),
                                         child: LikeButton(
                                           animationDuration: const Duration(
                                               milliseconds: 1300),
@@ -231,15 +230,15 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           ),
                                           likeBuilder: (bool isLiked) {
                                             return SizedBox(
-                                              height: height * 0.07,
-                                              width: height * 0.07,
+                                              height: height * 0.080,
+                                              width: height * 0.080,
                                               child: Animator<double>(
                                                 duration: const Duration(
                                                     milliseconds: 1600),
                                                 cycles: 0,
                                                 curve: Curves.elasticIn,
                                                 tween: Tween<double>(
-                                                    begin: 20.0, end: 25.0),
+                                                    begin: 22.0, end: 28.0),
                                                 builder: (context,
                                                         animatorState, child) =>
                                                     Icon(
@@ -247,8 +246,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                                                       ? Icons.favorite_outlined
                                                       : Icons
                                                           .favorite_border_sharp,
-                                                  size:
-                                                      animatorState.value * 1.6,
+                                                  size: animatorState.value *
+                                                      1.65,
                                                   color: isLiked
                                                       ? color_red
                                                       : Colors.white,

@@ -199,6 +199,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                   } catch (e) {}
 
                                                   return ZoomTapAnimation(
+                                                    end: 0.994,
                                                     onLongTap: () =>
                                                         showAlertDialogDeleteChat(
                                                             context: context,
@@ -211,8 +212,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                     0],
                                                             height: height,
                                                             uidUser:
-                                                                userModelCurrent
-                                                                    .uid),
+                                                            userModelCurrent
+                                                                .uid),
                                                     onTap: () {
                                                       if (user.uid.isNotEmpty) {
                                                         Navigator.push(
@@ -220,13 +221,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                           FadeRouteAnimation(
                                                             ChatUserScreen(
                                                               friendId:
-                                                                  friendId,
+                                                              friendId,
                                                               friendName:
-                                                                  user.name,
+                                                              user.name,
                                                               friendImage: user
                                                                   .listImageUri[0],
                                                               userModelCurrent:
-                                                                  userModelCurrent,
+                                                              userModelCurrent,
                                                               token: user.token,
                                                               notification: user
                                                                   .notification,
@@ -238,71 +239,81 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                     child: Container(
                                                       height: height / 6.6,
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              8),
+                                                      const EdgeInsets.all(
+                                                          8),
                                                       child: Card(
                                                         shadowColor: Colors
                                                             .white
                                                             .withOpacity(.08),
                                                         color: color_black_88,
                                                         shape:
-                                                            RoundedRectangleBorder(
+                                                        RoundedRectangleBorder(
                                                           borderRadius:
-                                                              BorderRadius
-                                                                  .circular(18),
+                                                          BorderRadius
+                                                              .circular(18),
                                                           side:
-                                                              const BorderSide(
+                                                          const BorderSide(
                                                             width: 0.2,
                                                             color:
-                                                                Colors.white10,
+                                                            Colors.white10,
                                                           ),
                                                         ),
                                                         elevation: 16,
                                                         child: Padding(
                                                           padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 4,
-                                                                  bottom: 4,
-                                                                  top: 4,
-                                                                  right: 24),
+                                                          const EdgeInsets
+                                                              .only(
+                                                              left: 4,
+                                                              bottom: 4,
+                                                              top: 4,
+                                                              right: 24),
                                                           child: Row(
                                                             children: [
                                                               Expanded(
                                                                 flex: 1,
                                                                 child:
-                                                                    photoUser(
-                                                                  uri: user
-                                                                      .listImageUri[0],
-                                                                  width:
-                                                                      height /
-                                                                          11,
-                                                                  height:
-                                                                      height /
-                                                                          11,
-                                                                  state: user
-                                                                      .state,
-                                                                  padding: 0,
+                                                                    ZoomTapAnimation(
+                                                                  end: 0.990,
+                                                                  onTap: () => showDialogZoom(
+                                                                      uri: user
+                                                                              .listImageUri[
+                                                                          0],
+                                                                      context:
+                                                                          context),
+                                                                  child:
+                                                                      photoUser(
+                                                                    uri: user
+                                                                        .listImageUri[0],
+                                                                    width:
+                                                                        height /
+                                                                            11,
+                                                                    height:
+                                                                        height /
+                                                                            11,
+                                                                    state: user
+                                                                        .state,
+                                                                    padding: 0,
+                                                                  ),
                                                                 ),
                                                               ),
                                                               SizedBox(
                                                                   width:
-                                                                      height /
-                                                                          80),
+                                                                  height /
+                                                                      80),
                                                               Expanded(
                                                                 flex: 3,
                                                                 child: Column(
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
+                                                                  MainAxisAlignment
+                                                                      .center,
                                                                   crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
+                                                                  CrossAxisAlignment
+                                                                      .start,
                                                                   children: [
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
                                                                       children: [
                                                                         animatedText(
                                                                             height /
@@ -313,7 +324,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             1),
                                                                         const SizedBox(
                                                                           height:
-                                                                              2,
+                                                                          2,
                                                                         ),
                                                                         animatedText(
                                                                             height /
@@ -329,13 +340,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                     ),
                                                                     Row(
                                                                       mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
                                                                       children: [
                                                                         if (!isWriteUser)
                                                                           Expanded(
                                                                             child:
-                                                                                Padding(
+                                                                            Padding(
                                                                               padding: const EdgeInsets.only(right: 10),
                                                                               child: animatedText(height / 64, snapshotChat.data['last_msg'], Colors.white.withOpacity(.3), indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350, 2),
                                                                             ),
@@ -345,9 +356,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                         if (isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
-                                                                                const Duration(milliseconds: 450),
+                                                                            const Duration(milliseconds: 450),
                                                                             child:
-                                                                                Container(
+                                                                            Container(
                                                                               margin: const EdgeInsets.only(top: 6),
                                                                               alignment: Alignment.center,
                                                                               width: height / 47,
@@ -360,9 +371,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             !isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
-                                                                                Duration(milliseconds: indexAnimation * 250 < 2300 ? indexAnimation * 250 : 250),
+                                                                            Duration(milliseconds: indexAnimation * 250 < 2300 ? indexAnimation * 250 : 250),
                                                                             child:
-                                                                                Padding(
+                                                                            Padding(
                                                                               padding: EdgeInsets.only(left: height / 86),
                                                                               child: Icon(
                                                                                 Icons.done_all,
@@ -375,9 +386,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                                             !isNewMessage)
                                                                           DelayedDisplay(
                                                                             delay:
-                                                                                Duration(milliseconds: indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350),
+                                                                            Duration(milliseconds: indexAnimation * 350 < 2300 ? indexAnimation * 350 : 350),
                                                                             child:
-                                                                                Padding(
+                                                                            Padding(
                                                                               padding: EdgeInsets.only(left: height / 86),
                                                                               child: Icon(
                                                                                 Icons.check_rounded,

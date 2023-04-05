@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
@@ -25,6 +26,7 @@ Future main() async {
   await Firebase.initializeApp();
   getIt.registerSingleton(FirebaseFirestore.instance);
   getIt.registerSingleton(FirebaseAuth.instance);
+  getIt.registerSingleton(FirebaseStorage.instance);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -95,8 +97,9 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
     bool isEmptyImageBackground,
   ) async {
     Map<String, dynamic> data = {};
-    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
-      if (GetIt.I<FirebaseAuth>().currentUser.emailVerified) {
+    final auth = GetIt.I<FirebaseAuth>();
+    if (auth.currentUser?.uid != null) {
+      if (auth.currentUser.emailVerified) {
         if (isEmptyDataUser) {
           if (isEmptyImageBackground) {
             Navigator.pushReplacement(

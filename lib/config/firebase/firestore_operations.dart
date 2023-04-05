@@ -20,7 +20,7 @@ import '../../screens/settings/edit_profile_screen.dart';
 import '../../widget/dialog_widget.dart';
 import '../const.dart';
 
-Future<CroppedFile?> _cropImage(
+Future _cropImage(
     BuildContext context, XFile pickedImage, int compressQuality) async {
   CroppedFile? croppedFileCurrent;
 
@@ -56,14 +56,13 @@ Future<CroppedFile?> _cropImage(
     ],
   );
 
-  if (croppedFile != null) {
-    croppedFileCurrent = croppedFile;
-  }
+  if (croppedFile != null) croppedFileCurrent = croppedFile;
+
   return croppedFileCurrent;
 }
 
 Future uploadFirstImage(BuildContext context, UserModel modelUser) async {
-  final storage = FirebaseStorage.instance;
+  final storage = GetIt.I<FirebaseStorage>();
   final pickedImage = await ImagePicker()
       .pickImage(source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
   if (pickedImage != null) {
@@ -73,7 +72,7 @@ Future uploadFirstImage(BuildContext context, UserModel modelUser) async {
         final imageFile = File(croppedFile.path);
         final task = storage.ref(fileName).putFile(imageFile);
 
-        if (task == null) return '';
+        if (task == null) return;
         showAlertDialogLoading(context);
 
         final snapshot = await task.whenComplete(() {});
@@ -82,9 +81,8 @@ Future uploadFirstImage(BuildContext context, UserModel modelUser) async {
         modelUser.listImagePath.add(fileName);
         modelUser.listImageUri.add(urlDownload);
 
-        final docUser = GetIt.I<FirebaseFirestore>()
-            .collection('User')
-            .doc(GetIt.I<FirebaseAuth>().currentUser?.uid);
+        final docUser =
+            GetIt.I<FirebaseFirestore>().collection('User').doc(modelUser.uid);
 
         final json = {
           'listImageUri': modelUser.listImageUri,
@@ -92,66 +90,66 @@ Future uploadFirstImage(BuildContext context, UserModel modelUser) async {
         };
 
         await docUser.update(json);
+        Navigator.pop(context);
       }
     });
   }
 }
 
-Future<void> uploadImageAdd(
-    BuildContext context, UserModel userModelCurrent) async {
-    final pickedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 28, maxWidth: 1920);
-    if (pickedImage != null) {
-      await _cropImage(context, pickedImage, 28).then((croppedFile) async {
-        if (croppedFile != null) {
-          final fileName = path.basename(croppedFile.path);
-          final imageFile = File(croppedFile.path);
-          try {
-            final task =
-                FirebaseStorage.instance.ref(fileName).putFile(imageFile);
+Future uploadImageAdd(BuildContext context, UserModel userModelCurrent) async {
+  final pickedImage = await ImagePicker()
+      .pickImage(source: ImageSource.gallery, imageQuality: 28, maxWidth: 1920);
+  if (pickedImage != null) {
+    await _cropImage(context, pickedImage, 28).then((croppedFile) async {
+      if (croppedFile != null) {
+        final fileName = path.basename(croppedFile.path);
+        final imageFile = File(croppedFile.path);
+        try {
+          final task =
+              GetIt.I<FirebaseStorage>().ref(fileName).putFile(imageFile);
 
-            if (task == null) return;
-            showAlertDialogLoading(context);
+          if (task == null) return;
+          showAlertDialogLoading(context);
 
-            final snapshot = await task.whenComplete(() {});
-            final urlDownload = await snapshot.ref.getDownloadURL();
+          final snapshot = await task.whenComplete(() {});
+          final urlDownload = await snapshot.ref.getDownloadURL();
 
-            userModelCurrent.listImageUri.add(urlDownload);
-            userModelCurrent.listImagePath.add(fileName);
+          userModelCurrent.listImageUri.add(urlDownload);
+          userModelCurrent.listImagePath.add(fileName);
 
-            final docUser = GetIt.I<FirebaseFirestore>()
-                .collection('User')
-                .doc(userModelCurrent.uid);
+          final docUser = GetIt.I<FirebaseFirestore>()
+              .collection('User')
+              .doc(userModelCurrent.uid);
 
-            final json = {
-              'listImageUri': userModelCurrent.listImageUri,
-              'listImagePath': userModelCurrent.listImagePath
-            };
+          final json = {
+            'listImageUri': userModelCurrent.listImageUri,
+            'listImagePath': userModelCurrent.listImagePath
+          };
 
-            docUser.update(json);
+          docUser.update(json);
 
-            Map<String, dynamic> dataCash = {};
-            Navigator.pushReplacement(
-              context,
-              FadeRouteAnimation(
-                ManagerScreen(
-                  currentIndex: 3,
-                  userModelCurrent: UserModel.fromDocument(dataCash),
-                ),
+          Map<String, dynamic> dataCash = {};
+          Navigator.pushReplacement(
+            context,
+            FadeRouteAnimation(
+              ManagerScreen(
+                currentIndex: 3,
+                userModelCurrent: UserModel.fromDocument(dataCash),
               ),
-            );
-          } on FirebaseException {
-            Navigator.pop(context);
-          }
+            ),
+          );
+        } on FirebaseException {
+          Navigator.pop(context);
         }
-      });
-    }
+      }
+    });
+  }
 }
 
 Future updateFirstImage(
     BuildContext context, UserModel userModelCurrent, bool isScreen) async {
   List<String> listImageUri = [], listImagePath = [];
-  final storage = FirebaseStorage.instance, picker = ImagePicker();
+  final storage = GetIt.I<FirebaseStorage>(), picker = ImagePicker();
   final pickedImage = await picker.pickImage(
       source: ImageSource.gallery, imageQuality: 38, maxWidth: 1920);
   if (pickedImage != null) {
@@ -198,7 +196,7 @@ Future updateFirstImage(
             Navigator.pushReplacement(
                 context,
                 FadeRouteAnimation(EditProfileScreen(
-                  isFirst: false,
+                  isFirst: true,
                   userModel: UserModel.fromDocument(dataCash),
                 )));
           } else {
@@ -216,44 +214,41 @@ Future updateFirstImage(
     }
 }
 
-Future<void> createSympathy(
-    String idPartner, UserModel userModelCurrent) async {
-    GetIt.I<FirebaseFirestore>()
-        .collection('User')
+Future createSympathy(String idPartner, UserModel userModelCurrent) async {
+  GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(idPartner)
+      .collection('sympathy')
+      .where('uid', isEqualTo: userModelCurrent.uid)
+      .get()
+      .then((querySnapshot) {
+    for (var document in querySnapshot.docs) {
+      if (document['uid'] == userModelCurrent.uid) return;
+    }
+    final docUser = GetIt.I<FirebaseFirestore>()
+        .collection("User")
         .doc(idPartner)
         .collection('sympathy')
-        .where('uid', isEqualTo: userModelCurrent.uid)
-        .get()
-        .then((querySnapshot) {
-      for (var document in querySnapshot.docs) {
-        if (document['uid'] == userModelCurrent.uid) return;
-      }
-      final docUser = GetIt.I<FirebaseFirestore>()
-          .collection("User")
-          .doc(idPartner)
-          .collection('sympathy')
-          .doc();
-      docUser.set({
-        'id_doc': docUser.id,
-        'uid': userModelCurrent.uid,
-        'time': DateTime.now(),
-      });
+        .doc();
+    docUser.set({
+      'id_doc': docUser.id,
+      'uid': userModelCurrent.uid,
+      'time': DateTime.now(),
     });
+  });
 }
 
-Future<void> deleteSympathy(String idDoc, idUser) async {
-  try {
-    GetIt.I<FirebaseFirestore>()
-        .collection("User")
-        .doc(idUser)
-        .collection('sympathy')
-        .doc(idDoc)
-        .delete()
-        .then((value) {});
-  } on FirebaseException {}
+Future deleteSympathy(String idDoc, idUser) async {
+  GetIt.I<FirebaseFirestore>()
+      .collection("User")
+      .doc(idUser)
+      .collection('sympathy')
+      .doc(idDoc)
+      .delete()
+      .then((value) {});
 }
 
-Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
+Future deleteSympathyPartner(String idPartner, String idUser) async {
   await GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(idPartner)
@@ -275,7 +270,7 @@ Future<void> deleteSympathyPartner(String idPartner, String idUser) async {
 Future<void> imageRemove(
     int index, BuildContext context, UserModel userModelCurrent) async {
   try {
-    FirebaseStorage.instance
+    GetIt.I<FirebaseStorage>()
         .ref(userModelCurrent.listImagePath[index])
         .delete();
     CachedNetworkImage.evictFromCache(userModelCurrent.listImageUri[index]);
@@ -337,29 +332,30 @@ Future deleteChatFirebase(
   String friendUri,
 ) async {
   if (friendUri.isNotEmpty) CachedNetworkImage.evictFromCache(friendUri);
+  final init = GetIt.I<FirebaseFirestore>();
 
-  GetIt.I<FirebaseFirestore>()
+  init
       .collection('User')
       .doc(uidUser)
       .collection('messages')
       .doc(friendId)
       .delete();
 
-  GetIt.I<FirebaseFirestore>()
+  init
       .collection('User')
       .doc(friendId)
       .collection('messages')
       .doc(uidUser)
       .delete();
 
-  final usersMy = GetIt.I<FirebaseFirestore>()
+  final usersMy = init
       .collection('User')
       .doc(uidUser)
       .collection('messages')
       .doc(friendId)
       .collection('chats');
 
-  final batchMy = GetIt.I<FirebaseFirestore>().batch();
+  final batchMy = init.batch();
 
   usersMy.get().then((querySnapshot) {
     for (var document in querySnapshot.docs) {
@@ -368,14 +364,14 @@ Future deleteChatFirebase(
     return batchMy.commit();
   });
 
-  final usersFriend = GetIt.I<FirebaseFirestore>()
+  final usersFriend = init
       .collection('User')
       .doc(friendId)
       .collection('messages')
       .doc(uidUser)
       .collection('chats');
 
-  final batchFriend = GetIt.I<FirebaseFirestore>().batch();
+  final batchFriend = init.batch();
 
   await usersFriend.get().then((querySnapshot) {
     for (var document in querySnapshot.docs) {
@@ -407,46 +403,47 @@ Future<void> uploadImagePhotoProfile(String uri, context) async {
 Future<UserModel> readUserFirebase([String? idUser]) async {
   Map<String, dynamic> data = {};
   UserModel userModel = UserModel.fromDocument(data);
-    DocumentSnapshot<Map<String, dynamic>> query;
-    final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
-    try {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(idUser ?? uid)
-          .get(const GetOptions(source: Source.cache));
-    } on FirebaseException {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(idUser ?? uid)
-          .get(const GetOptions(source: Source.server));
-    }
+  DocumentSnapshot<Map<String, dynamic>> query;
+  final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
+  final init = GetIt.I<FirebaseFirestore>();
+  try {
+    query = await init
+        .collection('User')
+        .doc(idUser ?? uid)
+        .get(const GetOptions(source: Source.cache));
+  } on FirebaseException {
+    query = await init
+        .collection('User')
+        .doc(idUser ?? uid)
+        .get(const GetOptions(source: Source.server));
+  }
 
-    if (!query.metadata.isFromCache) {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(idUser ?? uid)
-          .get(const GetOptions(source: Source.server));
-    }
+  if (!query.metadata.isFromCache) {
+    query = await init
+        .collection('User')
+        .doc(idUser ?? uid)
+        .get(const GetOptions(source: Source.server));
+  }
 
-    final dataCash = query.data() as Map<String, dynamic>;
+  final dataCash = query.data() as Map<String, dynamic>;
 
-    try {
-      if (dataCash['imageBackground'] == null ||
-          dataCash['listInterests'] == null ||
-          dataCash['listImageUri'] == null) {
-        query = await GetIt.I<FirebaseFirestore>()
-            .collection('User')
-            .doc(uid)
-            .get(const GetOptions(source: Source.server));
-      }
-    } on FirebaseException {
-      query = await GetIt.I<FirebaseFirestore>()
+  try {
+    if (dataCash['imageBackground'] == null ||
+        dataCash['listInterests'] == null ||
+        dataCash['listImageUri'] == null) {
+      query = await init
           .collection('User')
           .doc(uid)
           .get(const GetOptions(source: Source.server));
     }
+  } on FirebaseException {
+    query = await init
+        .collection('User')
+        .doc(uid)
+        .get(const GetOptions(source: Source.server));
+  }
 
-    userModel = UserModel.fromDocument(query.data() as Map<String, dynamic>);
+  userModel = UserModel.fromDocument(query.data() as Map<String, dynamic>);
 
   return userModel;
 }
@@ -454,14 +451,15 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
 Future<List<String>> readDislikeFirebase(String idUser) async {
   List<String> listDislike = [];
   QuerySnapshot<Map<String, dynamic>> query;
+  final init = GetIt.I<FirebaseFirestore>();
   try {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('User')
         .doc(idUser)
         .collection('dislike')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('User')
         .doc(idUser)
         .collection('dislike')
@@ -469,7 +467,7 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
   }
 
   if (query.size == 0 && query.docs.isEmpty) {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('User')
         .doc(idUser)
         .collection('dislike')
@@ -546,11 +544,14 @@ Future deleteAccountData(UserModel userModel) async {
       await deleteChatFirebase(document.id, userModel.uid, '');
     }
   });
+
+  instance.collection("User").doc(userModel.uid).delete();
 }
 
 Future deleteMessageFirebase(String myId, String friendId, String idDoc,
     bool isLastMessage, AsyncSnapshot snapshotMy, int index) async {
-  GetIt.I<FirebaseFirestore>()
+  final init = GetIt.I<FirebaseFirestore>();
+  init
       .collection('User')
       .doc(myId)
       .collection('messages')
@@ -559,7 +560,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
       .doc(idDoc)
       .delete();
 
-  GetIt.I<FirebaseFirestore>()
+  init
       .collection('User')
       .doc(friendId)
       .collection('messages')
@@ -569,7 +570,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
       .delete();
 
   if (isLastMessage) {
-    GetIt.I<FirebaseFirestore>()
+    init
         .collection('User')
         .doc(myId)
         .collection('messages')
@@ -580,7 +581,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
       'last_date_open_chat': DateTime.now(),
     });
 
-    GetIt.I<FirebaseFirestore>()
+    init
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -596,60 +597,61 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
 Future<bool> putLike(
     UserModel userModelCurrent, UserModel userModel, bool isLikeOnTap) async {
   bool isLike = false;
-    QuerySnapshot<Map<String, dynamic>> query;
-    try {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
+  QuerySnapshot<Map<String, dynamic>> query;
+  final init = GetIt.I<FirebaseFirestore>();
+  try {
+    query = await init
+        .collection('User')
+        .doc(userModel.uid)
+        .collection('likes')
+        .get(const GetOptions(source: Source.cache));
+  } on FirebaseException {
+    query = await init
+        .collection('User')
+        .doc(userModel.uid)
+        .collection('likes')
+        .get(const GetOptions(source: Source.server));
+  }
+
+  if (query.size == 0 && query.docs.isEmpty) {
+    query = await init
+        .collection('User')
+        .doc(userModel.uid)
+        .collection('likes')
+        .get(const GetOptions(source: Source.server));
+  }
+
+  for (var result in query.docs) {
+    if (userModelCurrent.uid == result.id) isLike = true;
+  }
+
+  if (isLikeOnTap) {
+    if (!isLike) {
+      init
+          .collection("User")
           .doc(userModel.uid)
           .collection('likes')
-          .get(const GetOptions(source: Source.cache));
-    } on FirebaseException {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(userModel.uid)
-          .collection('likes')
-          .get(const GetOptions(source: Source.server));
-    }
+          .doc(userModelCurrent.uid)
+          .set({});
 
-    if (query.size == 0 && query.docs.isEmpty) {
-      query = await GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(userModel.uid)
-          .collection('likes')
-          .get(const GetOptions(source: Source.server));
-    }
-
-    for (var result in query.docs) {
-      if (userModelCurrent.uid == result.id) isLike = true;
-    }
-
-    if (isLikeOnTap) {
-      if (!isLike) {
-        GetIt.I<FirebaseFirestore>()
-            .collection("User")
-            .doc(userModel.uid)
-            .collection('likes')
-            .doc(userModelCurrent.uid)
-            .set({});
-
-        if (userModelCurrent.uid != userModel.uid &&
-            userModel.notification &&
-            userModel.token != '') {
-          sendFcmMessage(
-              'Lancelot',
-              '${userModelCurrent.name}: нравится вашь профиль',
-              userModel.token,
-              'like');
-        }
-      } else {
-        GetIt.I<FirebaseFirestore>()
-            .collection("User")
-            .doc(userModel.uid)
-            .collection('likes')
-            .doc(userModelCurrent.uid)
-            .delete();
+      if (userModelCurrent.uid != userModel.uid &&
+          userModel.notification &&
+          userModel.token != '') {
+        sendFcmMessage(
+            'Lancelot',
+            '${userModelCurrent.name}: нравится вашь профиль',
+            userModel.token,
+            'like');
       }
+    } else {
+      init
+          .collection("User")
+          .doc(userModel.uid)
+          .collection('likes')
+          .doc(userModelCurrent.uid)
+          .delete();
     }
+  }
 
   return Future.value(!isLike);
 }
@@ -657,18 +659,19 @@ Future<bool> putLike(
 Future<Map> readInterestsFirebase() async {
   Map mapInterests = {};
   QuerySnapshot<Map<String, dynamic>> query;
+  final init = GetIt.I<FirebaseFirestore>();
   try {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.server));
   }
 
   if (query.size == 0) {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageInterests')
         .get(const GetOptions(source: Source.server));
   }
@@ -683,18 +686,21 @@ Future<Map> readInterestsFirebase() async {
 Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
   Map<String, dynamic> data = {};
   UserModel userModelCurrent = UserModel.fromDocument(data);
+  final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
+  final init = GetIt.I<FirebaseFirestore>();
+
   try {
-    if (GetIt.I<FirebaseAuth>().currentUser?.uid != null) {
+    if (uid != null) {
       DocumentSnapshot<Map<String, dynamic>> queryUser;
       try {
-        queryUser = await GetIt.I<FirebaseFirestore>()
+        queryUser = await init
             .collection('User')
-            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
+            .doc(uid)
             .get(const GetOptions(source: Source.cache));
       } on FirebaseException {
-        queryUser = await GetIt.I<FirebaseFirestore>()
+        queryUser = await init
             .collection('User')
-            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
+            .doc(uid)
             .get(const GetOptions(source: Source.server));
       }
 
@@ -703,15 +709,15 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
       try {
         if (dataCash['imageBackground'] == null ||
             dataCash['listInterests'] == null) {
-          queryUser = await GetIt.I<FirebaseFirestore>()
+          queryUser = await init
               .collection('User')
-              .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
+              .doc(uid)
               .get(const GetOptions(source: Source.server));
         }
       } on FirebaseException {
-        queryUser = await GetIt.I<FirebaseFirestore>()
+        queryUser = await init
             .collection('User')
-            .doc(GetIt.I<FirebaseAuth>().currentUser!.uid)
+            .doc(uid)
             .get(const GetOptions(source: Source.server));
       }
 
@@ -732,13 +738,14 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
 putUserWrites(
   String currentId,
   String friendId,
-) =>
-    GetIt.I<FirebaseFirestore>()
-        .collection("User")
-        .doc(friendId)
-        .collection('messages')
-        .doc(currentId)
-        .update({'writeLastData': DateTime.now()});
+) {
+  GetIt.I<FirebaseFirestore>()
+      .collection("User")
+      .doc(friendId)
+      .collection('messages')
+      .doc(currentId)
+      .update({'writeLastData': DateTime.now()});
+}
 
 Future createDisLike(UserModel userModelCurrent, UserModel userModel) async {
     GetIt.I<FirebaseFirestore>()
@@ -774,20 +781,21 @@ Future createLastCloseChat(String uid, String friendId, data) async {
 Future<List<String>> readFirebaseImageProfile() async {
   DocumentSnapshot<Map<String, dynamic>> query;
   List<String> listImages = [];
+  final init = GetIt.I<FirebaseFirestore>();
   try {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.server));
   }
 
   if (query.data()!.isEmpty) {
-    query = await GetIt.I<FirebaseFirestore>()
+    query = await init
         .collection('ImageProfile')
         .doc('Image')
         .get(const GetOptions(source: Source.server));
@@ -845,7 +853,7 @@ Future<String> getTokenUser() async {
   return await FirebaseMessaging.instance.getToken() ?? '';
 }
 
-Future<void> sendMessage(
+sendMessage(
     {required bool isFirstMessage,
     required TextEditingController controllerMessage,
     required bool notification,
@@ -853,21 +861,12 @@ Future<void> sendMessage(
     required UserModel currentUser,
     required String friendId}) async {
   if (controllerMessage.text.trim().isNotEmpty) {
-    final String messageText = controllerMessage.text.trim();
+    final String messageText = controllerMessage.text.trim(), idDocMessage;
     controllerMessage.clear();
-    final String idDocMessage;
     final dateCurrent = DateTime.now();
+    final init = GetIt.I<FirebaseFirestore>();
 
-    if (notification && token.isNotEmpty) {
-      sendFcmMessage(
-          'Lancelot',
-          '${currentUser.name}: отправил вам новое сообщение',
-          token,
-          'chat',
-          currentUser.uid);
-    }
-
-    final docMessage = GetIt.I<FirebaseFirestore>()
+    final docMessage = init
         .collection('User')
         .doc(currentUser.uid)
         .collection('messages')
@@ -877,38 +876,36 @@ Future<void> sendMessage(
 
     idDocMessage = docMessage.id;
 
-    await docMessage
-        .set(({
+    await docMessage.set(({
       "senderId": currentUser.uid,
       "idDoc": idDocMessage,
       "receiverId": friendId,
       "message": messageText,
       "date": dateCurrent,
-    }))
-        .then((value) async {
-      final docUser = GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(currentUser.uid)
-          .collection('messages')
-          .doc(friendId);
+    }));
 
-      if (isFirstMessage) {
-        await docUser.update({
-          'last_msg': messageText,
-          'date': dateCurrent,
-          'writeLastData': '',
-        });
-      } else {
-        await docUser.set({
-          'last_msg': messageText,
-          'date': dateCurrent,
-          'writeLastData': '',
-          'last_date_open_chat': '',
-        });
-      }
-    });
+    final docUserCurrent = init
+        .collection('User')
+        .doc(currentUser.uid)
+        .collection('messages')
+        .doc(friendId);
 
-    GetIt.I<FirebaseFirestore>()
+    if (isFirstMessage) {
+      await docUserCurrent.update({
+        'last_msg': messageText,
+        'date': dateCurrent,
+        'writeLastData': '',
+      });
+    } else {
+      await docUserCurrent.set({
+        'last_msg': messageText,
+        'date': dateCurrent,
+        'writeLastData': '',
+        'last_date_open_chat': '',
+      });
+    }
+
+    await init
         .collection('User')
         .doc(friendId)
         .collection('messages')
@@ -921,32 +918,41 @@ Future<void> sendMessage(
       "receiverId": friendId,
       "message": messageText,
       "date": dateCurrent,
-    }).then((value) async {
-      final docUser = GetIt.I<FirebaseFirestore>()
-          .collection('User')
-          .doc(friendId)
-          .collection('messages')
-          .doc(currentUser.uid);
-
-      if (isFirstMessage) {
-        await docUser.update({
-          'last_msg': messageText,
-          'date': dateCurrent,
-          'writeLastData': '',
-          'last_date_open_chat': '',
-        });
-      } else {
-        await docUser.set({
-          'last_msg': messageText,
-          'date': dateCurrent,
-          'writeLastData': '',
-          'last_date_open_chat': '',
-          'last_date_close_chat': '',
-        });
-
-        createLastCloseChat(currentUser.uid, friendId, '');
-      }
     });
+
+    final docUser = init
+        .collection('User')
+        .doc(friendId)
+        .collection('messages')
+        .doc(currentUser.uid);
+
+    if (isFirstMessage) {
+      await docUser.update({
+        'last_msg': messageText,
+        'date': dateCurrent,
+        'writeLastData': '',
+        'last_date_open_chat': '',
+      });
+    } else {
+      await docUser.set({
+        'last_msg': messageText,
+        'date': dateCurrent,
+        'writeLastData': '',
+        'last_date_open_chat': '',
+        'last_date_close_chat': '',
+      });
+
+      await createLastCloseChat(currentUser.uid, friendId, '');
+    }
+
+    if (notification && token.isNotEmpty) {
+      await sendFcmMessage(
+          'Lancelot',
+          '${currentUser.name}: отправил вам новое сообщение',
+          token,
+          'chat',
+          currentUser.uid);
+    }
   }
 }
 
@@ -990,12 +996,11 @@ Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFriendFirebase(
 }
 
 Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFirebase(
-    int limit, String uid) async {
-  return await GetIt.I<FirebaseFirestore>()
-      .collection('User')
-      .doc(uid)
-      .collection('sympathy')
-      .orderBy("time", descending: true)
-      .limit(limit)
-      .get();
-}
+        int limit, String uid) async =>
+    await GetIt.I<FirebaseFirestore>()
+        .collection('User')
+        .doc(uid)
+        .collection('sympathy')
+        .orderBy("time", descending: true)
+        .limit(limit)
+        .get();

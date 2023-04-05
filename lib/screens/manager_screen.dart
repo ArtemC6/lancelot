@@ -225,11 +225,13 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
                             bottomNav[index].src,
                             artboard: bottomNav[index].art,
                             onInit: (art) {
-                              final controller = getRiveController(art,
-                                  stateMachineName:
-                                      bottomNav[index].stateMachineName);
-                              bottomNav[index].input =
-                                  controller.findSMI("active") as SMIBool;
+                              try {
+                                final controller = getRiveController(art,
+                                    stateMachineName:
+                                        bottomNav[index].stateMachineName);
+                                bottomNav[index].input =
+                                    controller.findSMI("active") as SMIBool;
+                              } catch (e) {}
                             },
                           ),
                         ),

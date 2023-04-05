@@ -4,6 +4,7 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -188,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (modelUser.listImageUri.isNotEmpty) isPhoto = true;
 
-    _deleteAccountController.text = modelUser.email;
+    _deleteAccountController.text = GetIt.I<FirebaseAuth>().currentUser!.email!;
     _selectedInterests = modelUser.listInterests;
     interestsCount = modelUser.listInterests.length;
     _dateTimeBirthday = getDataTime(modelUser.ageTime);

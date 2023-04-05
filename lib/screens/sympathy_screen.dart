@@ -16,6 +16,7 @@ import '../widget/animation_widget.dart';
 import '../widget/button_widget.dart';
 import '../widget/card_widget.dart';
 import '../widget/component_widget.dart';
+import '../widget/dialog_widget.dart';
 import 'chat_user_screen.dart';
 
 class SympathyScreen extends StatefulWidget {
@@ -141,7 +142,8 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                   isMySym = i['uid'] ==
                                                       userModelCurrent.uid;
                                                 }
-                                                return GestureDetector(
+                                                return ZoomTapAnimation(
+                                                  end: 0.994,
                                                   onTap: () {
                                                     if (uid.isNotEmpty) {
                                                       Navigator.push(
@@ -189,16 +191,29 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                                   .spaceBetween,
                                                           children: [
                                                             Flexible(
-                                                              child: photoUser(
-                                                                uri: friend
-                                                                    .listImageUri[0],
-                                                                width: height /
-                                                                    8.2,
-                                                                height: height /
-                                                                    8.2,
-                                                                state: friend
-                                                                    .state,
-                                                                padding: 2.2,
+                                                              child:
+                                                                  ZoomTapAnimation(
+                                                                end: 0.989,
+                                                                onTap: () => showDialogZoom(
+                                                                    uri: friend
+                                                                            .listImageUri[
+                                                                        0],
+                                                                    context:
+                                                                        context),
+                                                                child:
+                                                                    photoUser(
+                                                                  uri: friend
+                                                                      .listImageUri[0],
+                                                                  width:
+                                                                      height /
+                                                                          8.2,
+                                                                  height:
+                                                                      height /
+                                                                          8.2,
+                                                                  state: friend
+                                                                      .state,
+                                                                  padding: 2.2,
+                                                                ),
                                                               ),
                                                             ),
                                                             SizedBox(
