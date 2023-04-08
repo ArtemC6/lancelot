@@ -142,257 +142,15 @@ class _SympathyScreenState extends State<SympathyScreen>
                                                   isMySym = i['uid'] ==
                                                       userModelCurrent.uid;
                                                 }
-                                                return ZoomTapAnimation(
-                                                  end: 0.994,
-                                                  onTap: () {
-                                                    if (uid.isNotEmpty) {
-                                                      Navigator.push(
-                                                        context,
-                                                        FadeRouteAnimation(
-                                                          ProfileScreen(
-                                                            userModelPartner:
-                                                                UserModel
-                                                                    .fromDocument(
-                                                                        data),
-                                                            isBack: true,
-                                                            idUser: uid,
-                                                            userModelCurrent:
-                                                                userModelCurrent,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    height: height / 4.5,
-                                                    padding: EdgeInsets.all(
-                                                        height / 72),
-                                                    child: Card(
-                                                      shadowColor: Colors.white
-                                                          .withOpacity(.10),
-                                                      color: color_black_88,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                        side: const BorderSide(
-                                                          width: 0.8,
-                                                          color: Colors.white10,
-                                                        ),
-                                                      ),
-                                                      elevation: 14,
-                                                      child: Padding(
-                                                        padding: EdgeInsets.all(
-                                                            height / 58),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Flexible(
-                                                              child:
-                                                                  ZoomTapAnimation(
-                                                                end: 0.989,
-                                                                onTap: () => showDialogZoom(
-                                                                    uri: friend
-                                                                            .listImageUri[
-                                                                        0],
-                                                                    context:
-                                                                        context),
-                                                                child:
-                                                                    photoUser(
-                                                                  uri: friend
-                                                                      .listImageUri[0],
-                                                                  width:
-                                                                      height /
-                                                                          8.2,
-                                                                  height:
-                                                                      height /
-                                                                          8.2,
-                                                                  state: friend
-                                                                      .state,
-                                                                  padding: 2.2,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                                width: height /
-                                                                    77),
-                                                            Expanded(
-                                                              flex: 2,
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceEvenly,
-                                                                children: [
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      Padding(
-                                                                        padding:
-                                                                            EdgeInsets.only(bottom: height / 72),
-                                                                        child:
-                                                                            DelayedDisplay(
-                                                                              delay:
-                                                                              Duration(milliseconds: timeAnim),
-                                                                          child:
-                                                                              Column(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text(
-                                                                                '${friend.name.trim()}, ${friend.ageInt}',
-                                                                                style: GoogleFonts.lato(
-                                                                                  textStyle: TextStyle(color: Colors.white, fontSize: height / 49, letterSpacing: .9),
-                                                                                ),
-                                                                              ),
-                                                                              Text(
-                                                                                friend.myCity,
-                                                                                style: GoogleFonts.lato(
-                                                                                  textStyle: TextStyle(color: Colors.white.withOpacity(.8), fontSize: height / 67, letterSpacing: .5),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        margin:
-                                                                            EdgeInsets.only(
-                                                                          bottom:
-                                                                              height / 120,
-                                                                          right:
-                                                                              height / 120,
-                                                                        ),
-                                                                        alignment:
-                                                                            Alignment.topRight,
-                                                                        child:
-                                                                            GestureDetector(
-                                                                              onTap:
-                                                                              () {
-                                                                            deleteSympathy(idDoc,
-                                                                                userModelCurrent.uid);
-                                                                            setState(() {});
-                                                                            CachedNetworkImage.evictFromCache(friend.listImageUri[0]);
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.close,
-                                                                            size:
-                                                                                width / 18,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceAround,
-                                                                    children: [
-                                                                      if (!isMySym)
-                                                                        buttonUniversalNoState(
-                                                                          text:
-                                                                              'Принять симпатию',
-                                                                          darkColors:
-                                                                              false,
-                                                                          colorButton: const [
-                                                                            color_black_88,
-                                                                            color_black_88
-                                                                          ],
-                                                                          height:
-                                                                              width / 9.9,
-                                                                          width:
-                                                                              width / 2.6,
-                                                                          sizeText:
-                                                                              width / 35,
-                                                                          time:
-                                                                              timeAnim,
-                                                                          onTap:
-                                                                              () {
-                                                                                createSympathy(uid, userModelCurrent).then((i) {
-                                                                              setState(() {});
-                                                                              if (friend.token.isNotEmpty && friend.notification) {
-                                                                                sendFcmMessage('Lancelot', 'У вас взаимная симпатия', friend.token, 'sympathy', userModelCurrent.uid, userModelCurrent.listImageUri[0]);
-                                                                              }
-                                                                            });
-                                                                          },
-                                                                        ),
-                                                                      if (isMySym)
-                                                                        buttonUniversal(
-                                                                          text:
-                                                                              'У вас взаимно',
-                                                                          darkColors:
-                                                                              true,
-                                                                          colorButton:
-                                                                              listColorMulticoloured,
-                                                                          height:
-                                                                              width / 10.2,
-                                                                          width:
-                                                                              width / 3.2,
-                                                                          sizeText:
-                                                                              width / 34.5,
-                                                                          time:
-                                                                              timeAnim,
-                                                                          onTap: () =>
-                                                                              deleteSympathyPartner(uid, userModelCurrent.uid).then((i) => setState(() {})),
-                                                                        ),
-                                                                      DropShadow(
-                                                                        blurRadius:
-                                                                            2.5,
-                                                                        spread:
-                                                                            0.1,
-                                                                        opacity:
-                                                                            1,
-                                                                        child:
-                                                                            ZoomTapAnimation(
-                                                                          onTap:
-                                                                              () {
-                                                                            if (uid.isNotEmpty) {
-                                                                              Navigator.of(context).push(
-                                                                                MaterialPageRoute(
-                                                                                  builder: (context) => ChatUserScreen(
-                                                                                    friendId: uid,
-                                                                                    friendName: friend.name,
-                                                                                    friendImage: friend.listImageUri[0],
-                                                                                    userModelCurrent: userModelCurrent,
-                                                                                    token: friend.token,
-                                                                                    notification: friend.notification,
-                                                                                  ),
-                                                                                ),
-                                                                              );
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Padding(
-                                                                            padding: EdgeInsets.only(
-                                                                                bottom: height / 74,
-                                                                                top: height / 140,
-                                                                                left: height / 100,
-                                                                                right: height / 120),
-                                                                            child:
-                                                                                Image.asset(
-                                                                              'images/ic_send.png',
-                                                                              height: height / 23,
-                                                                              width: height / 23,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
+                                                return cardSympathy(
+                                                    uid,
+                                                    context,
+                                                    height,
+                                                    friend,
+                                                    timeAnim,
+                                                    idDoc,
+                                                    width,
+                                                    isMySym);
                                               }
                                               return const SizedBox();
                                             },
@@ -434,6 +192,216 @@ class _SympathyScreenState extends State<SympathyScreen>
                 },
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  cardSympathy(
+      String uid,
+      BuildContext context,
+      double height,
+      UserModel friend,
+      int timeAnim,
+      String idDoc,
+      double width,
+      bool isMySym) {
+    return ZoomTapAnimation(
+      end: 0.994,
+      onTap: () {
+        if (uid.isNotEmpty) {
+          Navigator.push(
+            context,
+            FadeRouteAnimation(
+              ProfileScreen(
+                userModelPartner: UserModel.fromDocument(data),
+                isBack: true,
+                idUser: uid,
+                userModelCurrent: userModelCurrent,
+              ),
+            ),
+          );
+        }
+      },
+      child: Container(
+        height: height / 4.5,
+        padding: EdgeInsets.all(height / 72),
+        child: Card(
+          shadowColor: Colors.white.withOpacity(.10),
+          color: color_black_88,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+            side: const BorderSide(
+              width: 0.8,
+              color: Colors.white10,
+            ),
+          ),
+          elevation: 14,
+          child: Padding(
+            padding: EdgeInsets.all(height / 58),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: ZoomTapAnimation(
+                    end: 0.989,
+                    onTap: () => showDialogZoom(
+                        uri: friend.listImageUri[0], context: context),
+                    child: photoUser(
+                      uri: friend.listImageUri[0],
+                      width: height / 8.2,
+                      height: height / 8.2,
+                      state: friend.state,
+                      padding: 2.2,
+                    ),
+                  ),
+                ),
+                SizedBox(width: height / 77),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: height / 72),
+                            child: DelayedDisplay(
+                              delay: Duration(milliseconds: timeAnim),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${friend.name.trim()}, ${friend.ageInt}',
+                                    style: GoogleFonts.lato(
+                                      textStyle: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: height / 49,
+                                          letterSpacing: .9),
+                                    ),
+                                  ),
+                                  Text(
+                                    friend.myCity,
+                                    style: GoogleFonts.lato(
+                                      textStyle: TextStyle(
+                                          color: Colors.white.withOpacity(.8),
+                                          fontSize: height / 67,
+                                          letterSpacing: .5),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              bottom: height / 120,
+                              right: height / 120,
+                            ),
+                            alignment: Alignment.topRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                deleteSympathy(idDoc, userModelCurrent.uid);
+                                setState(() {});
+                                CachedNetworkImage.evictFromCache(
+                                    friend.listImageUri[0]);
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: width / 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          if (!isMySym)
+                            buttonUniversalNoState(
+                              text: 'Принять симпатию',
+                              darkColors: false,
+                              colorButton: const [
+                                color_black_88,
+                                color_black_88
+                              ],
+                              height: width / 9.9,
+                              width: width / 2.6,
+                              sizeText: width / 35,
+                              time: timeAnim,
+                              onTap: () {
+                                createSympathy(uid, userModelCurrent).then((i) {
+                                  setState(() {});
+                                  if (friend.token.isNotEmpty &&
+                                      friend.notification) {
+                                    sendFcmMessage(
+                                        'Lancelot',
+                                        'У вас взаимная симпатия',
+                                        friend.token,
+                                        'sympathy',
+                                        userModelCurrent.uid,
+                                        userModelCurrent.listImageUri[0]);
+                                  }
+                                });
+                              },
+                            ),
+                          if (isMySym)
+                            buttonUniversal(
+                              text: 'У вас взаимно',
+                              darkColors: true,
+                              colorButton: listColorMulticoloured,
+                              height: width / 10.2,
+                              width: width / 3.2,
+                              sizeText: width / 34.5,
+                              time: timeAnim,
+                              onTap: () => deleteSympathyPartner(
+                                      uid, userModelCurrent.uid)
+                                  .then((i) => setState(() {})),
+                            ),
+                          DropShadow(
+                            blurRadius: 2.5,
+                            spread: 0.1,
+                            opacity: 1,
+                            child: ZoomTapAnimation(
+                              onTap: () {
+                                if (uid.isNotEmpty) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatUserScreen(
+                                        friendId: uid,
+                                        friendName: friend.name,
+                                        friendImage: friend.listImageUri[0],
+                                        userModelCurrent: userModelCurrent,
+                                        token: friend.token,
+                                        notification: friend.notification,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: height / 74,
+                                    top: height / 140,
+                                    left: height / 100,
+                                    right: height / 120),
+                                child: Image.asset(
+                                  'images/ic_send.png',
+                                  height: height / 23,
+                                  width: height / 23,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

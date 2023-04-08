@@ -128,7 +128,6 @@ Future uploadImageAdd(BuildContext context, UserModel userModelCurrent) async {
 
           docUser.update(json);
 
-          Map<String, dynamic> dataCash = {};
           Navigator.pushReplacement(
             context,
             FadeRouteAnimation(
@@ -191,7 +190,6 @@ Future updateFirstImage(
 
           docUser.update(json);
           Navigator.pop(context);
-          Map<String, dynamic> dataCash = {};
           if (isScreen) {
             Navigator.pushReplacement(
                 context,
@@ -215,21 +213,19 @@ Future updateFirstImage(
 }
 
 Future createSympathy(String idPartner, UserModel userModelCurrent) async {
-  GetIt.I<FirebaseFirestore>()
+  final init = GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(idPartner)
-      .collection('sympathy')
+      .collection('sympathy');
+
+  init
       .where('uid', isEqualTo: userModelCurrent.uid)
       .get()
       .then((querySnapshot) {
     for (var document in querySnapshot.docs) {
       if (document['uid'] == userModelCurrent.uid) return;
     }
-    final docUser = GetIt.I<FirebaseFirestore>()
-        .collection("User")
-        .doc(idPartner)
-        .collection('sympathy')
-        .doc();
+    final docUser = init.doc();
     docUser.set({
       'id_doc': docUser.id,
       'uid': userModelCurrent.uid,
@@ -249,20 +245,14 @@ Future deleteSympathy(String idDoc, idUser) async {
 }
 
 Future deleteSympathyPartner(String idPartner, String idUser) async {
-  await GetIt.I<FirebaseFirestore>()
+  final init = GetIt.I<FirebaseFirestore>()
       .collection('User')
       .doc(idPartner)
-      .collection('sympathy')
-      .where('uid', isEqualTo: idUser)
-      .get()
-      .then((querySnapshot) async {
+      .collection('sympathy');
+
+  await init.where('uid', isEqualTo: idUser).get().then((querySnapshot) async {
     for (var result in querySnapshot.docs) {
-      await GetIt.I<FirebaseFirestore>()
-          .collection("User")
-          .doc(idPartner)
-          .collection('sympathy')
-          .doc(result.data()['id_doc'])
-          .delete();
+      await init.doc(result.data()['id_doc']).delete();
     }
   });
 }
@@ -284,7 +274,6 @@ Future<void> imageRemove(
       'listImageUri': userModelCurrent.listImageUri,
       'listImagePath': userModelCurrent.listImagePath
     });
-    Map<String, dynamic> dataCash = {};
     Navigator.pushReplacement(
       context,
       FadeRouteAnimation(
@@ -333,23 +322,12 @@ Future deleteChatFirebase(
 ) async {
   if (friendUri.isNotEmpty) CachedNetworkImage.evictFromCache(friendUri);
   final init = GetIt.I<FirebaseFirestore>();
+  final initUser = init.collection('User');
 
-  init
-      .collection('User')
-      .doc(uidUser)
-      .collection('messages')
-      .doc(friendId)
-      .delete();
-
-  init
-      .collection('User')
-      .doc(friendId)
-      .collection('messages')
-      .doc(uidUser)
-      .delete();
+  initUser.doc(uidUser).collection('messages').doc(friendId).delete();
+  initUser.doc(friendId).collection('messages').doc(uidUser).delete();
 
   final usersMy = init
-      .collection('User')
       .doc(uidUser)
       .collection('messages')
       .doc(friendId)
@@ -364,8 +342,7 @@ Future deleteChatFirebase(
     return batchMy.commit();
   });
 
-  final usersFriend = init
-      .collection('User')
+  final usersFriend = initUser
       .doc(friendId)
       .collection('messages')
       .doc(uidUser)
@@ -387,17 +364,19 @@ Future<void> uploadImagePhotoProfile(String uri, context) async {
       .doc(GetIt.I<FirebaseAuth>().currentUser?.uid)
       .update({
     'imageBackground': uri,
-  }).then((i) {
-    Map<String, dynamic> dataCash = {};
-    Navigator.pushReplacement(
+  }).then(
+    (i) {
+      Navigator.pushReplacement(
         context,
         FadeRouteAnimation(
           ManagerScreen(
             currentIndex: 3,
             userModelCurrent: UserModel.fromDocument(dataCash),
           ),
-        ));
-  });
+        ),
+      );
+    },
+  );
 }
 
 Future<UserModel> readUserFirebase([String? idUser]) async {
@@ -405,24 +384,16 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
   UserModel userModel = UserModel.fromDocument(data);
   DocumentSnapshot<Map<String, dynamic>> query;
   final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
-  final init = GetIt.I<FirebaseFirestore>();
+  final init =
+      GetIt.I<FirebaseFirestore>().collection('User').doc(idUser ?? uid);
   try {
-    query = await init
-        .collection('User')
-        .doc(idUser ?? uid)
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await init
-        .collection('User')
-        .doc(idUser ?? uid)
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   if (!query.metadata.isFromCache) {
-    query = await init
-        .collection('User')
-        .doc(idUser ?? uid)
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   final dataCash = query.data() as Map<String, dynamic>;
@@ -432,14 +403,10 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
         dataCash['listInterests'] == null ||
         dataCash['listImageUri'] == null) {
       query = await init
-          .collection('User')
-          .doc(uid)
           .get(const GetOptions(source: Source.server));
     }
   } on FirebaseException {
     query = await init
-        .collection('User')
-        .doc(uid)
         .get(const GetOptions(source: Source.server));
   }
 
@@ -451,27 +418,18 @@ Future<UserModel> readUserFirebase([String? idUser]) async {
 Future<List<String>> readDislikeFirebase(String idUser) async {
   List<String> listDislike = [];
   QuerySnapshot<Map<String, dynamic>> query;
-  final init = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(idUser)
+      .collection('dislike');
   try {
-    query = await init
-        .collection('User')
-        .doc(idUser)
-        .collection('dislike')
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await init
-        .collection('User')
-        .doc(idUser)
-        .collection('dislike')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   if (query.size == 0 && query.docs.isEmpty) {
-    query = await init
-        .collection('User')
-        .doc(idUser)
-        .collection('dislike')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   for (var result in query.docs) {
@@ -482,11 +440,9 @@ Future<List<String>> readDislikeFirebase(String idUser) async {
 }
 
 Future deleteDislike(String idUser) async {
-  final collection = GetIt.I<FirebaseFirestore>()
-      .collection('User')
-      .doc(idUser)
-      .collection('dislike');
-  final batch = GetIt.I<FirebaseFirestore>().batch();
+  final init = GetIt.I<FirebaseFirestore>();
+  final collection = init.collection('User').doc(idUser).collection('dislike');
+  final batch = init.batch();
 
   return collection.get().then((querySnapshot) {
     for (var document in querySnapshot.docs) {
@@ -515,17 +471,14 @@ Future deleteLike(String idUser) async {
 }
 
 Future deleteAccountData(UserModel userModel) async {
-  final instance = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>();
+  final instanceUser = init.collection('User').doc(userModel.uid);
+
   deleteDislike(userModel.uid);
   deleteLike(userModel.uid);
 
-  final batchSympathy = instance.batch();
-  instance
-      .collection('User')
-      .doc(userModel.uid)
-      .collection('sympathy')
-      .get()
-      .then((querySnapshot) async {
+  final batchSympathy = init.batch();
+  instanceUser.collection('sympathy').get().then((querySnapshot) async {
     for (var document in querySnapshot.docs) {
       await deleteSympathyPartner(document['uid'], userModel.uid);
       batchSympathy.delete(document.reference);
@@ -534,25 +487,19 @@ Future deleteAccountData(UserModel userModel) async {
     return await batchSympathy.commit();
   });
 
-  await instance
-      .collection('User')
-      .doc(userModel.uid)
-      .collection('messages')
-      .get()
-      .then((value) async {
+  await instanceUser.collection('messages').get().then((value) async {
     for (var document in value.docs) {
       await deleteChatFirebase(document.id, userModel.uid, '');
     }
   });
 
-  instance.collection("User").doc(userModel.uid).delete();
+  instanceUser.delete();
 }
 
 Future deleteMessageFirebase(String myId, String friendId, String idDoc,
     bool isLastMessage, AsyncSnapshot snapshotMy, int index) async {
-  final init = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>().collection('User');
   init
-      .collection('User')
       .doc(myId)
       .collection('messages')
       .doc(friendId)
@@ -561,7 +508,6 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
       .delete();
 
   init
-      .collection('User')
       .doc(friendId)
       .collection('messages')
       .doc(myId)
@@ -571,7 +517,6 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
 
   if (isLastMessage) {
     init
-        .collection('User')
         .doc(myId)
         .collection('messages')
         .doc(friendId)
@@ -581,12 +526,7 @@ Future deleteMessageFirebase(String myId, String friendId, String idDoc,
       'last_date_open_chat': DateTime.now(),
     });
 
-    init
-        .collection('User')
-        .doc(friendId)
-        .collection('messages')
-        .doc(myId)
-        .update({
+    await init.doc(friendId).collection('messages').doc(myId).update({
       "last_msg": snapshotMy.data.docs[index]['message'],
       'date': snapshotMy.data.docs[index]['date'],
       'last_date_open_chat': DateTime.now(),
@@ -598,27 +538,18 @@ Future<bool> putLike(
     UserModel userModelCurrent, UserModel userModel, bool isLikeOnTap) async {
   bool isLike = false;
   QuerySnapshot<Map<String, dynamic>> query;
-  final init = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(userModel.uid)
+      .collection('likes');
   try {
-    query = await init
-        .collection('User')
-        .doc(userModel.uid)
-        .collection('likes')
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await init
-        .collection('User')
-        .doc(userModel.uid)
-        .collection('likes')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   if (query.size == 0 && query.docs.isEmpty) {
-    query = await init
-        .collection('User')
-        .doc(userModel.uid)
-        .collection('likes')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   for (var result in query.docs) {
@@ -628,15 +559,12 @@ Future<bool> putLike(
   if (isLikeOnTap) {
     if (!isLike) {
       init
-          .collection("User")
-          .doc(userModel.uid)
-          .collection('likes')
           .doc(userModelCurrent.uid)
           .set({});
 
       if (userModelCurrent.uid != userModel.uid &&
           userModel.notification &&
-          userModel.token != '') {
+          userModel.token.isNotEmpty) {
         sendFcmMessage(
             'Lancelot',
             '${userModelCurrent.name}: нравится вашь профиль',
@@ -645,9 +573,6 @@ Future<bool> putLike(
       }
     } else {
       init
-          .collection("User")
-          .doc(userModel.uid)
-          .collection('likes')
           .doc(userModelCurrent.uid)
           .delete();
     }
@@ -659,21 +584,15 @@ Future<bool> putLike(
 Future<Map> readInterestsFirebase() async {
   Map mapInterests = {};
   QuerySnapshot<Map<String, dynamic>> query;
-  final init = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>().collection('ImageInterests');
   try {
-    query = await init
-        .collection('ImageInterests')
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await init
-        .collection('ImageInterests')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   if (query.size == 0) {
-    query = await init
-        .collection('ImageInterests')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   for (var document in query.docs) {
@@ -687,21 +606,17 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
   Map<String, dynamic> data = {};
   UserModel userModelCurrent = UserModel.fromDocument(data);
   final uid = GetIt.I<FirebaseAuth>().currentUser?.uid;
-  final init = GetIt.I<FirebaseFirestore>();
+  final init = GetIt.I<FirebaseFirestore>().collection('User');
 
   try {
     if (uid != null) {
       DocumentSnapshot<Map<String, dynamic>> queryUser;
       try {
-        queryUser = await init
-            .collection('User')
-            .doc(uid)
-            .get(const GetOptions(source: Source.cache));
+        queryUser =
+            await init.doc(uid).get(const GetOptions(source: Source.cache));
       } on FirebaseException {
-        queryUser = await init
-            .collection('User')
-            .doc(uid)
-            .get(const GetOptions(source: Source.server));
+        queryUser =
+            await init.doc(uid).get(const GetOptions(source: Source.server));
       }
 
       final dataCash = queryUser.data() as Map<String, dynamic>;
@@ -710,13 +625,11 @@ Future<UserModel> readFirebaseIsAccountFull(BuildContext context) async {
         if (dataCash['imageBackground'] == null ||
             dataCash['listInterests'] == null) {
           queryUser = await init
-              .collection('User')
               .doc(uid)
               .get(const GetOptions(source: Source.server));
         }
       } on FirebaseException {
         queryUser = await init
-            .collection('User')
             .doc(uid)
             .get(const GetOptions(source: Source.server));
       }
@@ -781,24 +694,16 @@ Future createLastCloseChat(String uid, String friendId, data) async {
 Future<List<String>> readFirebaseImageProfile() async {
   DocumentSnapshot<Map<String, dynamic>> query;
   List<String> listImages = [];
-  final init = GetIt.I<FirebaseFirestore>();
+  final init =
+      GetIt.I<FirebaseFirestore>().collection('ImageProfile').doc('Image');
   try {
-    query = await init
-        .collection('ImageProfile')
-        .doc('Image')
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await init
-        .collection('ImageProfile')
-        .doc('Image')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   if (query.data()!.isEmpty) {
-    query = await init
-        .collection('ImageProfile')
-        .doc('Image')
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   listImages.addAll(List<String>.from(query['listProfileImage']));
@@ -864,10 +769,9 @@ sendMessage(
     final String messageText = controllerMessage.text.trim(), idDocMessage;
     controllerMessage.clear();
     final dateCurrent = DateTime.now();
-    final init = GetIt.I<FirebaseFirestore>();
+    final init = GetIt.I<FirebaseFirestore>().collection('User');
 
     final docMessage = init
-        .collection('User')
         .doc(currentUser.uid)
         .collection('messages')
         .doc(friendId)
@@ -885,7 +789,6 @@ sendMessage(
     }));
 
     final docUserCurrent = init
-        .collection('User')
         .doc(currentUser.uid)
         .collection('messages')
         .doc(friendId);
@@ -906,7 +809,6 @@ sendMessage(
     }
 
     await init
-        .collection('User')
         .doc(friendId)
         .collection('messages')
         .doc(currentUser.uid)
@@ -921,7 +823,6 @@ sendMessage(
     });
 
     final docUser = init
-        .collection('User')
         .doc(friendId)
         .collection('messages')
         .doc(currentUser.uid);
@@ -976,31 +877,28 @@ Future<List<InterestsModel>> sortingList(UserModel userModelPartner) async {
 Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFriendFirebase(
     String uid, String friend, int limit) async {
   QuerySnapshot<Map<String, dynamic>> query;
+  final init = GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(uid)
+      .collection('sympathy')
+      .where('uid', isEqualTo: friend);
+
   try {
-    query = await GetIt.I<FirebaseFirestore>()
-        .collection('User')
-        .doc(uid)
-        .collection('sympathy')
-        .where('uid', isEqualTo: friend)
-        .get(const GetOptions(source: Source.cache));
+    query = await init.get(const GetOptions(source: Source.cache));
   } on FirebaseException {
-    query = await GetIt.I<FirebaseFirestore>()
-        .collection('User')
-        .doc(uid)
-        .collection('sympathy')
-        .where('uid', isEqualTo: friend)
-        .get(const GetOptions(source: Source.server));
+    query = await init.get(const GetOptions(source: Source.server));
   }
 
   return query;
 }
 
 Future<QuerySnapshot<Map<String, dynamic>>> readSympathyFirebase(
-        int limit, String uid) async =>
-    await GetIt.I<FirebaseFirestore>()
-        .collection('User')
-        .doc(uid)
-        .collection('sympathy')
-        .orderBy("time", descending: true)
-        .limit(limit)
-        .get();
+    int limit, String uid) async {
+  return await GetIt.I<FirebaseFirestore>()
+      .collection('User')
+      .doc(uid)
+      .collection('sympathy')
+      .orderBy("time", descending: true)
+      .limit(limit)
+      .get();
+}

@@ -30,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final scrollController = ScrollController();
   int limit = 7;
   bool isLoadingUser = false;
-
+  final init = GetIt.I<FirebaseFirestore>().collection('User');
   late final AnimationController animationController;
 
   _ChatScreenState(this.userModelCurrent);
@@ -81,8 +81,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 icon: Icons.message,
               ),
               StreamBuilder(
-                stream: GetIt.I<FirebaseFirestore>()
-                    .collection('User')
+                stream: init
                     .doc(widget.userModelCurrent.uid)
                     .collection('messages')
                     .limit(limit)
@@ -123,10 +122,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                           return SizedBox(
                                             child: FutureBuilder(
                                               future:
-                                                  GetIt.I<FirebaseFirestore>()
-                                                      .collection('User')
-                                                      .doc(userModelCurrent.uid)
-                                                      .collection('messages')
+                                              init
+                                                  .doc(userModelCurrent.uid)
+                                                  .collection('messages')
                                                       .doc(friendId)
                                                       .get(),
                                               builder: (context,

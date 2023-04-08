@@ -120,24 +120,24 @@ class buttonAuthAnimation extends StatelessWidget {
             ? [
                 const BoxShadow(
                     spreadRadius: 1.5,
-                    blurRadius: 4,
+                    blurRadius: 5,
                     offset: Offset(-3, 0),
                     color: Colors.blueAccent),
                 const BoxShadow(
                     spreadRadius: 1,
-                    blurRadius: 7,
+                    blurRadius: 8,
                     offset: Offset(3, 0),
                     color: Colors.purpleAccent),
               ]
             : [
                 const BoxShadow(
                     spreadRadius: 1.5,
-                    blurRadius: 4,
+                    blurRadius: 6,
                     offset: Offset(-3, 0),
                     color: Colors.white12),
                 const BoxShadow(
                     spreadRadius: 1,
-                    blurRadius: 7,
+                    blurRadius: 8,
                     offset: Offset(3, 0),
                     color: Colors.white12),
               ],
@@ -196,24 +196,24 @@ buttonUniversalNoState({
             ? [
                 const BoxShadow(
                     spreadRadius: 1.5,
-                    blurRadius: 4,
+                    blurRadius: 5,
                     offset: Offset(-3, 0),
                     color: Colors.blueAccent),
                 const BoxShadow(
                     spreadRadius: 1,
-                    blurRadius: 7,
+                    blurRadius: 8,
                     offset: Offset(3, 0),
                     color: Colors.purpleAccent),
               ]
             : [
                 const BoxShadow(
                     spreadRadius: 1.5,
-                    blurRadius: 4,
+                    blurRadius: 5,
                     offset: Offset(-3, 0),
                     color: Colors.white12),
                 const BoxShadow(
                     spreadRadius: 1,
-                    blurRadius: 7,
+                    blurRadius: 8,
                     offset: Offset(3, 0),
                     color: Colors.white12),
               ],
@@ -285,7 +285,7 @@ class customIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ZoomTapAnimation(
-      end: 0.94,
+      end: 0.95,
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.all(padding),
@@ -315,6 +315,8 @@ class buttonProfileUser extends StatefulWidget {
 
 class _buttonProfileUserState extends State<buttonProfileUser> {
   final UserModel userModelFriend, userModelCurrent;
+
+  final init = GetIt.I<FirebaseFirestore>().collection('User');
 
   _buttonProfileUserState(this.userModelCurrent, this.userModelFriend);
 
@@ -427,16 +429,14 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
     }
 
     return FutureBuilder(
-      future: GetIt.I<FirebaseFirestore>()
-          .collection('User')
+      future: init
           .doc(userModelCurrent.uid)
           .collection('sympathy')
           .where('uid', isEqualTo: userModelFriend.uid)
           .get(),
       builder: (context, snapshotMy) {
         return FutureBuilder(
-          future: GetIt.I<FirebaseFirestore>()
-              .collection('User')
+          future: init
               .doc(userModelFriend.uid)
               .collection('sympathy')
               .where('uid', isEqualTo: userModelCurrent.uid)
@@ -444,7 +444,7 @@ class _buttonProfileUserState extends State<buttonProfileUser> {
           builder: (context, snapshot) {
             if (snapshotMy.hasData && snapshot.hasData) {
               bool isMutuallyFriend = false, isMutuallyMy = false;
-              getFuture(70).then((i) {
+              getFuture(50).then((i) {
                 isMutuallyFriend = false;
                 isMutuallyMy = false;
               });

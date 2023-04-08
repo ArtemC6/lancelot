@@ -121,7 +121,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .update(json)
           .then((value) {
         if (modelUser.imageBackground.isNotEmpty) {
-          Map<String, dynamic> dataCash = {};
           Navigator.pushReplacement(
             context,
             FadeRouteAnimation(

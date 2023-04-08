@@ -7,6 +7,8 @@ const color_blue_90 = Color(0xff192028);
 const color_black_88 = Color(0xff212428);
 const color_red = Color(0xFFFC0465);
 
+const Map<String, dynamic> dataCash = {};
+
 class FadeRouteAnimation extends PageRouteBuilder {
   final Widget page;
 

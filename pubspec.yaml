@@ -48,7 +48,7 @@ dependencies:
   shimmer_animation: any
   get: any
   get_it: any
-  rive: any
+  rive:
 
 
 dev_dependencies:
