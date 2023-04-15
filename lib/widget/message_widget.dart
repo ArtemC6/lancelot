@@ -244,7 +244,7 @@ class _MessageTextFieldState extends State<MessageTextField> {
       if (_controllerMessage.text.isNotEmpty) {
         if (!isWrite) return;
         startTimer();
-        putUserWrites(currentUser.uid, friendId).then((i) => isWrite = false);
+        putUserWrites(currentUser.uid, friendId).then((_) => isWrite = false);
       }
     });
     super.initState();

@@ -281,7 +281,7 @@ class cardPartner extends StatelessWidget {
             Colors.white70,
           ],
           size: Size(height, height),
-          boardRadius: 22,
+          boardRadius: 24,
           borderWidth: 1,
           child: Stack(
             fit: StackFit.expand,
@@ -337,10 +337,6 @@ class cardPartner extends StatelessWidget {
                             sigmaY: 12,
                           ),
                           child: AnimateGradient(
-                            primaryBegin: Alignment.topLeft,
-                            primaryEnd: Alignment.bottomLeft,
-                            secondaryBegin: Alignment.bottomLeft,
-                            secondaryEnd: Alignment.topRight,
                             primaryColors: [
                               Colors.white.withOpacity(0.01),
                               Colors.black12

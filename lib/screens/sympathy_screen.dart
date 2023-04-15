@@ -51,7 +51,8 @@ class _SympathyScreenState extends State<SympathyScreen>
           scrollController.offset) {
         setState(() => limit += 3);
 
-        getFuture(600).then((i) => scrollController.animateTo(
+        getFuture(600).then(
+          (_) => scrollController.animateTo(
             scrollController.position.maxScrollExtent -
                 MediaQuery.of(context).size.height / 7,
             duration: const Duration(milliseconds: 1500),
@@ -118,7 +119,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                 delay: const Duration(milliseconds: 400),
                                 child: SlideAnimation(
                                   duration: const Duration(milliseconds: 1500),
-                                  verticalOffset: 220,
+                                  verticalOffset: 200,
                                   child: FadeInAnimation(
                                     curve: Curves.easeOut,
                                     duration:
@@ -136,7 +137,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                                             builder: (context, snap) {
                                               if (snap.hasData) {
                                                 getFuture(70).then(
-                                                    (i) => isMySym = false);
+                                                    (_) => isMySym = false);
 
                                                 for (var i in snap.data!.docs) {
                                                   isMySym = i['uid'] ==
@@ -332,7 +333,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                               sizeText: width / 35,
                               time: timeAnim,
                               onTap: () {
-                                createSympathy(uid, userModelCurrent).then((i) {
+                                createSympathy(uid, userModelCurrent).then((_) {
                                   setState(() {});
                                   if (friend.token.isNotEmpty &&
                                       friend.notification) {
@@ -358,7 +359,7 @@ class _SympathyScreenState extends State<SympathyScreen>
                               time: timeAnim,
                               onTap: () => deleteSympathyPartner(
                                       uid, userModelCurrent.uid)
-                                  .then((i) => setState(() {})),
+                                  .then((_) => setState(() {})),
                             ),
                           DropShadow(
                             blurRadius: 2.5,

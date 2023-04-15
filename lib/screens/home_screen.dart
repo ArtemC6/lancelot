@@ -32,26 +32,26 @@ class _HomeScreen extends State<HomeScreen>
   late CardController controllerCard;
   int limit = 0, count = 0;
   bool isLoading = false, isWrite = false, isEmptyUser = false;
-  List<UserModel> userModelPartner = [];
+  List<UserModel> listPartnerSorted = [];
   List<String> listDisLike = [];
   final UserModel userModelCurrent;
-  final scrollController = ScrollController();
   late final AnimationController animationController;
+  final init = GetIt.I<FirebaseFirestore>().collection('User');
+  final sympathyCar = Get.put(GetSympathyCartController());
 
   _HomeScreen(this.userModelCurrent);
 
-  Future readFirebase(int setLimit, bool isReadDislike) async {
+  Future readFirebase(int setLimit, isReadDislike) async {
     limit += setLimit;
 
-    if (userModelPartner.length > 2) userModelPartner.clear();
+    if (listPartnerSorted.length > 2) listPartnerSorted.clear();
 
     if (isReadDislike) {
       await readDislikeFirebase(userModelCurrent.uid)
           .then((list) => listDisLike.addAll(list));
     }
 
-    await GetIt.I<FirebaseFirestore>()
-        .collection('User')
+    await init
         .where('myPol', isEqualTo: userModelCurrent.searchPol)
         .limit(limit)
         .get()
@@ -64,14 +64,14 @@ class _HomeScreen extends State<HomeScreen>
           bool isDislike = true;
           await Future.forEach(listDisLike, (idUser) {
             if (idUser == data['uid']) isDislike = false;
-          }).then((i) async {
+          }).then((_) async {
             if (!isDislike) return;
-            userModelPartner.add(UserModel.fromDocument(data));
+            listPartnerSorted.add(UserModel.fromDocument(data));
           });
         }
       }
-    }).then((i) {
-      if (userModelPartner.isEmpty) {
+    }).then((_) {
+      if (listPartnerSorted.isEmpty) {
         count++;
         if (count >= 8) {
           listDisLike.clear();
@@ -83,7 +83,7 @@ class _HomeScreen extends State<HomeScreen>
         isEmptyUser = false;
       }
 
-      if (userModelPartner.length < 3) {
+      if (listPartnerSorted.length < 3) {
         count++;
         if (count >= 10) {
           listDisLike.clear();
@@ -93,8 +93,9 @@ class _HomeScreen extends State<HomeScreen>
       }
 
       isWrite = true;
-      setState(() => isLoading = true);
     });
+
+    setState(() => isLoading = true);
   }
 
   @override
@@ -117,7 +118,6 @@ class _HomeScreen extends State<HomeScreen>
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final sympathyCar = Get.put(GetSympathyCartController());
 
     if (isLoading) {
       return Scaffold(
@@ -139,24 +139,25 @@ class _HomeScreen extends State<HomeScreen>
                           alignment: Alignment.center,
                           children: [
                             SizedBox(
-                              height: height * 0.65,
+                              height: height * 0.66,
                               child: TinderSwapCard(
                                 animDuration: 900,
-                                totalNum: userModelPartner.length + 1,
+                                totalNum: listPartnerSorted.length + 1,
                                 maxWidth: width * 0.98,
                                 maxHeight: height * 0.49,
                                 minWidth: width * 0.96,
                                 minHeight: height * 0.48,
                                 cardBuilder: (context, index) {
-                                  if (index < userModelPartner.length) {
+                                  if (index < listPartnerSorted.length) {
                                     return cardPartner(
-                                      userModelPartner: userModelPartner[index],
+                                      userModelPartner:
+                                          listPartnerSorted[index],
                                       onTap: () => Navigator.push(
                                         context,
                                         FadeRouteAnimation(
                                           ProfileScreen(
                                             userModelPartner:
-                                                userModelPartner[index],
+                                                listPartnerSorted[index],
                                             isBack: true,
                                             idUser: '',
                                             userModelCurrent: userModelCurrent,
@@ -167,7 +168,7 @@ class _HomeScreen extends State<HomeScreen>
                                   } else {
                                     if (isWrite) {
                                       isWrite = false;
-                                      readFirebase(8, false);
+                                      readFirebase(12, false);
                                     }
 
                                     return const cardLoadingHome(
@@ -177,50 +178,49 @@ class _HomeScreen extends State<HomeScreen>
                                 },
                                 cardController: controllerCard =
                                     CardController(),
-                                swipeUpdateCallback: (DragUpdateDetails details,
-                                    Alignment align) {
+                                swipeUpdateCallback: (details, align) {
                                   setColorCard(align, sympathyCar);
                                 },
                                 swipeCompleteCallback:
-                                    (CardSwipeOrientation orientation,
-                                    int index) async {
+                                    (orientation, int index) async {
                                   if (orientation.toString() ==
                                       'CardSwipeOrientation.LEFT') {
                                     listDisLike
-                                        .add(userModelPartner[index].uid);
+                                        .add(listPartnerSorted[index].uid);
 
-                                    createDisLike(userModelCurrent,
-                                        userModelPartner[index]);
-                                    CachedNetworkImage.evictFromCache(
-                                        userModelPartner[index]
+                                    await createDisLike(userModelCurrent,
+                                        listPartnerSorted[index]);
+                                    await CachedNetworkImage.evictFromCache(
+                                        listPartnerSorted[index]
                                             .listImageUri[0]);
                                   }
 
                                   if (orientation.toString() ==
                                       'CardSwipeOrientation.RIGHT') {
                                     listDisLike
-                                        .add(userModelPartner[index].uid);
+                                        .add(listPartnerSorted[index].uid);
 
-                                    createDisLike(userModelCurrent,
-                                        userModelPartner[index]);
+                                    await createDisLike(userModelCurrent,
+                                        listPartnerSorted[index]);
 
                                     await createSympathy(
-                                        userModelPartner[index].uid,
+                                        listPartnerSorted[index].uid,
                                         userModelCurrent);
-                                    if (userModelPartner[index].token != '' &&
-                                        userModelPartner[index].notification) {
-                                      sendFcmMessage(
+                                    if (listPartnerSorted[index].token != '' &&
+                                        listPartnerSorted[index].notification) {
+                                      await sendFcmMessage(
                                           'Lancelot',
                                           'У вас симпатия',
-                                          userModelPartner[index].token,
+                                          listPartnerSorted[index].token,
                                           'sympathy',
                                           userModelCurrent.uid,
                                           userModelCurrent.listImageUri[0]);
                                     }
-                                    CachedNetworkImage.evictFromCache(
-                                        userModelPartner[index]
+                                    await CachedNetworkImage.evictFromCache(
+                                        listPartnerSorted[index]
                                             .listImageUri[0]);
                                   }
+
                                   sympathyCar.setIndex(0);
                                 },
                               ),
@@ -296,13 +296,13 @@ class _HomeScreen extends State<HomeScreen>
                             homeAnimationButton(
                               icon: Icons.close,
                               colors: Colors.white,
-                              time: 2000,
+                              time: 2400,
                               onTap: () => controllerCard.triggerLeft(),
                             ),
                             homeAnimationButton(
                               icon: Icons.favorite,
                               colors: color_red,
-                              time: 2700,
+                              time: 3000,
                               onTap: () => controllerCard.triggerRight(),
                             ),
                           ],

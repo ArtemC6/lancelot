@@ -191,10 +191,10 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
             bottomNav.length,
             (index) => GestureDetector(
               onTap: () {
-                getFuture(10).then((i) {
+                getFuture(10).then((_) {
                   bottomNav[index].input!.change(true);
                   getFuture(1200)
-                      .then((i) => bottomNav[index].input!.change(false));
+                      .then((_) => bottomNav[index].input!.change(false));
                   setState(() => currentIndex = index);
                 });
               },

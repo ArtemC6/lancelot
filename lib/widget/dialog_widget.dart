@@ -246,7 +246,7 @@ showAlertDialogDeleteAccount(
       }
       Navigator.pop(context);
       showAlertDialogSuccess(context);
-      getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+      getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const Manager())));
     },
   );

@@ -34,7 +34,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
     animationController = AnimationController(vsync: this);
     auth.currentUser
         ?.reload()
-        .then((i) => auth.currentUser!.sendEmailVerification());
+        .then((_) => auth.currentUser!.sendEmailVerification());
     timer =
         Timer.periodic(const Duration(seconds: 5), (i) => checkEmailVerify());
   }

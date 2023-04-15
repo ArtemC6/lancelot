@@ -47,7 +47,7 @@ class FirebaseAuthMethods {
           'listImageUri': [],
           'notification': true,
         });
-        getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+        getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) async {
         await auth
@@ -78,7 +78,7 @@ class FirebaseAuthMethods {
             'notification': true,
           });
 
-          getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+          getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
@@ -104,7 +104,7 @@ class FirebaseAuthMethods {
         setStateFirebase('online');
         setTokenUserFirebase();
 
-        getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+        getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const Manager())));
       }).onError((error, stackTrace) {
         auth
@@ -115,7 +115,7 @@ class FirebaseAuthMethods {
           showAlertDialogSuccess(context);
           setStateFirebase('online');
           setTokenUserFirebase();
-          getFuture(1720).then((i) => Navigator.of(context).pushReplacement(
+          getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {
           Navigator.pop(context);
@@ -126,7 +126,7 @@ class FirebaseAuthMethods {
 
   static Future<void> signOut(BuildContext context, String uid) async {
     try {
-      auth.signOut().then((i) {
+      auth.signOut().then((_) {
         Navigator.pushReplacement(
             context, FadeRouteAnimation(const SignInScreen()));
         setStateFirebase('offline', uid);

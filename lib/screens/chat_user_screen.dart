@@ -77,7 +77,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
           scrollController.offset) {
         setState(() => limit += 10);
 
-        getFuture(600).then((i) => scrollController.animateTo(
+        getFuture(600).then((_) => scrollController.animateTo(
               scrollController.position.maxScrollExtent -
                   MediaQuery.of(context).size.height / 6,
               duration: const Duration(milliseconds: 1500),
@@ -156,7 +156,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
       });
     }
 
-    await getDataChat().then((i) => setState(() => isLoading = true));
+    await getDataChat().then((_) => setState(() => isLoading = true));
   }
 
   Future getDataChat() async {
