@@ -12,7 +12,7 @@ import 'firebase/firestore_operations.dart';
 
 class FirebaseAuthMethods {
   static final auth = GetIt.I<FirebaseAuth>();
-  static final init = GetIt.I<FirebaseFirestore>();
+  static final init = GetIt.I<FirebaseFirestore>().collection('User');
 
   static Future<void> signUpWithEmail({
     required String email,
@@ -28,7 +28,7 @@ class FirebaseAuthMethods {
           .then((value) async {
         Navigator.pop(context);
         showAlertDialogSuccess(context);
-        init.collection('User').doc(auth.currentUser?.uid).set({
+        init.doc(auth.currentUser?.uid).set({
           'uid': auth.currentUser?.uid,
           'name': name.trim(),
           'password': password.trim(),
@@ -56,8 +56,7 @@ class FirebaseAuthMethods {
             .then((value) async {
           Navigator.pop(context);
           showAlertDialogSuccess(context);
-
-          init.collection('User').doc(auth.currentUser?.uid).set({
+          init.doc(auth.currentUser?.uid).set({
             'uid': auth.currentUser?.uid,
             'name': name.trim(),
             'email': email.trim(),
@@ -77,7 +76,6 @@ class FirebaseAuthMethods {
             'listImageUri': [],
             'notification': true,
           });
-
           getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const Manager())));
         }).onError((error, stackTrace) {

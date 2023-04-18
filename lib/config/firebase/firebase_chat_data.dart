@@ -53,9 +53,5 @@ class ChatDataFirebase {
     });
   }
 
-  closeChatDataFirebase() {
-    try {
-      listenerChatData.cancel();
-    } catch (e) {}
-  }
+  closeChatDataFirebase() => listenerChatData.cancel();
 }

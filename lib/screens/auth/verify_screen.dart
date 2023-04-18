@@ -47,7 +47,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
   }
 
   sendEmail() {
-    auth.currentUser?.reload().then((value) {
+    auth.currentUser?.reload().then((_) {
       setState(() => isEmail = false);
       auth.currentUser!.sendEmailVerification();
       Future.delayed(const Duration(milliseconds: 8000), () {
@@ -59,7 +59,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
   }
 
   checkEmailVerify() {
-    auth.currentUser?.reload().then((value) {
+    auth.currentUser?.reload().then((_) {
       if (auth.currentUser!.emailVerified) {
         animationController.dispose();
         timer.cancel();
@@ -171,6 +171,7 @@ class _VerifyScreen extends State<VerifyScreen> with TickerProviderStateMixin {
                   } catch (e) {
                     await auth.signOut();
                   }
+                  auth.signOut();
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const Manager()));
                 },

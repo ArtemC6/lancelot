@@ -159,8 +159,8 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                           uri: userModel.listImageUri[0]),
                                       customIconButton(
                                         path: 'images/ic_edit.png',
-                                        width: height / 30,
-                                        height: height / 30,
+                                        width: height / 33,
+                                        height: height / 33,
                                         onTap: () => updateFirstImage(
                                             context, userModel, false),
                                         padding: 0,
@@ -198,23 +198,27 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                     ],
                                   ),
                                 ),
-                                buttonUniversal(
-                                    height: height / 20,
-                                    width: height / 5.5,
-                                    sizeText: height / 66,
-                                    time: 400,
-                                    text: 'Редактировать',
-                                    darkColors: false,
-                                    colorButton: const [
-                                      Colors.blueAccent,
-                                      Colors.purpleAccent
-                                    ],
-                                    onTap: () => Navigator.push(
-                                        context,
-                                        FadeRouteAnimation(EditProfileScreen(
-                                          isFirst: false,
-                                          userModel: userModel,
-                                        )))),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: height / 46, left: height / 42),
+                                  child: buttonUniversal(
+                                      height: height / 20,
+                                      width: height / 5.5,
+                                      sizeText: height / 66,
+                                      time: 400,
+                                      text: 'Редактировать',
+                                      darkColors: false,
+                                      colorButton: const [
+                                        Colors.blueAccent,
+                                        Colors.purpleAccent
+                                      ],
+                                      onTap: () => Navigator.push(
+                                          context,
+                                          FadeRouteAnimation(EditProfileScreen(
+                                            isFirst: false,
+                                            userModel: userModel,
+                                          )))),
+                                ),
                                 const SizedBox()
                               ],
                             ),
@@ -223,7 +227,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(
                                     left: 14,
-                                    top: height / 48,
+                                    top: height / 46,
                                     right: width / 24),
                                 child: DelayedDisplay(
                                   fadeIn: true,
@@ -242,7 +246,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                 ),
                               ),
                             Container(
-                              margin: const EdgeInsets.only(top: 20),
+                              margin: EdgeInsets.only(top: height / 34),
                               alignment: Alignment.topLeft,
                               decoration: const BoxDecoration(
                                 color: color_black_88,
@@ -253,7 +257,7 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
+                                children: [
                                   Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: height / 40),
@@ -404,8 +408,11 @@ class _ProfileSettingScreen extends State<ProfileSettingScreen> {
                                       ],
                                     ),
                                   ),
-                                  slideInterestsSettings(
-                                      listInterests, userModel),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: height / 58),
+                                    child: slideInterestsSettings(
+                                        listInterests, userModel),
+                                  ),
                                   photoProfileSettingsGallery(userModel),
                                 ],
                               ),

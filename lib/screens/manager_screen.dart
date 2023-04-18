@@ -79,17 +79,17 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     setState(() {});
   }
 
-  Future<void> getNotificationFcm() async {
+  Future getNotificationFcm() async {
     clearAllNotification();
+    await FirebaseMessaging.instance.requestPermission();
+
     await FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message == null) return;
       setIndexPage(message.data['type'], message.data['uid']);
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      final notification = message.notification,
-          android = message.notification?.android;
-      if (notification != null && android != null) {
+      if (message.notification != null) {
         if (message.data['type'] == 'sympathy') indexSympathy++;
         if (message.data['type'] == 'chat') indexChat++;
         if (message.data['type'] == 'like') indexProfile++;
@@ -102,9 +102,7 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final notification = message.notification,
-          android = message.notification?.android;
-      if (notification != null && android != null) {
+      if (message.notification != null) {
         setIndexPage(message.data['type'], message.data['uid']);
       }
     });
@@ -183,7 +181,7 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
         padding: EdgeInsets.only(
             left: width / 34,
             right: width / 34,
-            bottom: height / 64,
+            bottom: height / 56,
             top: width / 60),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -292,5 +290,4 @@ class _ManagerScreen extends State<ManagerScreen> with WidgetsBindingObserver {
 
     return const loadingCustom();
   }
-
 }

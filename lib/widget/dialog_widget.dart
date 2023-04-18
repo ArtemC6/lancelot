@@ -148,7 +148,7 @@ showAlertDialogDeleteChat(
   final continueButton = TextButton(
     child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () {
-      deleteChatFirebase(friendId, uidUser, friendUri);
+      deleteChatFirebase(uidUser, friendId, friendUri);
       Navigator.pop(context);
       Map<String, dynamic> data = {};
       Navigator.push(
@@ -234,20 +234,19 @@ showAlertDialogDeleteAccount(
   final continueButton = TextButton(
     child: animatedText(height / 62, 'Удалить', Colors.blueAccent, 400, 1),
     onPressed: () async {
+      showAlertDialogSuccess(context);
+      getFuture(1730).then((_) => Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Manager())));
       try {
         if (auth.currentUser?.uid == null) return;
-        showAlertDialogLoading(context);
-        await deleteAccountData(userModel);
+        deleteAccountData(userModel);
         await auth.currentUser?.delete();
         await auth.signOut();
       } catch (e) {
-        await auth.currentUser?.delete();
         await auth.signOut();
+        await auth.currentUser?.delete();
       }
-      Navigator.pop(context);
-      showAlertDialogSuccess(context);
-      getFuture(1720).then((_) => Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Manager())));
+      auth.signOut();
     },
   );
 
@@ -322,7 +321,7 @@ showAlertDialogLoading(BuildContext context) {
     ),
     dismissable: false,
     context,
-    future: Future.delayed(const Duration(seconds: 16)),
+    future: Future.delayed(const Duration(seconds: 12)),
   );
 }
 

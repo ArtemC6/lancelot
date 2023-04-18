@@ -42,6 +42,7 @@ class _HomeScreen extends State<HomeScreen>
   _HomeScreen(this.userModelCurrent);
 
   Future readFirebase(int setLimit, isReadDislike) async {
+    sympathyCar.setIndex(0.0);
     limit += setLimit;
 
     if (listPartnerSorted.length > 2) listPartnerSorted.clear();

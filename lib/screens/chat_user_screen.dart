@@ -51,7 +51,7 @@ class _ChatUserScreenState extends State<ChatUserScreen>
       friendName,
       friendImage,
       token,
-      chatBackground = 'images/animation_chat_bac_2.json';
+      chatBackground = 'images/animation_chat_bac_1.json';
 
   final UserModel userModelCurrent;
   final scrollController = ScrollController();
@@ -163,9 +163,9 @@ class _ChatUserScreenState extends State<ChatUserScreen>
     final prefs = await SharedPreferences.getInstance();
 
     chatBackground =
-        prefs.getString('chatBackground') ?? 'images/animation_chat_bac_2.json';
+        prefs.getString('chatBackground') ?? 'images/animation_chat_bac_1.json';
     chatBlur = prefs.getDouble('chatBlur') ?? 0;
-    chatBlackoutFinal = prefs.getDouble('chatBlackout') ?? 0.2;
+    chatBlackoutFinal = prefs.getDouble('chatBlackout') ?? 0.0;
 
     if (chatBlackoutFinal < 1.0) {
       chatBlackout = double.parse(chatBlackoutFinal.toString().substring(2, 3));

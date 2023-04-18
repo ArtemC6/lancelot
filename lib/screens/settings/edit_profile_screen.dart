@@ -217,13 +217,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     imageProfileSettings(double height, context) {
       return GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (modelUser.listImageUri.isEmpty) {
-            uploadFirstImage(context, modelUser)
+            await uploadFirstImage(context, modelUser)
                 .then((uri) => setState(() => isPhoto = true));
           } else {
-            updateFirstImage(context, modelUser, true);
+            await updateFirstImage(context, modelUser, true);
           }
+          setState(() => isError = false);
         },
         child: SizedBox(
           height: width / 2.8,

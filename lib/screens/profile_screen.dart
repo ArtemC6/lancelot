@@ -50,7 +50,7 @@ class _ProfileScreen extends State<ProfileScreen> {
       this.userModelPartner, this.isBack, this.idUser, this.userModelCurrent);
 
   Future readFirebase() async {
-    if (userModelPartner.uid == '' && idUser != '') {
+    if (userModelPartner.uid.isEmpty && idUser.isNotEmpty) {
       await readUserFirebase(idUser).then((user) => userModelPartner = user);
     }
 
@@ -306,7 +306,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                                     ),
                                   ),
                                   if (isProprietor)
-                                    buttonUniversal(
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: height / 46, left: height / 52),
+                                      child: buttonUniversal(
                                         height: height / 20,
                                         width: height / 5.5,
                                         sizeText: height / 66,
@@ -318,18 +321,24 @@ class _ProfileScreen extends State<ProfileScreen> {
                                           Colors.purpleAccent
                                         ],
                                         onTap: () => Navigator.push(
-                                              context,
-                                              FadeRouteAnimation(
-                                                EditProfileScreen(
-                                                  isFirst: false,
-                                                  userModel: userModelCurrent,
-                                                ),
-                                              ),
-                                            )),
+                                          context,
+                                          FadeRouteAnimation(
+                                            EditProfileScreen(
+                                              isFirst: false,
+                                              userModel: userModelCurrent,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   if (!isProprietor)
-                                    buttonProfileUser(
-                                      userModelCurrent,
-                                      userModelPartner,
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: height / 46, left: height / 52),
+                                      child: buttonProfileUser(
+                                        userModelCurrent,
+                                        userModelPartner,
+                                      ),
                                     ),
                                   const SizedBox()
                                 ],
@@ -357,7 +366,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                                   ),
                                 ),
                               Container(
-                                margin: EdgeInsets.only(top: height / 32),
+                                margin: EdgeInsets.only(top: height / 30),
                                 alignment: Alignment.topLeft,
                                 decoration: const BoxDecoration(
                                     color: color_black_88,
@@ -524,7 +533,11 @@ class _ProfileScreen extends State<ProfileScreen> {
                                         ],
                                       ),
                                     ),
-                                    slideInterests(listStory),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(top: height / 48),
+                                      child: slideInterests(listStory),
+                                    ),
                                     photoProfileGallery(
                                         userModelPartner.listImageUri),
                                   ],

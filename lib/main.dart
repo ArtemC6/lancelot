@@ -23,10 +23,6 @@ Future main() async {
   final getIt = GetIt.I;
   CachedNetworkImage.logLevel = CacheManagerLogLevel.debug;
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  getIt.registerSingleton(FirebaseFirestore.instance);
-  getIt.registerSingleton(FirebaseAuth.instance);
-  getIt.registerSingleton(FirebaseStorage.instance);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -38,6 +34,11 @@ Future main() async {
     statusBarBrightness: Brightness.dark,
     statusBarIconBrightness: Brightness.light,
   ));
+
+  await Firebase.initializeApp();
+  getIt.registerSingleton(FirebaseFirestore.instance);
+  getIt.registerSingleton(FirebaseAuth.instance);
+  getIt.registerSingleton(FirebaseStorage.instance);
 
   runApp(const MyApp());
 }
@@ -51,12 +52,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
-      builder: (BuildContext context, Widget child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: child,
-        );
-      },
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        child: child,
+      ),
       home: const Manager(),
     );
   }
@@ -71,19 +70,20 @@ class Manager extends StatefulWidget {
 
 class _Manager extends State<Manager> with TickerProviderStateMixin {
   UserModel userModelCurrent;
+  final auth = GetIt.I<FirebaseAuth>();
 
   @override
   void initState() {
-    readFirebaseIsAccountFull(context).then((userModel) {
+    readFirebaseIsAccountFull(context).then((user) {
       bool isEmptyImageBackground = false, isEmptyDataUser = false;
-      if (userModel.uid.isNotEmpty) {
-        if (userModel.listInterests.isNotEmpty &&
-            userModel.myCity.isNotEmpty &&
-            userModel.searchPol.isNotEmpty) {
+      if (user.uid.isNotEmpty) {
+        if (user.listInterests.isNotEmpty &&
+            user.myCity.isNotEmpty &&
+            user.searchPol.isNotEmpty) {
           isEmptyDataUser = true;
-          if (userModel.imageBackground.isNotEmpty) {
+          if (user.imageBackground.isNotEmpty) {
             isEmptyImageBackground = true;
-            userModelCurrent = userModel;
+            userModelCurrent = user;
           }
         }
       }
@@ -92,12 +92,10 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
     super.initState();
   }
 
-  Future userNavigator(
+  userNavigator(
     bool isEmptyDataUser,
     bool isEmptyImageBackground,
-  ) async {
-    Map<String, dynamic> data = {};
-    final auth = GetIt.I<FirebaseAuth>();
+  ) {
     if (auth.currentUser?.uid != null) {
       if (auth.currentUser.emailVerified) {
         if (isEmptyDataUser) {
@@ -116,7 +114,7 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
               context,
               FadeRouteAnimation(
                 EditImageProfileScreen(
-                  userModel: UserModel.fromDocument(data),
+                  userModel: UserModel.fromDocument(dataCash),
                   listInterests: const [],
                 ),
               ),
@@ -128,7 +126,7 @@ class _Manager extends State<Manager> with TickerProviderStateMixin {
             FadeRouteAnimation(
               EditProfileScreen(
                 isFirst: true,
-                userModel: UserModel.fromDocument(data),
+                userModel: UserModel.fromDocument(dataCash),
               ),
             ),
           );
